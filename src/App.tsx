@@ -128,11 +128,12 @@ export default function App() {
     }
     recognition.onend = () => setIsListening(false)
     recognitionRef.current = recognition
+    setIsListening(true)
+    setNotice('Listening… speak now. Nothing is sent anywhere.')
     try {
       recognition.start()
-      setIsListening(true)
-      setNotice('Listening… speak now. Nothing is sent anywhere.')
     } catch {
+      setIsListening(false)
       setNotice('Voice dictation could not start. Use the text box instead.')
     }
   }

@@ -94,6 +94,29 @@ test('microphone permission denial keeps text entry available', async ({ page })
   await openPractice(page)
   await page.getByRole('button', { name: 'Use voice dictation' }).click()
   await expect(page.getByRole('status')).toContainText('Microphone permission was denied. Use the text box instead.')
+  await expect(page.getByRole('button', { name: 'Use voice dictation' })).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.getByRole('textbox', { name: 'Your English reply' })).toBeEditable()
+})
+
+test('asynchronous microphone permission denial keeps text entry available', async ({ page }) => {
+  await page.addInitScript(() => {
+    class DeniedSpeechRecognition {
+      lang = ''
+      interimResults = false
+      continuous = false
+      onresult: null = null
+      onerror: ((event: { error: string }) => void) | null = null
+      onend: null = null
+      start() { window.setTimeout(() => this.onerror?.({ error: 'not-allowed' }), 0) }
+      stop() {}
+    }
+    ;(window as Window & { SpeechRecognition?: unknown }).SpeechRecognition = DeniedSpeechRecognition
+  })
+
+  await openPractice(page)
+  await page.getByRole('button', { name: 'Use voice dictation' }).click()
+  await expect(page.getByRole('status')).toContainText('Microphone permission was denied. Use the text box instead.')
+  await expect(page.getByRole('button', { name: 'Use voice dictation' })).toHaveAttribute('aria-pressed', 'false')
   await expect(page.getByRole('textbox', { name: 'Your English reply' })).toBeEditable()
 })
 
