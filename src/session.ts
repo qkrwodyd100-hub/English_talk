@@ -87,13 +87,52 @@ export function completeSession(session: Session): Session {
   return { ...session, endedAt: new Date().toISOString(), summary: makeSummary(session) }
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function isDateString(value: unknown): value is string {
+  return typeof value === 'string' && !Number.isNaN(Date.parse(value))
+}
+
+function isMessage(value: unknown): value is Message {
+  return isRecord(value)
+    && typeof value.id === 'string'
+    && (value.speaker === 'learner' || value.speaker === 'coach')
+    && typeof value.text === 'string'
+    && isDateString(value.timestamp)
+}
+
+function isSessionSummary(value: unknown): value is SessionSummary {
+  return isRecord(value)
+    && Number.isInteger(value.turnCount)
+    && (value.turnCount as number) >= 0
+    && Array.isArray(value.expressions)
+    && value.expressions.every((expression) => typeof expression === 'string')
+    && typeof value.nextAction === 'string'
+}
+
+function isStoredSession(value: unknown): value is Session {
+  return isRecord(value)
+    && typeof value.id === 'string'
+    && (value.goal === 'travel' || value.goal === 'work' || value.goal === 'daily')
+    && (value.difficulty === 'beginner' || value.difficulty === 'intermediate' || value.difficulty === 'advanced')
+    && typeof value.scenario === 'string'
+    && Object.hasOwn(scenarios, value.scenario)
+    && isDateString(value.startedAt)
+    && (value.endedAt === undefined || isDateString(value.endedAt))
+    && Array.isArray(value.messages)
+    && value.messages.every(isMessage)
+    && (value.summary === undefined || isSessionSummary(value.summary))
+}
+
 export function parseStoredSessions(raw: string | null): Session[] {
   if (!raw) return []
   try {
     const value: unknown = JSON.parse(raw)
     if (!value || typeof value !== 'object') return []
     const stored = value as { version?: unknown; sessions?: unknown }
-    return stored.version === STORAGE_VERSION && Array.isArray(stored.sessions) ? stored.sessions as Session[] : []
+    return stored.version === STORAGE_VERSION && Array.isArray(stored.sessions) ? stored.sessions.filter(isStoredSession) : []
   } catch {
     return []
   }
