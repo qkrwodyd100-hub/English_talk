@@ -57,7 +57,16 @@ test('a malformed v1 session response keeps existing local history and the compl
       }],
     }))
     ;(window as Window & { __englishTalkSessionApi?: { createSession: () => Promise<unknown> } }).__englishTalkSessionApi = {
-      createSession: async () => ({ contractVersion: 'v1', id: 'malformed-session' }),
+      createSession: async () => ({
+        contractVersion: 'v1',
+        id: '',
+        storage: 'local',
+        scenarioId: '',
+        title: '',
+        createdAt: 'not-a-date',
+        updatedAt: 'not-a-date',
+        turns: [],
+      }),
     }
   })
 

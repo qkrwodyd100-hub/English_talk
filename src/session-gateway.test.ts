@@ -72,4 +72,36 @@ describe('local-first session gateway', () => {
 
     await expect(gateway.submit(draft)).resolves.toMatchObject({ mode: 'local-fallback' })
   })
+
+  it('falls back locally when a v1 response has shallowly valid but contract-invalid values', async () => {
+    const gateway = createLocalFirstSessionGateway({
+      createSession: async () => ({
+        contractVersion: 'v1',
+        id: '',
+        storage: 'local',
+        scenarioId: '',
+        title: '',
+        createdAt: 'not-a-date',
+        updatedAt: 'not-a-date',
+        turns: [],
+      } as unknown as import('./contracts/session-contract').Session),
+    })
+
+    await expect(gateway.submit(draft)).resolves.toMatchObject({ mode: 'local-fallback' })
+  })
+
+  it('falls back locally when a v1 response contains an impossible ISO calendar date', async () => {
+    const gateway = createLocalFirstSessionGateway({
+      createSession: async () => ({
+        ...draft,
+        contractVersion: 'v1',
+        id: 'session-1',
+        storage: 'local',
+        createdAt: '2026-02-30T08:00:00.000Z',
+        updatedAt: '2026-08-10T08:00:00.000Z',
+      }),
+    })
+
+    await expect(gateway.submit(draft)).resolves.toMatchObject({ mode: 'local-fallback' })
+  })
 })

@@ -21,7 +21,7 @@ Base URL (phase 2): `/api/v1`. Content type: `application/json`. All successful 
 }
 ```
 
-`speaker` is `learner` or `coach`. A session has 1–100 turns; each text is 1–2,000 characters, `scenarioId` is at most 80 characters, and `title` at most 120. Client fields outside the documented shape must be ignored rather than persisted.
+`speaker` is `learner` or `coach`. A session ID is 1–128 characters. A session has 1–100 turns; each text is 1–2,000 characters, `scenarioId` is 1–80 characters, and `title` is 1–120 characters. All timestamps are ISO-8601 UTC date-times. Client fields outside the documented shape must be ignored rather than persisted.
 
 ## Routes
 
