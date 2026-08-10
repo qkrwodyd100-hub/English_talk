@@ -1,0 +1,56 @@
+import { expect, test } from '@playwright/test'
+
+test('the 390px learning dashboard remains usable without horizontal overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await expect(page.getByRole('heading', { name: '오늘의 문장을 내 것으로 만들어요.' })).toBeVisible()
+  await expect(page.getByRole('button', { name: '타이핑 연습' })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+})
+
+test('learner reveals a card, masters it, and hides mastered cards', async ({ page }) => {
+  await page.goto('/')
+  const firstCard = page.locator('.flashcard').first()
+  await expect(firstCard.getByText('차 한 잔 주세요.')).toBeVisible()
+  await firstCard.getByRole('button', { name: '탭하거나 Enter로 영어 문장 보기' }).click()
+  await expect(firstCard.getByText('I would like a cup of tea.')).toBeVisible()
+  await firstCard.getByRole('button', { name: '마스터로 표시' }).click()
+  await page.getByLabel('마스터 숨기기').check()
+  await expect(page.getByText('차 한 잔 주세요.')).toHaveCount(0)
+})
+
+test('learner gets normalized typing feedback and can use text when speech is unavailable', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, 'SpeechRecognition', { value: undefined, configurable: true })
+    Object.defineProperty(window, 'webkitSpeechRecognition', { value: undefined, configurable: true })
+  })
+  await page.goto('/')
+  await page.getByRole('button', { name: '타이핑 연습' }).click()
+  const prompt = await page.locator('.practice-prompt strong').textContent()
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await expect(page.getByText('누락 또는 오타 단어를 확인해 보세요.')).toBeVisible()
+  await expect(page.locator('.word-feedback .missing').first()).toBeVisible()
+  await page.getByRole('button', { name: '음성으로 입력' }).click()
+  await expect(page.getByText(/텍스트 입력으로 계속 학습할 수 있습니다/)).toBeVisible()
+  expect(prompt).not.toBeNull()
+})
+
+test('learner creates, edits, deletes, and restores a custom sentence', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: '내 문장', exact: true }).click()
+  await page.getByRole('button', { name: '문장 추가' }).click()
+  await page.getByLabel('영어 문장').fill('This is my custom sentence.')
+  await page.getByLabel('한국어 뜻').fill('이것은 내 문장입니다.')
+  await page.getByRole('button', { name: '저장' }).click()
+  await expect(page.getByText('This is my custom sentence.')).toBeVisible()
+  await page.reload()
+  await page.getByRole('button', { name: '내 문장', exact: true }).click()
+  await expect(page.getByText('This is my custom sentence.')).toBeVisible()
+  await page.getByRole('button', { name: '수정' }).click()
+  await page.getByLabel('영어 문장').fill('This is an edited custom sentence.')
+  await page.getByRole('button', { name: '저장' }).click()
+  await expect(page.getByText('This is an edited custom sentence.')).toBeVisible()
+  await page.getByRole('button', { name: '삭제' }).click()
+  await expect(page.getByText('아직 내 문장이 없습니다. 자주 쓰는 문장을 추가해 보세요.')).toBeVisible()
+})
