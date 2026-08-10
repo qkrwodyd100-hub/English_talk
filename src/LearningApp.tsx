@@ -168,7 +168,7 @@ export default function LearningApp() {
   }
 
   return <main className="learning-shell">
-    <header className="learning-header"><div><p className="eyebrow">English Talk · 60-day study</p><h1>오늘의 문장을 내 것으로 만들어요.</h1></div><p className="fixture-note">현재는 XLSX 교체용 소형 fixture 데이터입니다.</p></header>
+    <header className="learning-header"><div><p className="eyebrow">English Talk · 60-day study</p><h1>오늘의 문장을 내 것으로 만들어요.</h1></div><p className="fixture-note">60일 동안 매일 10문장씩 학습해요.</p></header>
     <section className="dashboard" aria-label="학습 현황">
       <div><strong>{sentences.length}</strong><span>전체 문장</span></div><div><strong>{state.masteredIds.length}</strong><span>마스터</span></div><div><strong>{progress}%</strong><span>진행률</span></div><div><strong>{completedToday ? '완료' : `${practiceIndex + 1}/10`}</strong><span>오늘 challenge</span></div>
       <div className="progress-track" role="progressbar" aria-label="마스터 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}><span style={{ width: `${progress}%` }} /></div>

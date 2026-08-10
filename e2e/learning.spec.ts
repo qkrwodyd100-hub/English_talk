@@ -4,6 +4,7 @@ test('the 390px learning dashboard remains usable without horizontal overflow', 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
   await expect(page.getByRole('heading', { name: '오늘의 문장을 내 것으로 만들어요.' })).toBeVisible()
+  await expect(page.getByText('60일 동안 매일 10문장씩 학습해요.')).toBeVisible()
   await expect(page.getByRole('button', { name: '타이핑 연습' })).toBeVisible()
   await expect(page.getByLabel('학습 현황')).toContainText('600')
   await expect(page.getByLabel('학습 현황')).toContainText('0%')
