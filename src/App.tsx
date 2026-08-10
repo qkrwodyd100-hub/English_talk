@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { getBrowserSelectedSessionApi, createLocalFirstSessionGateway } from './session-gateway'
 import { advanceScenario, completeSession, createSession, parseStoredSessions, scenarios, STORAGE_VERSION, type Difficulty, type Goal, type ScenarioId, type Session } from './session'
 
 type Screen = 'home' | 'prepare' | 'practice' | 'result' | 'history'
@@ -25,6 +26,14 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
 }
 
+function toContractDraft(session: Session) {
+  return {
+    scenarioId: session.scenario,
+    title: scenarios[session.scenario].title,
+    turns: session.messages.map(({ speaker, text, timestamp }) => ({ speaker, text, occurredAt: timestamp })),
+  }
+}
+
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home')
   const [goal, setGoal] = useState<Goal>('travel')
@@ -38,6 +47,7 @@ export default function App() {
   const [isListening, setIsListening] = useState(false)
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
   const speechAvailable = useMemo(() => Boolean(hasSpeechRecognition()), [])
+  const sessionGateway = useMemo(() => createLocalFirstSessionGateway(getBrowserSelectedSessionApi()), [])
   const activeScenario = scenarios[scenario]
 
   useEffect(() => {
@@ -91,6 +101,9 @@ export default function App() {
     setSession(completed)
     persist([completed, ...sessions])
     setScreen('result')
+    void sessionGateway.submit(toContractDraft(completed)).then((result) => {
+      if (result.mode === 'local-fallback') setNotice(result.guidance)
+    })
   }
 
   function toggleListening() {
@@ -143,7 +156,7 @@ export default function App() {
   }
 
   if (screen === 'result' && session?.summary) {
-    return <main className="shell"><Header onHistory={() => setScreen('history')} /><section className="panel"><p className="eyebrow">Session complete</p><h1>You finished {session.summary.turnCount} turns.</h1><h2>Expressions to reuse</h2><div className="expression-list">{session.summary.expressions.map((expression) => <span key={expression}>{expression}</span>)}</div><h2>Next action</h2><p>{session.summary.nextAction}</p>{storageStatus === 'error' && <p className="notice" role="status">History could not be saved.</p>}<div className="actions"><button className="button secondary" onClick={() => setScreen('history')}>View history</button><button className="button" onClick={() => setScreen('home')}>Practice another scenario</button></div></section></main>
+    return <main className="shell"><Header onHistory={() => setScreen('history')} /><section className="panel"><p className="eyebrow">Session complete</p><h1>You finished {session.summary.turnCount} turns.</h1><h2>Expressions to reuse</h2><div className="expression-list">{session.summary.expressions.map((expression) => <span key={expression}>{expression}</span>)}</div><h2>Next action</h2><p>{session.summary.nextAction}</p>{storageStatus === 'error' && <p className="notice" role="status">History could not be saved.</p>}{storageStatus !== 'error' && notice && <p className="notice" role="status">{notice}</p>}<div className="actions"><button className="button secondary" onClick={() => setScreen('history')}>View history</button><button className="button" onClick={() => setScreen('home')}>Practice another scenario</button></div></section></main>
   }
 
   if (screen === 'history') {
