@@ -3,7 +3,6 @@ import {
   LEARNING_STORAGE_KEY,
   LEARNING_STORAGE_VERSION,
   createEmptyLearningState,
-  fixtureSentences,
   getTodayChallenge,
   getTodayKey,
   getWordFeedback,
@@ -12,6 +11,7 @@ import {
   type LearningState,
   type Sentence,
 } from './learning'
+import { builtInSentences } from './sentences'
 
 type Tab = 'cards' | 'practice' | 'manage'
 type SpeechRecognitionLike = {
@@ -59,7 +59,7 @@ export default function LearningApp() {
     }
   }, [])
 
-  const sentences = useMemo(() => [...fixtureSentences, ...state.customSentences], [state.customSentences])
+  const sentences = useMemo(() => [...builtInSentences, ...state.customSentences], [state.customSentences])
   const todayKey = getTodayKey()
   const challenge = useMemo(() => getTodayChallenge(sentences), [sentences])
   const current = challenge[practiceIndex % Math.max(challenge.length, 1)]
