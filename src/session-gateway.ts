@@ -53,6 +53,28 @@ function fallbackFor(error: unknown): string {
   return fallbackGuidance.unavailable
 }
 
+function isConversationTurn(value: unknown): boolean {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const turn = value as Record<string, unknown>
+  return (turn.speaker === 'learner' || turn.speaker === 'coach')
+    && typeof turn.text === 'string'
+    && typeof turn.occurredAt === 'string'
+}
+
+function isContractSession(value: unknown): value is ContractSession {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const session = value as Record<string, unknown>
+  return session.contractVersion === SESSION_CONTRACT_VERSION
+    && typeof session.id === 'string'
+    && (session.storage === 'local' || session.storage === 'remote')
+    && typeof session.createdAt === 'string'
+    && typeof session.updatedAt === 'string'
+    && typeof session.scenarioId === 'string'
+    && typeof session.title === 'string'
+    && Array.isArray(session.turns)
+    && session.turns.every(isConversationTurn)
+}
+
 export function createLocalFirstSessionGateway(selectedApi?: SelectedSessionApi) {
   return {
     async submit(draft: CreateSessionRequest): Promise<SessionGatewayResult> {
@@ -60,7 +82,7 @@ export function createLocalFirstSessionGateway(selectedApi?: SelectedSessionApi)
 
       try {
         const session = await selectedApi.createSession(draft)
-        if (session.contractVersion !== SESSION_CONTRACT_VERSION) {
+        if (!isContractSession(session)) {
           return { mode: 'local-fallback', guidance: fallbackGuidance.unavailable }
         }
         return { mode: 'selected-api' }

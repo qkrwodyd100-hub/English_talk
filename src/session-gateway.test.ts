@@ -37,4 +37,39 @@ describe('local-first session gateway', () => {
 
     await expect(gateway.submit(draft)).resolves.toEqual({ mode: 'selected-api' })
   })
+
+  it('falls back locally when a v1 response omits required session fields', async () => {
+    const gateway = createLocalFirstSessionGateway({
+      createSession: async () => ({
+        ...draft,
+        contractVersion: 'v1',
+        id: 'session-1',
+        storage: 'local',
+        createdAt: '2026-08-10T08:00:00.000Z',
+        updatedAt: '2026-08-10T08:00:00.000Z',
+        turns: undefined,
+      } as unknown as import('./contracts/session-contract').Session),
+    })
+
+    await expect(gateway.submit(draft)).resolves.toEqual({
+      mode: 'local-fallback',
+      guidance: 'The session service is unavailable. Your transcript stays on this device; continue with text practice.',
+    })
+  })
+
+  it('falls back locally when a v1 response has a malformed turn', async () => {
+    const gateway = createLocalFirstSessionGateway({
+      createSession: async () => ({
+        ...draft,
+        contractVersion: 'v1',
+        id: 'session-1',
+        storage: 'local',
+        createdAt: '2026-08-10T08:00:00.000Z',
+        updatedAt: '2026-08-10T08:00:00.000Z',
+        turns: [{ speaker: 'learner', text: 42, occurredAt: '2026-08-10T08:00:00.000Z' }],
+      } as unknown as import('./contracts/session-contract').Session),
+    })
+
+    await expect(gateway.submit(draft)).resolves.toMatchObject({ mode: 'local-fallback' })
+  })
 })

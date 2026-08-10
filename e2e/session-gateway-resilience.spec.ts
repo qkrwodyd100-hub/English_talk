@@ -40,3 +40,37 @@ for (const [failure, guidance] of [
     await expect(page.getByText(/2 turns/)).toBeVisible()
   })
 }
+
+test('a malformed v1 session response keeps existing local history and the completed transcript', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('english-talk.sessions', JSON.stringify({
+      version: 1,
+      sessions: [{
+        id: 'saved-session',
+        goal: 'travel',
+        difficulty: 'beginner',
+        scenario: 'cafe',
+        startedAt: '2026-08-10T08:00:00.000Z',
+        endedAt: '2026-08-10T08:02:00.000Z',
+        messages: [],
+        summary: { turnCount: 0, expressions: [], nextAction: 'Keep practicing.' },
+      }],
+    }))
+    ;(window as Window & { __englishTalkSessionApi?: { createSession: () => Promise<unknown> } }).__englishTalkSessionApi = {
+      createSession: async () => ({ contractVersion: 'v1', id: 'malformed-session' }),
+    }
+  })
+
+  await openPractice(page)
+  const reply = page.getByRole('textbox', { name: 'Your English reply' })
+  await reply.fill('Could I have tea, please?')
+  await page.getByRole('button', { name: 'Send reply' }).click()
+  await reply.fill('That is all, thank you.')
+  await page.getByRole('button', { name: 'Send reply' }).click()
+  await page.getByRole('button', { name: 'Finish session' }).click()
+
+  await expect(page.getByRole('status')).toContainText('The session service is unavailable.')
+  await page.getByRole('button', { name: 'View history' }).click()
+  await expect(page.locator('.history-list > li')).toHaveCount(2)
+  await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.sessions')!).sessions.map((session: { id: string }) => session.id))).toContain('saved-session')
+})
