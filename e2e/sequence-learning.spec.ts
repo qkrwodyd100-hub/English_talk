@@ -127,3 +127,65 @@ test('topic-filtered practice persists the displayed sentence position across to
   await page.getByRole('button', { name: '다음 문장' }).click()
   await expect(page.getByText('한 명 자리 부탁해요.')).toBeVisible()
 })
+
+test('keeps practice usable and announces a persistence failure without horizontal overflow on mobile', async ({ page }) => {
+  await page.addInitScript(() => {
+    const originalSetItem = Storage.prototype.setItem
+    Storage.prototype.setItem = function (key: string, value: string) {
+      if (key === 'english-talk.learning') throw new DOMException('Storage unavailable', 'QuotaExceededError')
+      return originalSetItem.call(this, key, value)
+    }
+  })
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+
+  const notice = page.getByRole('status')
+  await expect(notice).toContainText('저장소를 읽을 수 없습니다')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+
+  await expect(page.getByText('수정 필요')).toBeVisible()
+  await expect(page.getByRole('button', { name: '오답 복습 (1)' })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await page.screenshot({ path: 'test-results/qa-artifacts/learning-storage-fallback-mobile-390.png', fullPage: true })
+})
+
+test('supports keyboard day selection and exposes answer feedback through a polite live region on desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/')
+
+  const daySelect = page.getByLabel('학습 Day 선택')
+  await daySelect.focus()
+  await page.keyboard.press('End')
+  await expect(daySelect).toHaveValue('60')
+  await expect(page.getByRole('heading', { name: /1 \/ 10/ })).toBeVisible()
+
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await expect(page.locator('[aria-live="polite"]')).toContainText('수정 필요')
+  await page.screenshot({ path: 'test-results/qa-artifacts/learning-keyboard-desktop-1280.png', fullPage: true })
+})
+
+test('completes a desktop practice flow without browser console, page, or network failures', async ({ page }) => {
+  const consoleErrors: string[] = []
+  const pageErrors: string[] = []
+  const failedRequests: string[] = []
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text())
+  })
+  page.on('pageerror', (error) => pageErrors.push(error.message))
+  page.on('requestfailed', (request) => failedRequests.push(`${request.method()} ${request.url()} ${request.failure()?.errorText ?? ''}`))
+
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('A table for one, please.')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await expect(page.getByText('정확')).toBeVisible()
+  await page.getByRole('button', { name: '다음 문장' }).click()
+
+  expect(consoleErrors).toEqual([])
+  expect(pageErrors).toEqual([])
+  expect(failedRequests).toEqual([])
+})
