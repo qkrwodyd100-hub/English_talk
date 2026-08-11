@@ -11,6 +11,12 @@ npm run dev
 
 Open the local URL printed by Vite. Create a production bundle with `npm run build`. Run the behavior tests with `npm test` and TypeScript validation with `npm run typecheck`.
 
+## 60-day learning flow
+
+- Choose any Day or curriculum topic and work through its 10 sentences in order. Answer checks accept only the stored sentence or its declared alternatives; topic/level/priority metadata, phrase slots, and the day's real mini dialogue are shown in the practice view.
+- The last Day and sentence position, completed sentences, attempt counts, review queue, and favorites are saved after each answer. Reloading resumes from that position.
+- Existing version 1 `english-talk.learning` data is migrated to version 2 on load. Mastered sentences, custom sentences, and completed challenge dates are preserved while the new sequential fields are initialized safely.
+
 ## Privacy and browser behavior
 
 - Practice history stays only in this browser's `localStorage`; clearing browser site data removes it.

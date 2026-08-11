@@ -56,7 +56,7 @@ export function getDayProgress(sentences: Sentence[], state: SequentialLearningS
 export function getTopicProgress(sentences: Sentence[], state: SequentialLearningState): TopicProgress[] {
   const byTopic = new Map<string, Sentence[]>()
   for (const sentence of sentences) {
-    const topic = sentence.topic?.trim() || 'Uncategorized'
+    const topic = sentence.source === 'builtIn' ? sentence.topic : 'custom'
     byTopic.set(topic, [...(byTopic.get(topic) ?? []), sentence])
   }
   return [...byTopic.entries()].map(([topic, topicSentences]) => ({ topic, ...calculateProgress(topicSentences, state.completedSentenceIds) }))
@@ -65,7 +65,7 @@ export function getTopicProgress(sentences: Sentence[], state: SequentialLearnin
 export function judgeAnswer(sentence: Sentence, attempt: string): AnswerJudgment {
   const normalizedAttempt = normalizeAnswer(attempt)
   if (normalizedAttempt === normalizeAnswer(sentence.english)) return { kind: 'exact', isCorrect: true }
-  if (sentence.alternatives?.some((alternative) => normalizedAttempt === normalizeAnswer(alternative))) {
+  if (sentence.source === 'builtIn' && sentence.alternatives?.some((alternative) => normalizedAttempt === normalizeAnswer(alternative.english))) {
     return { kind: 'accepted-alternative', isCorrect: true }
   }
   return { kind: 'needs-correction', isCorrect: false }

@@ -1,29 +1,106 @@
 import { expect, test } from '@playwright/test'
 
-test('learner can choose a day and topic, review a missed answer, and complete a mini dialogue', async ({ page }) => {
+test('migrates v1 data and persists sequential progress, review, and favorites across reloads', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (window.sessionStorage.getItem('seeded-v1')) return
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({
+      version: 1,
+      state: {
+        masteredIds: ['day-01-01'],
+        customSentences: [{ id: 'custom-1', english: 'Please wait here.', korean: '여기서 기다려 주세요.', day: 1, source: 'custom' }],
+        completedChallengeDates: ['2026-08-10'],
+      },
+    }))
+    window.sessionStorage.setItem('seeded-v1', 'true')
+  })
+  await page.goto('/')
+
+  await expect(page.getByText('601', { exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /1 \/ 11/ })).toBeVisible()
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await expect(page.getByText('수정 필요')).toBeVisible()
+  await page.getByRole('button', { name: '즐겨찾기' }).click()
+  await page.reload()
+
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
+  await expect(page.getByRole('heading', { name: /2 \/ 10/ })).toBeVisible()
+  await expect(page.getByRole('button', { name: '오답 복습 (1)' })).toBeVisible()
+  await page.getByRole('button', { name: '오답 복습 (1)' }).click()
+  await expect(page.getByText('A table for one, please.')).toBeVisible()
+  await page.getByRole('button', { name: '내 문장' }).click()
+  await expect(page.getByText('Please wait here.')).toBeVisible()
+
+  const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}'))
+  expect(persisted).toMatchObject({ version: 2, state: { selectedDay: 2, dayPositions: { 2: 1 }, reviewQueueIds: ['day-02-01'], favoriteIds: ['day-02-01'] } })
+})
+
+test('resumes and re-practices a persisted custom sentence in the sequential flow', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({
+      version: 2,
+      state: {
+        masteredIds: [],
+        customSentences: [{ id: 'custom-1', english: 'Please wait here.', korean: '여기서 기다려 주세요.', day: 1, source: 'custom' }],
+        completedChallengeDates: [],
+        selectedDay: 1,
+        dayPositions: { 1: 10 },
+        completedSentenceIds: [],
+        attemptCounts: { 'custom-1': 1 },
+        reviewQueueIds: ['custom-1'],
+        favoriteIds: [],
+      },
+    }))
+  })
+  await page.goto('/')
+
+  await expect(page.getByRole('heading', { name: /11 \/ 11/ })).toBeVisible()
+  await expect(page.getByText('여기서 기다려 주세요.')).toBeVisible()
+  await page.getByRole('button', { name: '오답 복습 (1)' }).click()
+  await page.getByRole('button', { name: '다시 연습' }).click()
+
+  await expect(page.getByRole('heading', { name: /11 \/ 11/ })).toBeVisible()
+  await expect(page.getByText('여기서 기다려 주세요.')).toBeVisible()
+})
+
+test('uses declared alternatives and slots with the engine answer contract', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+
+  for (const answer of ['A table for one, please.', 'Can I see the menu?']) {
+    await page.getByRole('textbox', { name: '영어 답변' }).fill(answer)
+    await page.getByRole('button', { name: '정답 확인' }).click()
+    await expect(page.getByText('정확')).toBeVisible()
+    await page.getByRole('button', { name: '다음 문장' }).click()
+  }
+
+  await page.getByRole('button', { name: "What's good here?" }).click()
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await expect(page.getByText('허용 표현')).toBeVisible()
+
+  await page.getByLabel('학습 Day 선택').selectOption('8')
+  await page.getByRole('button', { name: 'Mina Lee · 미나 리' }).click()
+  await expect(page.getByRole('textbox', { name: '영어 답변' })).toHaveValue('I have a reservation under the name Mina Lee.')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await expect(page.getByText('수정 필요')).toBeVisible()
+})
+
+test('shows real topic metadata and the selected day mini dialogue on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
 
-  await page.getByLabel('학습 Day 선택').selectOption('2')
-  await expect(page.getByText('Day 2 학습', { exact: true })).toBeVisible()
-  await page.getByLabel('주제 필터').selectOption('식당·카페')
-  await expect(page.getByLabel('주제별 진행률')).toBeVisible()
+  await page.getByLabel('주제 필터').selectOption('asking-for-photo-help')
+  await expect(page.getByText('제 사진 좀 찍어 주시겠어요?')).toBeVisible()
+  await expect(page.getByRole('button', { name: '미니 대화 연습' })).toHaveCount(0)
 
-  await page.getByRole('button', { name: '정답 확인' }).click()
-  await expect(page.getByText('수정 필요')).toBeVisible()
-  await page.getByRole('button', { name: '오답 복습에 추가' }).click()
-  await expect(page.getByRole('button', { name: /오답 복습 \(1\)/ })).toBeVisible()
-
+  await page.getByLabel('주제 필터').selectOption('restaurant-basics')
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
+  await expect(page.getByText('restaurant-basics · beginner · 우선순위 1')).toBeVisible()
   await page.getByRole('button', { name: '미니 대화 연습' }).click()
   await expect(page.getByRole('heading', { name: 'Day 2 미니 대화' })).toBeVisible()
-  const reply = page.getByRole('textbox', { name: '내 영어 답변' })
-  await reply.fill('Hello! Nice to meet you.')
-  await page.getByRole('button', { name: '대화 계속하기' }).click()
-  await reply.fill('Thank you.')
-  await page.getByRole('button', { name: '대화 계속하기' }).click()
-  await expect(page.getByText('2 / 2 턴')).toBeVisible()
+  await expect(page.getByText('Of course. Here is the menu.')).toBeVisible()
+  await expect(page.getByText('네. 여기 메뉴판입니다.')).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
-  await page.screenshot({ path: 'test-results/qa-artifacts/sequential-learning-mobile-390.png', fullPage: true })
 })
 
 test('sequential learning controls remain visible on a desktop viewport', async ({ page }) => {
@@ -32,31 +109,21 @@ test('sequential learning controls remain visible on a desktop viewport', async 
   await expect(page.getByLabel('학습 Day 선택')).toBeVisible()
   await expect(page.getByLabel('주제별 진행률')).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
-  await page.screenshot({ path: 'test-results/qa-artifacts/sequential-learning-desktop.png', fullPage: true })
 })
 
-test('topic quick access and phrase controls produce usable answers without leaking template syntax', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 })
+test('topic-filtered practice persists the displayed sentence position across topic gaps', async ({ page }) => {
   await page.goto('/')
+  await page.getByLabel('주제 필터').selectOption('restaurant-basics')
 
-  await expect(page.getByRole('button', { name: '타이핑 연습' })).toHaveAttribute('aria-current', 'page')
-  await page.getByRole('textbox', { name: '영어 답변' }).fill('stale answer')
-  await page.getByLabel('주제 필터').selectOption('긴급 상황')
-  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('25')
-  await expect(page.getByRole('textbox', { name: '영어 답변' })).toHaveValue('')
-  await expect(page.getByText('이 주제에는 Day 1 문장이 없습니다.')).toHaveCount(0)
+  for (const answer of ['A table for one, please.', 'Can I see the menu?', 'What do you recommend?', "I'll have this.", 'Not spicy, please.', 'The bill, please.', 'Can I pay with a card?']) {
+    await page.getByRole('textbox', { name: '영어 답변' }).fill(answer)
+    await page.getByRole('button', { name: '정답 확인' }).click()
+    await page.getByRole('button', { name: '다음 문장' }).click()
+  }
 
-  await page.getByLabel('학습 Day 선택').selectOption('5')
-  const uberChoice = page.getByRole('button', { name: 'Can I book an Uber here?' })
-  await expect(uberChoice).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Can I book an Uber', exact: true })).toHaveCount(0)
-  await uberChoice.click()
-  await expect(page.getByRole('textbox', { name: '영어 답변' })).toHaveValue('Can I book an Uber here?')
-
-  await page.getByLabel('학습 Day 선택').selectOption('8')
-  await page.getByRole('textbox', { name: '이름 채우기' }).pressSequentially('Mina')
-  await expect(page.getByRole('textbox', { name: '영어 답변' })).toHaveValue('I have a reservation under the name Mina.')
+  await expect(page.getByText('맛있었어요.')).toBeVisible()
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('It was delicious.')
   await page.getByRole('button', { name: '정답 확인' }).click()
-  await expect(page.getByText('허용 표현')).toBeVisible()
-  await expect(page.locator('.answer-feedback')).not.toContainText('[이름]')
+  await page.getByRole('button', { name: '다음 문장' }).click()
+  await expect(page.getByText('한 명 자리 부탁해요.')).toBeVisible()
 })

@@ -14,9 +14,9 @@ import {
 import type { Sentence } from './learning'
 
 const sentences: Sentence[] = [
-  { id: 'day-01-01', english: 'Can I pay by card?', korean: '카드로 결제할 수 있나요?', day: 1, source: 'builtIn', topic: 'payment', alternatives: ['May I pay by card?'] },
-  { id: 'day-01-02', english: 'Where is the station?', korean: '역이 어디예요?', day: 1, source: 'builtIn', topic: 'travel' },
-  { id: 'day-02-01', english: 'I need help.', korean: '도움이 필요해요.', day: 2, source: 'builtIn', topic: 'travel' },
+  { id: 'day-01-01', english: 'Can I pay by card?', korean: '카드로 결제할 수 있나요?', day: 1, source: 'builtIn', topic: 'payment', level: 'beginner', priority: 1, alternatives: [{ english: 'May I pay by card?', korean: '카드로 결제해도 될까요?' }] },
+  { id: 'day-01-02', english: 'Where is the station?', korean: '역이 어디예요?', day: 1, source: 'builtIn', topic: 'travel', level: 'beginner', priority: 1 },
+  { id: 'day-02-01', english: 'I need help.', korean: '도움이 필요해요.', day: 2, source: 'builtIn', topic: 'travel', level: 'beginner', priority: 1 },
 ]
 
 function state(overrides: Partial<SequentialLearningState> = {}): SequentialLearningState {
@@ -45,6 +45,22 @@ describe('sequential learning engine', () => {
     expect(judgeAnswer(sentences[0], ' CAN I PAY BY CARD! ')).toEqual({ kind: 'exact', isCorrect: true })
     expect(judgeAnswer(sentences[0], 'May I pay by card.')).toEqual({ kind: 'accepted-alternative', isCorrect: true })
     expect(judgeAnswer(sentences[0], 'Can I pay with cash?')).toEqual({ kind: 'needs-correction', isCorrect: false })
+  })
+
+  it('uses the built-in sentence metadata contract without accepting undeclared slot substitutions', () => {
+    const sentence: Sentence = {
+      id: 'day-08-01',
+      english: 'I have a reservation under the name Alex Kim.',
+      korean: '알렉스 김 이름으로 예약했어요.',
+      day: 8,
+      source: 'builtIn',
+      topic: 'hotel-check-in',
+      level: 'beginner',
+      priority: 1,
+      slots: [{ key: 'guest-name', type: 'person-name', values: [{ english: 'Alex Kim', korean: '알렉스 김' }, { english: 'Mina Lee', korean: '미나 리' }] }],
+    }
+
+    expect(judgeAnswer(sentence, 'I have a reservation under the name Mina Lee.')).toEqual({ kind: 'needs-correction', isCorrect: false })
   })
 
   it('queues incorrect attempts for review and records correct completion without duplicates', () => {
