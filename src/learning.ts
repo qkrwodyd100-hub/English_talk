@@ -1,16 +1,63 @@
 export type SentenceSource = 'builtIn' | 'custom'
 
-export type Sentence = {
+export type LearningLevel = 'beginner' | 'intermediate' | 'advanced'
+
+export type SentenceAlternative = {
+  english: string
+  korean: string
+}
+
+export type SlotValue = {
+  english: string
+  korean: string
+}
+
+export type SentenceSlot = {
+  key: string
+  type: string
+  values: SlotValue[]
+}
+
+type SentenceBase = {
   id: string
   english: string
   korean: string
   day: number
-  source: SentenceSource
+}
+
+export type BuiltInSentence = SentenceBase & {
+  source: 'builtIn'
+  topic: string
+  level: LearningLevel
+  priority: 1 | 2 | 3
+  region?: string
+  alternatives?: SentenceAlternative[]
+  slots?: SentenceSlot[]
+}
+
+export type CustomSentence = SentenceBase & {
+  source: 'custom'
+}
+
+export type Sentence = BuiltInSentence | CustomSentence
+
+export type DialogueRole = 'traveler' | 'staff' | 'local'
+
+export type DialogueTurn = {
+  role: DialogueRole
+  english: string
+  korean: string
+}
+
+export type MiniDialogue = {
+  day: number
+  topic: string
+  turns: DialogueTurn[]
 }
 
 export type LearningState = {
   masteredIds: string[]
-  customSentences: Sentence[]
+  customSentences: CustomSentence[]
   completedChallengeDates: string[]
 }
 
@@ -35,7 +82,7 @@ export function parseLearningState(raw: string | null): LearningState {
     const record = value as Record<string, unknown>
     if (record.version !== LEARNING_STORAGE_VERSION || !record.state || typeof record.state !== 'object') return createEmptyLearningState()
     const state = record.state as Record<string, unknown>
-    const customSentences = Array.isArray(state.customSentences) ? state.customSentences.filter(isSentence) : []
+    const customSentences = Array.isArray(state.customSentences) ? state.customSentences.filter(isCustomSentence) : []
     return {
       masteredIds: Array.isArray(state.masteredIds) ? state.masteredIds.filter((id): id is string => typeof id === 'string') : [],
       customSentences,
@@ -46,7 +93,7 @@ export function parseLearningState(raw: string | null): LearningState {
   }
 }
 
-function isSentence(value: unknown): value is Sentence {
+function isCustomSentence(value: unknown): value is CustomSentence {
   if (!value || typeof value !== 'object') return false
   const sentence = value as Record<string, unknown>
   return typeof sentence.id === 'string' && typeof sentence.english === 'string' && typeof sentence.korean === 'string' && typeof sentence.day === 'number' && Number.isInteger(sentence.day) && sentence.day >= 1 && sentence.day <= 60 && sentence.source === 'custom'

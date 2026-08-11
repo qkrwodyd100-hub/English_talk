@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { getTodayChallenge, getWordFeedback, normalizeAnswer, parseLearningState, type Sentence } from './learning'
 
 const sentences: Sentence[] = [
-  { id: 'fixture-1', english: 'I would like a cup of tea.', korean: '차 한 잔 주세요.', day: 1, source: 'builtIn' },
-  { id: 'fixture-2', english: 'Could you help me?', korean: '도와주실 수 있나요?', day: 2, source: 'builtIn' },
-  { id: 'fixture-3', english: 'Where is the station?', korean: '역이 어디에 있나요?', day: 3, source: 'builtIn' },
+  { id: 'fixture-1', english: 'I would like a cup of tea.', korean: '차 한 잔 주세요.', day: 1, source: 'builtIn', topic: 'cafe-orders', level: 'beginner', priority: 1 },
+  { id: 'fixture-2', english: 'Could you help me?', korean: '도와주실 수 있나요?', day: 2, source: 'builtIn', topic: 'asking-for-help', level: 'beginner', priority: 1 },
+  { id: 'fixture-3', english: 'Where is the station?', korean: '역이 어디에 있나요?', day: 3, source: 'builtIn', topic: 'asking-for-directions', level: 'beginner', priority: 1 },
 ]
 
 describe('learning helpers', () => {
