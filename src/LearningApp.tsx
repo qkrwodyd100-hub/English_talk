@@ -42,7 +42,19 @@ function topicForDay(day: number): Topic {
 }
 
 function displayEnglish(value: string) {
-  return value.replace(/\[이름\]/g, 'your name').replace(/\//g, ' or ')
+  return value.replace(/\[([^\]]+)\]/g, (_, label: string) => label === '이름' ? 'your name' : label).replace(/\//g, ' or ')
+}
+
+function alternativeSentences(value: string) {
+  const match = value.match(/[A-Za-z0-9'-]+(?:\/[A-Za-z0-9'-]+)+/)
+  if (!match) return []
+  return match[0].split('/').map((option) => value.replace(match[0], option))
+}
+
+function matchesSlotTemplate(template: string, value: string) {
+  if (!/\[[^\]]+\]/.test(template)) return false
+  const pattern = template.split(/\[[^\]]+\]/).map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('.+')
+  return new RegExp(`^${pattern}$`, 'i').test(value.trim())
 }
 
 function persist(state: LearningState) {
@@ -105,7 +117,7 @@ export default function LearningApp() {
   const reviewSentences = sentences.filter((sentence) => reviewIds.includes(sentence.id))
   const isExact = Boolean(current) && normalizeAnswer(attempt) === normalizeAnswer(current.english)
   const wordFeedback = current ? getWordFeedback(current.english, attempt) : []
-  const isAllowed = !isExact && wordFeedback.length > 0 && wordFeedback.filter((item) => item.status === 'correct').length / wordFeedback.length >= 0.7
+  const isAllowed = Boolean(current) && !isExact && (alternativeSentences(current.english).some((answer) => normalizeAnswer(answer) === normalizeAnswer(attempt)) || matchesSlotTemplate(current.english, attempt))
   const feedbackLabel = isExact ? '정확' : isAllowed ? '허용 표현' : '수정 필요'
   const missingWords = wordFeedback.filter((item) => item.status === 'missing').map((item) => item.word)
 
@@ -164,6 +176,21 @@ export default function LearningApp() {
   }
   function deleteCustom(id: string) { updateState({ ...state, customSentences: state.customSentences.filter((sentence) => sentence.id !== id), masteredIds: state.masteredIds.filter((masteredId) => masteredId !== id) }) }
   function addToReview(id: string) { setReviewIds((ids) => ids.includes(id) ? ids : [...ids, id]) }
+  function resetPracticeContext() {
+    setPracticeIndex(0)
+    setAttempt('')
+    setAnswerRevealed(false)
+    setSpeechNotice('')
+    setDialogueOpen(false)
+  }
+  function chooseTopic(topic: Topic | '전체') {
+    setSelectedTopic(topic)
+    if (topic !== '전체' && topicForDay(selectedDay) !== topic) {
+      const firstMatchingDay = sentences.find((sentence) => topicForDay(sentence.day) === topic)?.day
+      if (firstMatchingDay) setSelectedDay(firstMatchingDay)
+    }
+    resetPracticeContext()
+  }
   function continueDialogue() {
     if (!dialogueReply.trim()) return
     if (dialogueTurn === 0) { setDialogueTurn(1); setDialogueReply('') } else { setDialogueTurn(2); setDialogueReply('') }
@@ -173,13 +200,13 @@ export default function LearningApp() {
     <header className="learning-header"><div><p className="eyebrow">English Talk · 60-day study</p><h1>더 넓은 세상으로의 시작</h1></div><p className="fixture-note">60일 동안 매일 10문장씩 학습해요. 오늘 날짜가 아니라, 이어서 학습할 Day와 문장 위치를 선택하세요.</p></header>
     <section className="dashboard" aria-label="학습 현황"><div><strong>{sentences.length}</strong><span>전체 문장</span></div><div><strong>{state.masteredIds.length}</strong><span>마스터</span></div><div><strong>{progress}%</strong><span>진행률</span></div><div><strong>{completedToday ? '완료' : `Day ${selectedDay}`}</strong><span>현재 학습</span></div><div className="progress-track" role="progressbar" aria-label="마스터 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}><span style={{ width: `${progress}%` }} /></div></section>
     {storageNotice && <p className="notice" role="status">{storageNotice}</p>}
-    <nav className="study-tabs" aria-label="학습 메뉴"><button className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({reviewIds.length})</button><button className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
+    <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({reviewIds.length})</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
     {speechNotice && <p className="hint" role="status">{speechNotice}</p>}
 
     {tab === 'practice' && <section className="study-panel" aria-labelledby="practice-heading">
-      <div className="learning-controls"><label>학습 Day 선택<select value={selectedDay} onChange={(event) => { setSelectedDay(Number(event.target.value)); setPracticeIndex(0); setAnswerRevealed(false) }}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label><label>주제 필터<select value={selectedTopic} onChange={(event) => { setSelectedTopic(event.target.value as Topic | '전체'); setPracticeIndex(0); setAnswerRevealed(false) }}><option value="전체">전체 주제</option>{topicOrder.map((topic) => <option key={topic} value={topic}>{topic}</option>)}</select></label></div>
+      <div className="learning-controls"><label>학습 Day 선택<select value={selectedDay} onChange={(event) => { setSelectedDay(Number(event.target.value)); setSelectedTopic('전체'); resetPracticeContext() }}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label><label>주제 필터<select value={selectedTopic} onChange={(event) => chooseTopic(event.target.value as Topic | '전체')}><option value="전체">전체 주제</option>{topicOrder.map((topic) => <option key={topic} value={topic}>{topic}</option>)}</select></label></div>
       <section className="topic-progress" aria-label="주제별 진행률"><strong>주제별 진행률</strong>{topicOrder.map((topic) => { const topicSentences = sentences.filter((sentence) => topicForDay(sentence.day) === topic); const topicMastered = topicSentences.filter((sentence) => mastered.has(sentence.id)).length; return <span key={topic}>{topic} {topicMastered}/{topicSentences.length}</span> })}</section>
-      {current ? <><p className="eyebrow">Day {selectedDay} 학습</p><h2 id="practice-heading">{practiceIndex + 1} / {daySentences.length} · 한국어를 영어로 입력하세요.</h2><p className="resume-copy">Day {selectedDay}에서 {currentDayProgress}/{sentences.filter((sentence) => sentence.day === selectedDay).length}개를 마스터했어요. 지금 문장을 마치면 다음 문장으로 이어집니다.</p><div className="practice-prompt"><strong>{current.korean}</strong><span>{topicForDay(current.day)} · Day {current.day}</span></div><PhraseChoices sentence={current} onAppend={(value) => setAttempt((answer) => `${answer}${answer ? ' ' : ''}${value}`)} /><label htmlFor="answer">영어 답변</label><textarea id="answer" value={attempt} onChange={(event) => setAttempt(event.target.value)} placeholder="영어 문장을 입력하세요" rows={3} /><div className="actions"><button className="button" onClick={checkAnswer}>정답 확인</button>{answerRevealed && <button className="button secondary" onClick={nextPractice}>다음 문장</button>}</div>
+      {current ? <><p className="eyebrow">Day {selectedDay} 학습</p><h2 id="practice-heading">{practiceIndex + 1} / {daySentences.length} · 한국어를 영어로 입력하세요.</h2><p className="resume-copy">Day {selectedDay}에서 {currentDayProgress}/{sentences.filter((sentence) => sentence.day === selectedDay).length}개를 마스터했어요. 지금 문장을 마치면 다음 문장으로 이어집니다.</p><div className="practice-prompt"><strong>{current.korean}</strong><span>{topicForDay(current.day)} · Day {current.day}</span></div><PhraseChoices key={current.id} sentence={current} onChoose={setAttempt} /><label htmlFor="answer">영어 답변</label><textarea id="answer" value={attempt} onChange={(event) => setAttempt(event.target.value)} placeholder="영어 문장을 입력하세요" rows={3} /><div className="actions"><button className="button" onClick={checkAnswer}>정답 확인</button>{answerRevealed && <button className="button secondary" onClick={nextPractice}>다음 문장</button>}</div>
       {answerRevealed && <div className={`answer-feedback ${isExact ? 'feedback-exact' : isAllowed ? 'feedback-allowed' : 'feedback-needs-work'}`} aria-live="polite"><p><strong>정답:</strong> {displayEnglish(current.english)}</p><p><strong>{feedbackLabel}</strong>{isExact ? ' · 정확해요! 문장과 정확히 일치해요.' : isAllowed ? ' · 의미가 전달되는 자연스러운 표현이에요.' : ' · 수정 필요: 누락 또는 오타 단어를 확인해 보세요.'}</p>{!isExact && <p>확인할 단어: {missingWords.length ? missingWords.join(', ') : '어순과 표현'}</p>}<div className="word-feedback" aria-label="단어별 피드백">{wordFeedback.map((item, index) => <span className={item.status} key={`${item.word}-${index}`}>{item.word}</span>)}</div><div className="actions"><button className="text-button" onClick={() => speakEnglish(current.english, '정답 문장을 재생했습니다.')}>정답 듣기</button><button className="text-button" onClick={toggleListening} aria-pressed={isListening}>{isListening ? '음성 입력 중지' : '음성으로 입력'}</button>{!isExact && <button className="text-button" onClick={() => addToReview(current.id)}>오답 복습에 추가</button>}<button className="text-button" aria-pressed={favoriteIds.includes(current.id)} onClick={() => setFavoriteIds((ids) => ids.includes(current.id) ? ids.filter((id) => id !== current.id) : [...ids, current.id])}>{favoriteIds.includes(current.id) ? '즐겨찾기 해제' : '즐겨찾기'}</button></div></div>}</> : <p className="empty-state">이 주제에는 Day {selectedDay} 문장이 없습니다. 다른 주제를 선택해 보세요.</p>}
       {current && <section className="dialogue-launch"><div><strong>Day {selectedDay} 미니 대화</strong><p>2턴으로 오늘 표현을 실제 대화처럼 말해 보세요.</p></div><button className="button secondary" onClick={() => { setDialogueOpen(true); setDialogueTurn(0); setDialogueReply('') }}>미니 대화 연습</button></section>}
       {dialogueOpen && current && <section className="mini-dialogue" aria-labelledby="dialogue-heading"><h2 id="dialogue-heading">Day {selectedDay} 미니 대화</h2><p className="turn-pill">{Math.min(dialogueTurn + 1, 2)} / 2 턴</p><div className="dialogue-transcript" aria-live="polite"><p><strong>Coach:</strong> {dialogueTurn === 0 ? `Try saying: ${displayEnglish(current.english)}` : dialogueTurn === 1 ? 'Great. Add one short, polite follow-up.' : 'Nice work. You completed this mini dialogue.'}</p></div>{dialogueTurn < 2 ? <><label htmlFor="dialogue-reply">내 영어 답변</label><textarea id="dialogue-reply" value={dialogueReply} onChange={(event) => setDialogueReply(event.target.value)} rows={2} placeholder="짧게 말해 보세요" /><div className="actions"><button className="button" onClick={continueDialogue}>대화 계속하기</button><button className="button secondary" onClick={() => setDialogueOpen(false)}>나중에 하기</button></div></> : <button className="button" onClick={() => setDialogueOpen(false)}>대화 마치기</button>}</section>}
@@ -193,9 +220,10 @@ export default function LearningApp() {
   </main>
 }
 
-function PhraseChoices({ sentence, onAppend }: { sentence: Sentence; onAppend: (value: string) => void }) {
-  const hasNameSlot = sentence.english.includes('[이름]')
-  const alternatives = sentence.english.includes('/') ? sentence.english.split('/').map((value) => value.replace(/\[.*?\]/g, '').trim()).filter(Boolean) : []
-  if (!hasNameSlot && alternatives.length === 0) return null
-  return <section className="phrase-choices" aria-label="표현 선택"><strong>표현을 선택하거나 채워 보세요</strong>{alternatives.length > 0 && <div>{alternatives.map((option) => <button type="button" className="choice-chip" key={option} onClick={() => onAppend(option)}>{option}</button>)}</div>}{hasNameSlot && <label>이름<input aria-label="이름 채우기" placeholder="예: Mina" onChange={(event) => onAppend(event.target.value)} /></label>}</section>
+function PhraseChoices({ sentence, onChoose }: { sentence: Sentence; onChoose: (value: string) => void }) {
+  const [slotValue, setSlotValue] = useState('')
+  const slot = sentence.english.match(/\[([^\]]+)\]/)
+  const alternatives = alternativeSentences(sentence.english)
+  if (!slot && alternatives.length === 0) return null
+  return <section className="phrase-choices" aria-label="표현 선택"><strong>표현을 선택하거나 채워 보세요</strong>{alternatives.length > 0 && <div>{alternatives.map((option) => <button type="button" className="choice-chip" key={option} onClick={() => onChoose(option)}>{displayEnglish(option)}</button>)}</div>}{slot && <label>{slot[1]}<input aria-label={`${slot[1]} 채우기`} value={slotValue} placeholder="예: Mina" onChange={(event) => { setSlotValue(event.target.value); onChoose(sentence.english.replace(slot[0], event.target.value)) }} /></label>}</section>
 }
