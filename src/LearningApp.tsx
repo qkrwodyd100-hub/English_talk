@@ -109,7 +109,8 @@ export default function LearningApp() {
   const judgment = checkedAnswer && current ? judgeAnswer(current, attempt) : undefined
   const wordFeedback = current ? getWordFeedback(current.english, attempt) : []
   const missingWords = wordFeedback.filter((item) => item.status === 'missing').map((item) => item.word)
-  const overallProgress = builtInSentences.length ? Math.round((state.completedSentenceIds.length / builtInSentences.length) * 100) : 0
+  const completedIds = new Set(state.completedSentenceIds)
+  const overallProgress = sentences.length ? Math.round((sentences.filter(({ id }) => completedIds.has(id)).length / sentences.length) * 100) : 0
   const masteryProgress = sentences.length ? Math.round((state.masteredIds.length / sentences.length) * 100) : 0
   const completedToday = state.completedChallengeDates.includes(getTodayKey())
 

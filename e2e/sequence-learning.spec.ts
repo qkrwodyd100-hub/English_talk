@@ -35,6 +35,43 @@ test('migrates v1 data and persists sequential progress, review, and favorites a
   expect(persisted).toMatchObject({ version: 2, state: { selectedDay: 2, dayPositions: { 2: 1 }, reviewQueueIds: ['day-02-01'], favoriteIds: ['day-02-01'] } })
 })
 
+test('keeps overall progress at 100 percent when built-in and custom sentences are all complete', async ({ page }) => {
+  await page.addInitScript(() => {
+    const builtInIds = Array.from({ length: 60 }, (_, dayIndex) =>
+      Array.from({ length: 10 }, (_, sentenceIndex) =>
+        `day-${String(dayIndex + 1).padStart(2, '0')}-${String(sentenceIndex + 1).padStart(2, '0')}`,
+      ),
+    ).flat()
+    const customSentences = Array.from({ length: 10 }, (_, index) => ({
+      id: `custom-${index + 1}`,
+      english: `Custom sentence ${index + 1}.`,
+      korean: `사용자 문장 ${index + 1}.`,
+      day: 1,
+      source: 'custom',
+    }))
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({
+      version: 2,
+      state: {
+        masteredIds: [],
+        customSentences,
+        completedChallengeDates: [],
+        selectedDay: 1,
+        dayPositions: {},
+        completedSentenceIds: [...builtInIds, ...customSentences.map(({ id }) => id)],
+        attemptCounts: {},
+        reviewQueueIds: [],
+        favoriteIds: [],
+      },
+    }))
+  })
+
+  await page.goto('/')
+
+  const dashboard = page.getByLabel('학습 현황')
+  await expect(dashboard.getByText('610', { exact: true })).toBeVisible()
+  await expect(dashboard.getByText('100%', { exact: true })).toBeVisible()
+})
+
 test('resumes and re-practices a persisted custom sentence in the sequential flow', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem('english-talk.learning', JSON.stringify({
