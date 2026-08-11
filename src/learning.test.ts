@@ -28,8 +28,29 @@ describe('learning helpers', () => {
     ])
   })
 
+  it('migrates v1 persisted learning state without losing legacy data', () => {
+    expect(parseLearningState(JSON.stringify({
+      version: 1,
+      state: {
+        masteredIds: ['fixture-1'],
+        customSentences: [{ id: 'custom-1', english: 'Hello.', korean: '안녕하세요.', day: 1, source: 'custom' }],
+        completedChallengeDates: ['2026-08-10'],
+      },
+    }))).toEqual({
+      masteredIds: ['fixture-1'],
+      customSentences: [{ id: 'custom-1', english: 'Hello.', korean: '안녕하세요.', day: 1, source: 'custom' }],
+      completedChallengeDates: ['2026-08-10'],
+      selectedDay: null,
+      dayPositions: {},
+      completedSentenceIds: [],
+      attemptCounts: {},
+      reviewQueueIds: [],
+      favoriteIds: [],
+    })
+  })
+
   it('falls back safely when persisted learning state is corrupt or incompatible', () => {
-    expect(parseLearningState('{"version":999}')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [] })
-    expect(parseLearningState('not-json')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [] })
+    expect(parseLearningState('{"version":999}')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [] })
+    expect(parseLearningState('not-json')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [] })
   })
 })

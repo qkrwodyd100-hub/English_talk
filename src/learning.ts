@@ -59,6 +59,12 @@ export type LearningState = {
   masteredIds: string[]
   customSentences: CustomSentence[]
   completedChallengeDates: string[]
+  selectedDay: number | null
+  dayPositions: Record<number, number>
+  completedSentenceIds: string[]
+  attemptCounts: Record<string, number>
+  reviewQueueIds: string[]
+  favoriteIds: string[]
 }
 
 export type WordFeedback = {
@@ -67,11 +73,20 @@ export type WordFeedback = {
 }
 
 export const LEARNING_STORAGE_KEY = 'english-talk.learning'
-export const LEARNING_STORAGE_VERSION = 1
-
+export const LEARNING_STORAGE_VERSION = 2
 
 export function createEmptyLearningState(): LearningState {
-  return { masteredIds: [], customSentences: [], completedChallengeDates: [] }
+  return {
+    masteredIds: [],
+    customSentences: [],
+    completedChallengeDates: [],
+    selectedDay: null,
+    dayPositions: {},
+    completedSentenceIds: [],
+    attemptCounts: {},
+    reviewQueueIds: [],
+    favoriteIds: [],
+  }
 }
 
 export function parseLearningState(raw: string | null): LearningState {
@@ -80,23 +95,70 @@ export function parseLearningState(raw: string | null): LearningState {
     const value: unknown = JSON.parse(raw)
     if (!value || typeof value !== 'object') return createEmptyLearningState()
     const record = value as Record<string, unknown>
-    if (record.version !== LEARNING_STORAGE_VERSION || !record.state || typeof record.state !== 'object') return createEmptyLearningState()
+    if (!record.state || typeof record.state !== 'object') return createEmptyLearningState()
     const state = record.state as Record<string, unknown>
-    const customSentences = Array.isArray(state.customSentences) ? state.customSentences.filter(isCustomSentence) : []
+    if (record.version === 1) return migrateV1LearningState(state)
+    if (record.version !== LEARNING_STORAGE_VERSION) return createEmptyLearningState()
     return {
-      masteredIds: Array.isArray(state.masteredIds) ? state.masteredIds.filter((id): id is string => typeof id === 'string') : [],
-      customSentences,
-      completedChallengeDates: Array.isArray(state.completedChallengeDates) ? state.completedChallengeDates.filter((date): date is string => typeof date === 'string') : [],
+      ...readLegacyLearningFields(state),
+      selectedDay: isDay(state.selectedDay) ? state.selectedDay : null,
+      dayPositions: readDayPositions(state.dayPositions),
+      completedSentenceIds: readStringArray(state.completedSentenceIds),
+      attemptCounts: readAttemptCounts(state.attemptCounts),
+      reviewQueueIds: readStringArray(state.reviewQueueIds),
+      favoriteIds: readStringArray(state.favoriteIds),
     }
   } catch {
     return createEmptyLearningState()
   }
 }
 
+function migrateV1LearningState(state: Record<string, unknown>): LearningState {
+  return { ...readLegacyLearningFields(state), ...createSequentialState() }
+}
+
+function readLegacyLearningFields(state: Record<string, unknown>) {
+  return {
+    masteredIds: readStringArray(state.masteredIds),
+    customSentences: Array.isArray(state.customSentences) ? state.customSentences.filter(isCustomSentence) : [],
+    completedChallengeDates: readStringArray(state.completedChallengeDates),
+  }
+}
+
+function createSequentialState() {
+  const { selectedDay, dayPositions, completedSentenceIds, attemptCounts, reviewQueueIds, favoriteIds } = createEmptyLearningState()
+  return { selectedDay, dayPositions, completedSentenceIds, attemptCounts, reviewQueueIds, favoriteIds }
+}
+
+function readStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
+}
+
+function isDay(value: unknown): value is number {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 60
+}
+
+function readDayPositions(value: unknown): Record<number, number> {
+  if (!value || typeof value !== 'object') return {}
+  return Object.fromEntries(Object.entries(value).flatMap(([day, position]) => {
+    const numericDay = Number(day)
+    return isDay(numericDay) && typeof position === 'number' && Number.isInteger(position) && position >= 0
+      ? [[numericDay, position]]
+      : []
+  }))
+}
+
+function readAttemptCounts(value: unknown): Record<string, number> {
+  if (!value || typeof value !== 'object') return {}
+  return Object.fromEntries(Object.entries(value).flatMap(([id, count]) =>
+    typeof count === 'number' && Number.isInteger(count) && count >= 0 ? [[id, count]] : [],
+  ))
+}
+
 function isCustomSentence(value: unknown): value is CustomSentence {
   if (!value || typeof value !== 'object') return false
   const sentence = value as Record<string, unknown>
-  return typeof sentence.id === 'string' && typeof sentence.english === 'string' && typeof sentence.korean === 'string' && typeof sentence.day === 'number' && Number.isInteger(sentence.day) && sentence.day >= 1 && sentence.day <= 60 && sentence.source === 'custom'
+  return typeof sentence.id === 'string' && typeof sentence.english === 'string' && typeof sentence.korean === 'string' && isDay(sentence.day) && sentence.source === 'custom'
 }
 
 export function normalizeAnswer(value: string) {
