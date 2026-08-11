@@ -6,7 +6,7 @@ test('the 390px learning dashboard remains usable without horizontal overflow', 
   await expect(page.getByRole('heading', { name: '더 넓은 세상으로의 시작' })).toBeVisible()
   await expect(page.getByText('60일 동안 매일 10문장씩 학습해요.')).toBeVisible()
   await expect(page.getByRole('button', { name: '타이핑 연습' })).toBeVisible()
-  expect(await page.locator('.study-tabs button').allTextContents()).toEqual(['타이핑 연습', '플래시카드', '내 문장'])
+  expect(await page.locator('.study-tabs button').allTextContents()).toEqual(['타이핑 연습', '플래시카드', '오답 복습 (0)', '내 문장'])
   await expect(page.getByRole('heading', { name: /1 \/ 10/ })).toBeVisible()
   await expect(page.getByLabel('학습 현황')).toContainText('600')
   await expect(page.getByLabel('학습 현황')).toContainText('0%')
