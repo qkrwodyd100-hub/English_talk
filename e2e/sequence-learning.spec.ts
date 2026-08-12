@@ -144,7 +144,7 @@ test('uses declared alternatives and slots with the engine answer contract', asy
 
   await page.getByRole('textbox', { name: '영어 답변' }).fill("What's good here?")
   await page.getByRole('button', { name: '정답 확인' }).click()
-  await expect(page.getByText('허용 표현')).toBeVisible()
+  await expect(page.getByText('정답 · 더 자연스러운 표현')).toBeVisible()
 
   await page.getByLabel('학습 Day 선택').selectOption('8')
   await expect(page.getByRole('button', { name: 'Mina Lee · 미나 리' })).toHaveCount(0)
@@ -325,6 +325,45 @@ test('submits typed answers once with Enter while preserving blank and IME safeg
   await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
   await page.getByRole('textbox', { name: '영어 답변' }).press('Enter')
   await expect(page.getByText('수정 필요')).toBeVisible()
+})
+
+test('submits a single-line answer with Enter or NumpadEnter without inserting a newline', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await expect(answer).toHaveAttribute('type', 'text')
+  await answer.fill('A table for one, please.')
+  await answer.press('Enter')
+  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
+  await expect(answer).not.toHaveValue(/\n/)
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(1)
+
+  await page.getByRole('button', { name: '다음 문장' }).click()
+  await answer.fill('Can I see the menu?')
+  await answer.press('NumpadEnter')
+  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
+  await expect(answer).not.toHaveValue(/\n/)
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(2)
+})
+
+test('treats I will have this as the correct Day 2 contraction equivalent', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+
+  for (const answerText of ['A table for one, please.', 'Can I see the menu?', 'What do you recommend?']) {
+    const answer = page.getByRole('textbox', { name: '영어 답변' })
+    await answer.fill(answerText)
+    await answer.press('Enter')
+    await page.getByRole('button', { name: '다음 문장' }).click()
+  }
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await answer.fill('I will have this.')
+  await answer.press('Enter')
+  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
+  await expect(page.getByText('입력한 표현이 기준 문장과 같거나 축약형만 달라요.')).toBeVisible()
 })
 
 test('keeps typing practice topic-free and visually aligned across responsive viewports', async ({ page }) => {

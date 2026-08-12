@@ -1,7 +1,7 @@
-import { normalizeAnswer, type Sentence } from './learning'
+import { getContractionEquivalentForms, normalizeAnswer, type Sentence } from './learning'
 
 export type AnswerJudgment = {
-  kind: 'exact' | 'accepted-alternative' | 'needs-correction'
+  kind: 'exact' | 'accepted-alternative' | 'contextual-correct' | 'needs-correction'
   isCorrect: boolean
 }
 
@@ -64,9 +64,12 @@ export function getTopicProgress(sentences: Sentence[], state: SequentialLearnin
 
 export function judgeAnswer(sentence: Sentence, attempt: string): AnswerJudgment {
   const normalizedAttempt = normalizeAnswer(attempt)
-  if (normalizedAttempt === normalizeAnswer(sentence.english)) return { kind: 'exact', isCorrect: true }
-  if (sentence.source === 'builtIn' && sentence.alternatives?.some((alternative) => normalizedAttempt === normalizeAnswer(alternative.english))) {
+  if (getContractionEquivalentForms(sentence.english).has(normalizedAttempt)) return { kind: 'exact', isCorrect: true }
+  if (sentence.source === 'builtIn' && sentence.acceptedAlternatives?.some((alternative) => getContractionEquivalentForms(alternative.english).has(normalizedAttempt))) {
     return { kind: 'accepted-alternative', isCorrect: true }
+  }
+  if (sentence.source === 'builtIn' && [...(sentence.alternatives ?? []), ...(sentence.contextualTips ?? [])].some((alternative) => getContractionEquivalentForms(alternative.english).has(normalizedAttempt))) {
+    return { kind: 'contextual-correct', isCorrect: true }
   }
   return { kind: 'needs-correction', isCorrect: false }
 }

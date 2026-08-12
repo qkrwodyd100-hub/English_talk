@@ -5,6 +5,8 @@ export type LearningLevel = 'beginner' | 'intermediate' | 'advanced'
 export type SentenceAlternative = {
   english: string
   korean: string
+  reason?: string
+  recommendedWhen?: string
 }
 
 export type SlotValue = {
@@ -32,6 +34,8 @@ export type BuiltInSentence = SentenceBase & {
   priority: 1 | 2 | 3
   region?: string
   alternatives?: SentenceAlternative[]
+  acceptedAlternatives?: SentenceAlternative[]
+  contextualTips?: SentenceAlternative[]
   slots?: SentenceSlot[]
 }
 
@@ -242,7 +246,43 @@ function isCustomSentence(value: unknown): value is CustomSentence {
 }
 
 export function normalizeAnswer(value: string) {
-  return value.toLocaleLowerCase().replace(/[^\p{L}\p{N}\s]/gu, '').replace(/\s+/g, ' ').trim()
+  return value.toLocaleLowerCase().replace(/[‘’]/g, "'").replace(/[^\p{L}\p{N}'\s]/gu, '').replace(/\s+/g, ' ').trim()
+}
+
+const contractionPairs: ReadonlyArray<readonly [string, string[]]> = [
+  ["i'll", ['i will']], ["i'm", ['i am']], ["i've", ['i have']],
+  ["we're", ['we are']], ["we'll", ['we will']], ["we've", ['we have']],
+  ["you're", ['you are']], ["you'll", ['you will']], ["you've", ['you have']],
+  ["they're", ['they are']], ["they'll", ['they will']], ["they've", ['they have']],
+  ["he's", ['he is']], ["he'll", ['he will']],
+  ["she's", ['she is']], ["she'll", ['she will']],
+  ["it's", ['it is']], ["it'll", ['it will']],
+  ["that's", ['that is']], ["there's", ['there is']], ["here's", ['here is']],
+  ["don't", ['do not']], ["doesn't", ['does not']], ["didn't", ['did not']],
+  ["can't", ['cannot', 'can not']], ["couldn't", ['could not']], ["won't", ['will not']],
+  ["wouldn't", ['would not']], ["shouldn't", ['should not']], ["isn't", ['is not']],
+  ["aren't", ['are not']], ["wasn't", ['was not']], ["weren't", ['were not']],
+  ["haven't", ['have not']], ["hasn't", ['has not']], ["hadn't", ['had not']],
+]
+
+function replaceWholePhrase(value: string, from: string, to: string) {
+  return value.replace(new RegExp(`(^| )${from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?= |$)`, 'g'), `$1${to}`)
+}
+
+/** Returns only explicit, token-bound contraction spellings; it never changes vocabulary or word order. */
+export function getContractionEquivalentForms(value: string) {
+  const forms = new Set([normalizeAnswer(value)])
+  for (let pass = 0; pass < 4; pass += 1) {
+    for (const form of [...forms]) {
+      for (const [contraction, expansions] of contractionPairs) {
+        for (const expansion of expansions) {
+          forms.add(replaceWholePhrase(form, contraction, expansion))
+          forms.add(replaceWholePhrase(form, expansion, contraction))
+        }
+      }
+    }
+  }
+  return forms
 }
 
 export function getTodayKey(date = new Date()) {

@@ -11,10 +11,11 @@ import {
   toggleFavorite,
   type SequentialLearningState,
 } from './learning-engine'
-import type { Sentence } from './learning'
+import { getContractionEquivalentForms, type Sentence } from './learning'
+import { builtInSentences } from './sentences'
 
 const sentences: Sentence[] = [
-  { id: 'day-01-01', english: 'Can I pay by card?', korean: '카드로 결제할 수 있나요?', day: 1, source: 'builtIn', topic: 'payment', level: 'beginner', priority: 1, alternatives: [{ english: 'May I pay by card?', korean: '카드로 결제해도 될까요?' }] },
+  { id: 'day-01-01', english: 'Can I pay by card?', korean: '카드로 결제할 수 있나요?', day: 1, source: 'builtIn', topic: 'payment', level: 'beginner', priority: 1, acceptedAlternatives: [{ english: 'May I pay by card?', korean: '카드로 결제해도 될까요?' }] },
   { id: 'day-01-02', english: 'Where is the station?', korean: '역이 어디예요?', day: 1, source: 'builtIn', topic: 'travel', level: 'beginner', priority: 1 },
   { id: 'day-02-01', english: 'I need help.', korean: '도움이 필요해요.', day: 2, source: 'builtIn', topic: 'travel', level: 'beginner', priority: 1 },
 ]
@@ -45,6 +46,23 @@ describe('sequential learning engine', () => {
     expect(judgeAnswer(sentences[0], ' CAN I PAY BY CARD! ')).toEqual({ kind: 'exact', isCorrect: true })
     expect(judgeAnswer(sentences[0], 'May I pay by card.')).toEqual({ kind: 'accepted-alternative', isCorrect: true })
     expect(judgeAnswer(sentences[0], 'Can I pay with cash?')).toEqual({ kind: 'needs-correction', isCorrect: false })
+  })
+
+  it('accepts verified contraction equivalents but does not accept changed words', () => {
+    const sentence: Sentence = { id: 'day-02-04', english: "I'll have this.", korean: '이걸로 주세요.', day: 2, source: 'builtIn', topic: 'restaurant-basics', level: 'beginner', priority: 1 }
+
+    expect(judgeAnswer(sentence, 'I will have this.')).toEqual({ kind: 'exact', isCorrect: true })
+    expect(judgeAnswer(sentence, 'I will have that.')).toEqual({ kind: 'needs-correction', isCorrect: false })
+  })
+
+  it('keeps all 600 curriculum targets and declared alternatives within the verified contraction contract', () => {
+    for (const sentence of builtInSentences) {
+      for (const expression of [sentence.english, ...(sentence.alternatives?.map((alternative) => alternative.english) ?? [])]) {
+        for (const equivalent of getContractionEquivalentForms(expression)) {
+          expect(judgeAnswer(sentence, equivalent), `${sentence.id}: ${equivalent}`).not.toEqual({ kind: 'needs-correction', isCorrect: false })
+        }
+      }
+    }
   })
 
   it('uses the built-in sentence metadata contract without accepting undeclared slot substitutions', () => {
