@@ -30,6 +30,28 @@ test('learner independently reveals and listens to a card, then masters and hide
   await expect(page.getByLabel('학습 현황')).toContainText('1')
 })
 
+test('flashcards render only the selected day and topic scope', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: '플래시카드' }).click()
+
+  await expect(page.locator('.flashcard')).toHaveCount(10)
+  await expect(page.getByRole('button', { name: '영어 문장 보기' })).toHaveCount(10)
+
+  await page.getByRole('button', { name: '타이핑 연습' }).click()
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  await page.getByRole('button', { name: '플래시카드' }).click()
+  await expect(page.locator('.flashcard')).toHaveCount(10)
+  await expect(page.getByText('한 명 자리 부탁해요.')).toBeVisible()
+  await expect(page.getByText('실례합니다, 영어 하세요?')).toHaveCount(0)
+
+  await page.getByRole('button', { name: '타이핑 연습' }).click()
+  await page.getByLabel('주제 필터').selectOption('restaurant-basics')
+  await page.getByRole('button', { name: '플래시카드' }).click()
+  await expect(page.locator('.flashcard')).toHaveCount(8)
+  await expect(page.getByText('한 명 자리 부탁해요.')).toBeVisible()
+  await expect(page.getByText('사진 좀 찍어 주시겠어요?')).toHaveCount(0)
+})
+
 test('flashcards prefer the most natural available English voice without revealing the sentence', async ({ page }) => {
   await page.addInitScript(() => {
     type Voice = { name: string; lang: string; localService: boolean }
