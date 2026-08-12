@@ -132,7 +132,7 @@ test('shows real topic metadata and the selected day mini dialogue on mobile', a
 
   await page.getByLabel('주제 필터').selectOption('restaurant-basics')
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
-  await expect(page.getByText('restaurant-basics · beginner · 우선순위 1')).toBeVisible()
+  await expect(page.getByText('식당 기본 표현 · beginner · 우선순위 1')).toBeVisible()
   await page.getByRole('button', { name: '미니 대화 연습' }).click()
   await expect(page.getByRole('heading', { name: 'Day 2 미니 대화' })).toBeVisible()
   await expect(page.getByText('Of course. Here is the menu.')).toBeVisible()
@@ -146,6 +146,30 @@ test('sequential learning controls remain visible on a desktop viewport', async 
   await expect(page.getByLabel('학습 Day 선택')).toBeVisible()
   await expect(page.getByLabel('주제별 진행률')).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+})
+
+test('keeps the desktop overview compact and presents localized topic progress on demand', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto('/')
+
+  const heading = page.getByRole('heading', { name: '더 넓은 세상으로의 시작' })
+  const headingBox = await heading.boundingBox()
+  expect(headingBox).not.toBeNull()
+  expect(headingBox!.x).toBeGreaterThanOrEqual(0)
+  expect(headingBox!.x + headingBox!.width).toBeLessThanOrEqual(1280)
+  expect(headingBox!.y + headingBox!.height).toBeLessThanOrEqual(900)
+  expect(await heading.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize))).toBeLessThanOrEqual(64)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+
+  const topicProgress = page.getByLabel('주제별 진행률')
+  await expect(topicProgress.getByText('현재 Day 주제')).toBeVisible()
+  await expect(topicProgress.getByText('기본 생존 회화')).toBeVisible()
+  await expect(topicProgress.getByText('survival-communication', { exact: false })).toHaveCount(0)
+  await expect(topicProgress.getByRole('button', { name: '전체 주제 진행률 보기' })).toBeVisible()
+  await expect(topicProgress.getByText('식당 기본 표현')).toHaveCount(0)
+
+  await topicProgress.getByRole('button', { name: '전체 주제 진행률 보기' }).click()
+  await expect(topicProgress.getByText('식당 기본 표현')).toBeVisible()
 })
 
 test('topic-filtered practice persists the displayed sentence position across topic gaps', async ({ page }) => {
