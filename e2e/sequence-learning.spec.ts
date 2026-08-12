@@ -123,6 +123,21 @@ test('uses declared alternatives and slots with the engine answer contract', asy
   await expect(page.getByRole('button', { name: 'Mina Lee · 미나 리' })).toBeVisible()
 })
 
+test('keeps the Day 16 alternative out of the DOM until the learner checks an answer', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('16')
+
+  await expect(page.getByText('This is too tight.')).toHaveCount(0)
+  await expect(page.getByText('This is too loose.')).toHaveCount(0)
+  await expect(page.getByText('저장된 표현과 슬롯')).toHaveCount(0)
+
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('This is too loose.')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await expect(page.getByText('This is too tight.')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'This is too loose.' })).toBeVisible()
+  await expect(page.getByText('저장된 표현과 슬롯')).toBeVisible()
+})
+
 test('shows real topic metadata and the selected day mini dialogue on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
