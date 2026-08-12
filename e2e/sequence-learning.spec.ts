@@ -383,6 +383,20 @@ test('keeps typing practice topic-free and visually aligned across responsive vi
   }
 })
 
+test('hides the typing answer label visually while retaining its accessible name', async ({ page }) => {
+  for (const viewport of [{ width: 320, height: 700 }, { width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+
+    const panel = page.locator('.study-panel')
+    const answer = panel.getByRole('textbox', { name: '영어 답변' })
+
+    await expect(answer).toHaveAttribute('placeholder', '영어 문장을 입력하세요')
+    await expect(panel.getByText('영어 답변', { exact: true })).toHaveCount(0)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  }
+})
+
 test('distinguishes persisted first and recent real learning timestamps', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
