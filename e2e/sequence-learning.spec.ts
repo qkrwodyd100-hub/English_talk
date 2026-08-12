@@ -18,6 +18,7 @@ test('migrates v1 data and persists sequential progress, review, and favorites a
   await expect(page.getByText('601', { exact: true })).toBeVisible()
   await expect(page.getByRole('heading', { name: /1 \/ 11/ })).toBeVisible()
   await page.getByLabel('학습 Day 선택').selectOption('2')
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
   await page.getByRole('button', { name: '정답 확인' }).click()
   await expect(page.getByText('수정 필요')).toBeVisible()
   await page.getByRole('button', { name: '즐겨찾기' }).click()
@@ -178,7 +179,7 @@ test('shows real topic metadata and the selected day mini dialogue on mobile', a
 
   await page.getByLabel('주제 필터').selectOption('restaurant-basics')
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
-  await expect(page.locator('.practice-prompt span')).toHaveText('식당 기본 표현')
+  await expect(page.locator('.practice-prompt').getByText('식당 기본 표현')).toHaveCount(0)
   await expect(page.getByText(/Beginner|우선순위/i)).toHaveCount(0)
   await page.getByRole('button', { name: '미니 대화 연습' }).click()
   await expect(page.getByRole('heading', { name: 'Day 2 미니 대화' })).toBeVisible()
@@ -296,4 +297,49 @@ test('completes a desktop practice flow without browser console, page, or networ
   expect(consoleErrors).toEqual([])
   expect(pageErrors).toEqual([])
   expect(failedRequests).toEqual([])
+})
+
+test('submits typed answers once with Enter while preserving blank and IME safeguards', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await answer.press('Enter')
+  await expect(page.getByText('정답:', { exact: false })).toHaveCount(0)
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(0)
+
+  await answer.dispatchEvent('compositionstart')
+  await answer.dispatchEvent('keydown', { key: 'Enter', isComposing: true })
+  await answer.dispatchEvent('compositionend')
+  await expect(page.getByText('정답:', { exact: false })).toHaveCount(0)
+
+  await answer.fill('A table for one, please.')
+  await answer.press('Enter')
+  await expect(page.getByText('정확')).toBeVisible()
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(1)
+  await page.reload()
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(1)
+
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
+  await page.getByRole('textbox', { name: '영어 답변' }).press('Enter')
+  await expect(page.getByText('수정 필요')).toBeVisible()
+})
+
+test('keeps typing practice topic-free and visually aligned across responsive viewports', async ({ page }) => {
+  for (const viewport of [{ width: 320, height: 700 }, { width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    const panel = page.locator('.study-panel')
+    const prompt = panel.locator('.practice-prompt strong')
+    const answer = panel.getByRole('textbox', { name: '영어 답변' })
+    await expect(panel.locator('.practice-prompt').getByText('기본 생존 회화')).toHaveCount(0)
+    expect(await prompt.evaluate((element) => getComputedStyle(element).fontSize)).toBe(await answer.evaluate((element) => getComputedStyle(element).fontSize))
+    expect(await prompt.evaluate((element) => getComputedStyle(element).fontWeight)).toBe(await answer.evaluate((element) => getComputedStyle(element).fontWeight))
+    await answer.fill('wrong words')
+    await answer.press('Enter')
+    await expect(panel.getByText('수정 필요')).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  }
 })

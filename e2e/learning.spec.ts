@@ -138,6 +138,7 @@ test('learner gets explicit speech playback and microphone-permission fallback',
   })
   await page.goto('/')
   await page.getByRole('button', { name: '타이핑 연습' }).click()
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
   await page.getByRole('button', { name: '정답 확인' }).click()
   await page.getByRole('button', { name: '정답 듣기' }).click()
   await expect(page.getByText('정답 문장을 재생했습니다.')).toBeVisible()
@@ -151,6 +152,7 @@ test('today challenge has ten deterministic items and completion persists after 
 
   for (let index = 0; index < 10; index += 1) {
     await expect(page.getByRole('heading', { name: new RegExp(`${index + 1} / 10`) })).toBeVisible()
+    await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
     await page.getByRole('button', { name: '정답 확인' }).click()
     const answer = await page.locator('.answer-feedback p').first().textContent()
     expect(answer).toBeTruthy()
