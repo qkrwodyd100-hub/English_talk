@@ -327,6 +327,92 @@ test('submits typed answers once with Enter while preserving blank and IME safeg
   await expect(page.getByText('수정 필요')).toBeVisible()
 })
 
+test('uses ArrowRight only after checking an answer to advance practice and refocus typing', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  const firstPrompt = page.locator('.practice-prompt').getByText('한 명 자리 부탁해요.')
+  await answer.fill('A table for one, please.')
+  await answer.press('ArrowLeft')
+  await answer.press('ArrowRight')
+  await expect(firstPrompt).toBeVisible()
+  await expect(answer).toHaveValue('A table for one, please.')
+  expect(await page.evaluate(() => (document.activeElement as HTMLInputElement)?.selectionStart)).toBe('A table for one, please.'.length)
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(0)
+
+  await answer.press('Enter')
+  await expect(page.getByRole('button', { name: '다음 문장' })).toBeVisible()
+  await answer.press('ArrowRight')
+  await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+  await expect(answer).toHaveValue('')
+  await expect(answer).toBeFocused()
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(1)
+})
+
+test('does not advance an answered practice with composing or modified ArrowRight keys and keeps the button fallback', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await answer.fill('wrong words')
+  await answer.press('Enter')
+  await expect(page.getByText('수정 필요')).toBeVisible()
+  const prompt = page.locator('.practice-prompt').getByText('한 명 자리 부탁해요.')
+
+  await answer.dispatchEvent('compositionstart')
+  await answer.dispatchEvent('keydown', { key: 'ArrowRight', isComposing: true })
+  await answer.dispatchEvent('compositionend')
+  await answer.press('Control+ArrowRight')
+  await answer.press('Alt+ArrowRight')
+  await answer.press('Meta+ArrowRight')
+  await expect(prompt).toBeVisible()
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(1)
+
+  await page.getByRole('button', { name: '다음 문장' }).click()
+  await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+  await expect(answer).toBeFocused()
+})
+
+test('uses the existing last-sentence wrap policy when ArrowRight advances practice', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
+      masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: { 2: 9 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
+    } }))
+  })
+  await page.goto('/')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await expect(page.locator('.practice-prompt').getByText('맛있었어요.')).toBeVisible()
+  await expect(answer).toHaveAccessibleDescription('정답 확인 후 오른쪽 화살표 키로 다음 문장으로 이동할 수 있습니다.')
+  await answer.fill('It was delicious.')
+  await answer.press('Enter')
+  await answer.press('ArrowRight')
+
+  await expect(page.locator('.practice-prompt').getByText('한 명 자리 부탁해요.')).toBeVisible()
+  await expect(answer).toBeFocused()
+  const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state)
+  expect(persisted.dayPositions).toEqual({ 2: 10 })
+  expect(persisted.studyActivities).toHaveLength(1)
+})
+
+test('keeps the ArrowRight practice flow usable without horizontal overflow at target widths', async ({ page }) => {
+  for (const viewport of [{ width: 320, height: 700 }, { width: 390, height: 844 }, { width: 1440, height: 900 }]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await page.evaluate(() => window.localStorage.clear())
+    await page.reload()
+    await page.getByLabel('학습 Day 선택').selectOption('2')
+    const answer = page.getByRole('textbox', { name: '영어 답변' })
+    await answer.fill('A table for one, please.')
+    await answer.press('Enter')
+    await answer.press('ArrowRight')
+    await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+    await expect(answer).toBeFocused()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  }
+})
+
 test('submits a single-line answer with Enter or NumpadEnter without inserting a newline', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/')
