@@ -37,6 +37,81 @@ type SpeechRecognitionLike = {
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike
 type CheckedAnswer = { sentence: Sentence; judgment: AnswerJudgment }
 
+const topicNames: Record<string, string> = {
+  'survival-communication': '기본 의사소통',
+  'restaurant-basics': '식당 기본 표현',
+  'asking-for-photo-help': '사진 도움 요청',
+  'getting-oriented': '길 찾기',
+  'immigration-and-customs': '입국 심사와 세관',
+  'airport-services': '공항 서비스',
+  'taxis-and-rides': '택시와 차량 호출',
+  'asking-for-directions': '길 안내 요청',
+  'public-transportation': '대중교통',
+  'hotel-check-in': '호텔 체크인',
+  'hotel-room-problems': '객실 문제',
+  'hotel-services': '호텔 서비스',
+  'hotel-check-out': '호텔 체크아웃',
+  'restaurant-reservations-and-ordering': '식당 예약과 주문',
+  'dining-requests': '식사 요청',
+  'cafe-orders': '카페 주문',
+  'clothing-shopping': '의류 쇼핑',
+  'sizes-and-store-policies': '사이즈와 매장 정책',
+  'payments-and-returns': '결제와 반품',
+  'market-bargaining': '시장 흥정',
+  'souvenirs-and-shipping': '기념품과 배송',
+  'phone-and-tech-support': '휴대폰과 기술 지원',
+  'flight-booking': '항공권 예약',
+  'emergencies-and-police': '긴급 상황과 경찰',
+  'medical-symptoms': '의료 증상',
+  'pharmacy-and-medicine': '약국과 약',
+  'asking-for-help': '도움 요청',
+  'opinions-and-recommendations': '의견과 추천',
+  'weather-forecast': '일기 예보',
+  'weather-and-climate': '날씨와 기후',
+  'scenery-appreciation': '풍경 감상',
+  'local-culture-and-language': '현지 문화와 언어',
+  'phone-calls': '전화 통화',
+  'local-information': '현지 정보',
+  'travel-support-calls': '여행 지원 전화',
+  'messages-and-email': '메시지와 이메일',
+  'scheduling-and-appointments': '일정과 약속',
+  'feelings-and-emotions': '감정 표현',
+  'compliments-and-encouragement': '칭찬과 격려',
+  'attraction-information': '관광지 정보',
+  'travel-photos': '여행 사진',
+  'day-trip-booking': '당일 여행 예약',
+  'asking-locals-for-help': '현지인에게 도움 요청',
+  'shows-and-nightlife': '공연과 야간 활동',
+  'checking-understanding': '이해 확인',
+  'business-meetings': '비즈니스 미팅',
+  'meeting-new-people': '새로운 사람 만나기',
+  'hobbies-and-interests': '취미와 관심사',
+  'sharing-travel-experiences': '여행 경험 공유',
+  'conversation-reactions': '대화 반응',
+  'ending-a-conversation': '대화 마무리',
+  'everyday-conversation': '일상 대화',
+  'polite-requests': '정중한 요청',
+  'travel-essentials': '여행 필수 표현',
+  'hotel-and-dining': '호텔과 식사',
+  'shopping-and-payments': '쇼핑과 결제',
+  'emergencies-and-local-help': '긴급 상황과 현지 도움',
+  'local-dining-customs': '현지 식사 문화',
+  'weather-small-talk': '날씨 대화',
+  'polite-disagreement': '정중한 반대 표현',
+  'phone-calls-and-arrangements': '전화와 약속 조율',
+  'sightseeing-and-transport': '관광과 교통',
+  'travel-purpose': '여행 목적',
+  'meeting-locals': '현지인 만나기',
+  'detailed-travel-questions': '자세한 여행 질문',
+  'polite-formal-requests': '정중하고 격식 있는 요청',
+  'confident-conversation-closings': '자신 있게 대화 마무리',
+  'travel-review-essentials': '여행 복습 핵심 표현',
+}
+
+function getTopicName(topic: string) {
+  return topicNames[topic] ?? '학습 주제'
+}
+
 function getRecognition() {
   const browser = window as typeof window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor }
   return browser.SpeechRecognition ?? browser.webkitSpeechRecognition
@@ -249,15 +324,15 @@ export default function LearningApp() {
     {speechNotice && <p className="hint" role="status">{speechNotice}</p>}
 
     {tab === 'practice' && <section className="study-panel" aria-labelledby="practice-heading">
-      <div className="learning-controls"><label>학습 Day 선택<select value={selectedDay} onChange={(event) => selectDay(Number(event.target.value))}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label><label>주제 필터<select value={selectedTopic} onChange={(event) => chooseTopic(event.target.value)}><option value="all">전체 주제</option>{topics.map((topic) => <option key={topic} value={topic}>{topic}</option>)}</select></label></div>
-      <section className="topic-progress" aria-label="주제별 진행률"><strong>주제별 진행률</strong>{topicProgress.map((item) => <span key={item.topic}>{item.topic} {item.completed}/{item.total}</span>)}</section>
-      {current ? <><p className="eyebrow">Day {selectedDay} 학습</p><h2 id="practice-heading">{currentPosition} / {dayChallenge.length} · 한국어를 영어로 입력하세요.</h2><p className="resume-copy">Day {selectedDay}에서 {progress.completed}/{progress.total}개를 완료했어요. 답을 확인하면 다음 위치가 저장됩니다.</p><div className="practice-prompt"><strong>{current.korean}</strong><span>{current.source === 'builtIn' ? `${current.topic} · ${current.level} · 우선순위 ${current.priority}` : `내 문장 · Day ${current.day}`}</span></div><PhraseChoices key={current.id} sentence={current} onChoose={setAttempt} /><label htmlFor="answer">영어 답변</label><textarea id="answer" value={attempt} onChange={(event) => setAttempt(event.target.value)} placeholder="영어 문장을 입력하세요" rows={3} /><div className="actions"><button className="button" disabled={Boolean(checkedAnswer)} onClick={checkAnswer}>정답 확인</button>{checkedAnswer && <button className="button secondary" onClick={nextPractice}>다음 문장</button>}</div>
-      {checkedAnswer && judgment && <div className={`answer-feedback ${judgment.kind === 'exact' ? 'feedback-exact' : judgment.kind === 'accepted-alternative' ? 'feedback-allowed' : 'feedback-needs-work'}`} aria-live="polite"><p><strong>정답:</strong> {current.english}</p><p><strong>{judgment.kind === 'exact' ? '정확' : judgment.kind === 'accepted-alternative' ? '허용 표현' : '수정 필요'}</strong>{judgment.kind === 'exact' ? ' · 정확해요! 저장된 문장과 일치해요.' : judgment.kind === 'accepted-alternative' ? ' · 저장된 허용 표현과 일치해요.' : ' · 누락 또는 오타 단어를 확인해 보세요.'}</p>{!judgment.isCorrect && <p>확인할 단어: {missingWords.length ? missingWords.join(', ') : '어순과 표현'}</p>}<div className="word-feedback" aria-label="단어별 피드백">{wordFeedback.map((item, index) => <span className={item.status} key={`${item.word}-${index}`}>{item.word}</span>)}</div><div className="actions"><button className="text-button" onClick={() => speakEnglish(current.english, '정답 문장을 재생했습니다.')}>정답 듣기</button><button className="text-button" onClick={toggleListening} aria-pressed={isListening}>{isListening ? '음성 입력 중지' : '음성으로 입력'}</button><button className="text-button" aria-pressed={state.favoriteIds.includes(current.id)} onClick={() => updateState({ ...state, ...toggleFavorite(state, current.id) })}>{state.favoriteIds.includes(current.id) ? '즐겨찾기 해제' : '즐겨찾기'}</button></div></div>}</> : <p className="empty-state">Day {selectedDay} 문장이 없습니다. 다른 Day를 선택해 보세요.</p>}
+      <div className="learning-controls"><label>학습 Day 선택<select value={selectedDay} onChange={(event) => selectDay(Number(event.target.value))}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label><label>주제 필터<select value={selectedTopic} onChange={(event) => chooseTopic(event.target.value)}><option value="all">전체 주제</option>{topics.map((topic) => <option key={topic} value={topic}>{getTopicName(topic)}</option>)}</select></label></div>
+      <section className="topic-progress" aria-label="주제별 진행률"><strong>주제별 진행률</strong>{topicProgress.map((item) => <span key={item.topic}>{getTopicName(item.topic)} {item.completed}/{item.total}</span>)}</section>
+      {current ? <><p className="eyebrow">Day {selectedDay} 학습</p><h2 id="practice-heading">{currentPosition} / {dayChallenge.length} · 한국어를 영어로 입력하세요.</h2><p className="resume-copy">Day {selectedDay}에서 {progress.completed}/{progress.total}개를 완료했어요. 답을 확인하면 다음 위치가 저장됩니다.</p><div className="practice-prompt"><strong>{current.korean}</strong><span>{current.source === 'builtIn' ? getTopicName(current.topic) : `내 문장 · Day ${current.day}`}</span></div><label htmlFor="answer">영어 답변</label><textarea id="answer" value={attempt} onChange={(event) => setAttempt(event.target.value)} placeholder="영어 문장을 입력하세요" rows={3} /><div className="actions"><button className="button" disabled={Boolean(checkedAnswer)} onClick={checkAnswer}>정답 확인</button>{checkedAnswer && <button className="button secondary" onClick={nextPractice}>다음 문장</button>}</div>
+      {checkedAnswer && judgment && <div className={`answer-feedback ${judgment.kind === 'exact' ? 'feedback-exact' : judgment.kind === 'accepted-alternative' ? 'feedback-allowed' : 'feedback-needs-work'}`} aria-live="polite"><p><strong>정답:</strong> {current.english}</p><p><strong>{judgment.kind === 'exact' ? '정확' : judgment.kind === 'accepted-alternative' ? '허용 표현' : '수정 필요'}</strong>{judgment.kind === 'exact' ? ' · 정확해요! 저장된 문장과 일치해요.' : judgment.kind === 'accepted-alternative' ? ' · 저장된 허용 표현과 일치해요.' : ' · 누락 또는 오타 단어를 확인해 보세요.'}</p>{!judgment.isCorrect && <p>확인할 단어: {missingWords.length ? missingWords.join(', ') : '어순과 표현'}</p>}<PhraseChoices sentence={current} onChoose={setAttempt} /><div className="word-feedback" aria-label="단어별 피드백">{wordFeedback.map((item, index) => <span className={item.status} key={`${item.word}-${index}`}>{item.word}</span>)}</div><div className="actions"><button className="text-button" onClick={() => speakEnglish(current.english, '정답 문장을 재생했습니다.')}>정답 듣기</button><button className="text-button" onClick={toggleListening} aria-pressed={isListening}>{isListening ? '음성 입력 중지' : '음성으로 입력'}</button><button className="text-button" aria-pressed={state.favoriteIds.includes(current.id)} onClick={() => updateState({ ...state, ...toggleFavorite(state, current.id) })}>{state.favoriteIds.includes(current.id) ? '즐겨찾기 해제' : '즐겨찾기'}</button></div></div>}</> : <p className="empty-state">Day {selectedDay} 문장이 없습니다. 다른 Day를 선택해 보세요.</p>}
       {dialogue && <section className="dialogue-launch"><div><strong>Day {selectedDay} 미니 대화</strong><p>{dialogue.turns.length}턴으로 오늘 표현을 실제 대화처럼 익혀 보세요.</p></div><button className="button secondary" onClick={() => setDialogueOpen(true)}>미니 대화 연습</button></section>}
-      {dialogueOpen && dialogue && <section className="mini-dialogue" aria-labelledby="dialogue-heading"><h2 id="dialogue-heading">Day {selectedDay} 미니 대화</h2><p className="turn-pill">{dialogue.turns.length}턴 · {dialogue.topic}</p><div className="dialogue-transcript">{dialogue.turns.map((turn, index) => <p key={`${turn.role}-${index}`}><strong>{turn.role}:</strong> {turn.english}<span>{turn.korean}</span></p>)}</div><button className="button" onClick={() => setDialogueOpen(false)}>대화 마치기</button></section>}
+      {dialogueOpen && dialogue && <section className="mini-dialogue" aria-labelledby="dialogue-heading"><h2 id="dialogue-heading">Day {selectedDay} 미니 대화</h2><p className="turn-pill">{dialogue.turns.length}턴 · {getTopicName(dialogue.topic)}</p><div className="dialogue-transcript">{dialogue.turns.map((turn, index) => <p key={`${turn.role}-${index}`}><strong>{turn.role}:</strong> {turn.english}<span>{turn.korean}</span></p>)}</div><button className="button" onClick={() => setDialogueOpen(false)}>대화 마치기</button></section>}
     </section>}
 
-    {tab === 'cards' && <section className="study-panel" aria-labelledby="cards-heading"><div className="panel-heading"><div><p className="eyebrow">Flashcards</p><h2 id="cards-heading">뜻을 보고 영어를 떠올려 보세요.</h2></div><label className="filter"><input type="checkbox" checked={hideMastered} onChange={(event) => setHideMastered(event.target.checked)} /> 마스터 숨기기</label></div><div className="card-grid">{(hideMastered ? flashcardSentences.filter((sentence) => !mastered.has(sentence.id)) : flashcardSentences).map((sentence) => <article key={sentence.id} className="flashcard"><div className="card-copy"><span className="korean-copy">{sentence.korean}</span><span className="reveal-copy">{revealed === sentence.id ? sentence.english : '영어 문장을 확인해 보세요.'}</span></div><div className="card-actions"><button className="card-action" onClick={() => setRevealed(revealed === sentence.id ? null : sentence.id)} aria-expanded={revealed === sentence.id}>{revealed === sentence.id ? '영어 문장 숨기기' : '영어 문장 보기'}</button><button className="card-action" onClick={() => speakEnglish(sentence.english, '영어 문장을 재생했습니다.')}>음성으로 듣기</button></div><button className="master-button" aria-pressed={mastered.has(sentence.id)} onClick={() => toggleMastered(sentence.id)}>{mastered.has(sentence.id) ? '마스터 해제' : '마스터로 표시'}</button></article>)}</div></section>}
+    {tab === 'cards' && <section className="study-panel" aria-labelledby="cards-heading"><div className="panel-heading"><div><p className="eyebrow">Flashcards</p><h2 id="cards-heading">뜻을 보고 영어를 떠올려 보세요.</h2></div><label className="filter"><input type="checkbox" checked={hideMastered} onChange={(event) => setHideMastered(event.target.checked)} /> 마스터 숨기기</label></div><div className="card-grid">{(hideMastered ? flashcardSentences.filter((sentence) => !mastered.has(sentence.id)) : flashcardSentences).map((sentence) => <article key={sentence.id} className="flashcard"><div className="card-copy"><span className="korean-copy">{sentence.korean}</span><span className="reveal-copy">{revealed === sentence.id ? sentence.english : null}</span></div><div className="card-actions"><button className="card-action" onClick={() => setRevealed(revealed === sentence.id ? null : sentence.id)} aria-expanded={revealed === sentence.id}>{revealed === sentence.id ? '영어 문장 숨기기' : '영어 문장 보기'}</button><button className="card-action" onClick={() => speakEnglish(sentence.english, '영어 문장을 재생했습니다.')}>음성으로 듣기</button></div><button className="master-button" aria-pressed={mastered.has(sentence.id)} onClick={() => toggleMastered(sentence.id)}>{mastered.has(sentence.id) ? '마스터 해제' : '마스터로 표시'}</button></article>)}</div></section>}
 
     {tab === 'review' && <section className="study-panel" aria-labelledby="review-heading"><p className="eyebrow">Review queue</p><h2 id="review-heading">오답과 즐겨찾기 복습</h2>{reviewSentences.length === 0 && state.favoriteIds.length === 0 ? <p className="empty-state">아직 복습할 문장이 없습니다. 답을 확인하거나 즐겨찾기를 선택해 보세요.</p> : <ul className="review-list">{sentences.filter((sentence) => state.reviewQueueIds.includes(sentence.id) || state.favoriteIds.includes(sentence.id)).map((sentence) => <li key={sentence.id}><div><strong>{sentence.korean}</strong><span>{sentence.english}</span></div><button className="text-button" onClick={() => practiceAgain(sentence)}>다시 연습</button></li>)}</ul>}</section>}
 
