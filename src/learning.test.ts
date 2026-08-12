@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getTodayChallenge, getWordFeedback, normalizeAnswer, parseLearningState, type Sentence } from './learning'
+import { getStudySummary, getTodayChallenge, getWordFeedback, normalizeAnswer, parseLearningState, recordStudyActivity, type Sentence } from './learning'
 
 const sentences: Sentence[] = [
   { id: 'fixture-1', english: 'I would like a cup of tea.', korean: '차 한 잔 주세요.', day: 1, source: 'builtIn', topic: 'cafe-orders', level: 'beginner', priority: 1 },
@@ -46,11 +46,26 @@ describe('learning helpers', () => {
       attemptCounts: {},
       reviewQueueIds: [],
       favoriteIds: [],
+      studyActivities: [],
     })
   })
 
   it('falls back safely when persisted learning state is corrupt or incompatible', () => {
-    expect(parseLearningState('{"version":999}')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [] })
-    expect(parseLearningState('not-json')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [] })
+    expect(parseLearningState('{"version":999}')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [] })
+    expect(parseLearningState('not-json')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [] })
+  })
+
+  it('migrates v2 data, records only distinct study actions, and calculates calendar-day streaks', () => {
+    const migrated = parseLearningState(JSON.stringify({
+      version: 2,
+      state: { masteredIds: ['fixture-1'], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: { 2: 1 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: ['fixture-2'], favoriteIds: ['fixture-3'] },
+    }))
+    expect(migrated).toMatchObject({ masteredIds: ['fixture-1'], selectedDay: 2, reviewQueueIds: ['fixture-2'], favoriteIds: ['fixture-3'], studyActivities: [] })
+
+    const first = recordStudyActivity(migrated, { timestamp: '2026-08-11T12:00:00', day: 2, sentenceId: 'fixture-2', action: 'answer-checked', correct: true })
+    const duplicate = recordStudyActivity(first, { timestamp: '2026-08-11T12:00:20', day: 2, sentenceId: 'fixture-2', action: 'answer-checked', correct: true })
+    const nextDay = recordStudyActivity(duplicate, { timestamp: '2026-08-12T12:00:00', day: 1, sentenceId: 'fixture-1', action: 'mastered' })
+    expect(duplicate.studyActivities).toHaveLength(1)
+    expect(getStudySummary(nextDay, new Date(2026, 7, 12, 15))).toMatchObject({ todaySentenceCount: 1, streakDays: 2, lastDay: 1 })
   })
 })

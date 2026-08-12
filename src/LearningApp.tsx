@@ -13,9 +13,12 @@ import {
   LEARNING_STORAGE_KEY,
   LEARNING_STORAGE_VERSION,
   createEmptyLearningState,
+  formatStudyTimestamp,
+  getStudySummary,
   getTodayKey,
   getWordFeedback,
   parseLearningState,
+  recordStudyActivity,
   type CustomSentence,
   type LearningState,
   type Sentence,
@@ -23,7 +26,7 @@ import {
 import { builtInDialogues } from './dialogues'
 import { builtInSentences } from './sentences'
 
-type Tab = 'practice' | 'cards' | 'review' | 'manage'
+type Tab = 'practice' | 'cards' | 'review' | 'manage' | 'history'
 type SpeechRecognitionLike = {
   lang: string
   interimResults: boolean
@@ -63,7 +66,10 @@ function voiceScore(voice: SpeechSynthesisVoice) {
 
 export default function LearningApp() {
   const [tab, setTab] = useState<Tab>('practice')
-  const [state, setState] = useState<LearningState>(createEmptyLearningState)
+  const [state, setState] = useState<LearningState>(() => {
+    try { return parseLearningState(window.localStorage.getItem(LEARNING_STORAGE_KEY)) }
+    catch { return createEmptyLearningState() }
+  })
   const [storageNotice, setStorageNotice] = useState('')
   const [hideMastered, setHideMastered] = useState(false)
   const [revealed, setRevealed] = useState<string | null>(null)
@@ -81,14 +87,12 @@ export default function LearningApp() {
   const recognition = useRef<SpeechRecognitionLike | null>(null)
 
   useEffect(() => {
-    try {
-      const loaded = parseLearningState(window.localStorage.getItem(LEARNING_STORAGE_KEY))
-      setState(loaded)
-      persist(loaded)
-    } catch {
-      setStorageNotice('브라우저 저장소를 읽을 수 없습니다. 이번 학습은 계속할 수 있지만 저장되지 않을 수 있습니다.')
-    }
+    try { persist(state) }
+    catch { setStorageNotice('브라우저 저장소를 읽을 수 없습니다. 이번 학습은 계속할 수 있지만 저장되지 않을 수 있습니다.') }
+  // The initial snapshot is deliberately written once to complete v1/v2 migration.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
 
   useEffect(() => {
     if (!('speechSynthesis' in window)) return
@@ -122,6 +126,15 @@ export default function LearningApp() {
   const overallProgress = sentences.length ? Math.round((sentences.filter(({ id }) => completedIds.has(id)).length / sentences.length) * 100) : 0
   const masteryProgress = sentences.length ? Math.round((state.masteredIds.length / sentences.length) * 100) : 0
   const completedToday = state.completedChallengeDates.includes(getTodayKey())
+  const studySummary = getStudySummary(state)
+  const historyByDate = useMemo(() => {
+    const groups = new Map<string, typeof state.studyActivities>()
+    for (const activity of state.studyActivities) {
+      const date = new Intl.DateTimeFormat('en-CA').format(new Date(activity.timestamp))
+      groups.set(date, [...(groups.get(date) ?? []), activity])
+    }
+    return [...groups.entries()].sort(([left], [right]) => right.localeCompare(left))
+  }, [state.studyActivities])
 
   function updateState(next: LearningState) {
     setState(next)
@@ -159,8 +172,9 @@ export default function LearningApp() {
     resetPracticeContext()
   }
 
-  function toggleMastered(id: string) {
-    updateState({ ...state, masteredIds: mastered.has(id) ? state.masteredIds.filter((value) => value !== id) : [...state.masteredIds, id] })
+  function toggleMastered(sentence: Sentence) {
+    const next = { ...state, masteredIds: mastered.has(sentence.id) ? state.masteredIds.filter((value) => value !== sentence.id) : [...state.masteredIds, sentence.id] }
+    updateState(mastered.has(sentence.id) ? next : recordStudyActivity(next, { timestamp: new Date().toISOString(), day: sentence.day, sentenceId: sentence.id, action: 'mastered' }))
   }
 
   function checkAnswer() {
@@ -169,7 +183,7 @@ export default function LearningApp() {
     const position = daySentences.findIndex((sentence) => sentence.id === current.id)
     const nextState = recordAttempt(state, { sentence: current, position: Math.max(0, position), judgment: nextJudgment })
     setCheckedAnswer({ sentence: current, judgment: nextJudgment })
-    updateState(withCompletedDay({ ...state, ...nextState }, current, nextJudgment))
+    updateState(withCompletedDay(recordStudyActivity({ ...state, ...nextState }, { timestamp: new Date().toISOString(), day: current.day, sentenceId: current.id, action: 'answer-checked', correct: nextJudgment.isCorrect }), current, nextJudgment))
   }
 
   function nextPractice() {
@@ -179,7 +193,7 @@ export default function LearningApp() {
         completedSentenceIds: state.completedSentenceIds.includes(current.id) ? state.completedSentenceIds : [...state.completedSentenceIds, current.id],
         reviewQueueIds: state.reviewQueueIds.filter((id) => id !== current.id),
       }
-      updateState(withCompletedDay(correctedState, current, judgment))
+      updateState(withCompletedDay(recordStudyActivity(correctedState, { timestamp: new Date().toISOString(), day: current.day, sentenceId: current.id, action: 'review-completed', correct: true }), current, judgment))
     }
     resetPracticeContext()
   }
@@ -253,8 +267,9 @@ export default function LearningApp() {
   return <main className="learning-shell">
     <header className="learning-header"><div><p className="eyebrow">English Talk · 60-day study</p><h1>더 넓은 세상으로의 시작</h1></div><p className="fixture-note">60일 동안 매일 10문장씩 학습해요. 마지막으로 학습한 Day와 문장부터 이어집니다.</p></header>
     <section className="dashboard" aria-label="학습 현황"><div><strong>{sentences.length}</strong><span>전체 문장</span></div><div><strong>{state.masteredIds.length}</strong><span>마스터</span></div><div><strong>{overallProgress}%</strong><span>학습 진행률</span></div><div><strong>{completedToday ? '완료' : `Day ${selectedDay}`}</strong><span>현재 학습</span></div><div className="progress-track" role="progressbar" aria-label="마스터 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteryProgress}><span style={{ width: `${masteryProgress}%` }} /></div></section>
+    <section className="recent-study" aria-label="최근 학습"><div><strong>최근 학습</strong><span>{studySummary.lastActivity ? `Day ${studySummary.lastDay} · ${formatStudyTimestamp(studySummary.lastActivity.timestamp)}` : '아직 실제 학습 기록이 없습니다.'}</span></div><div><strong>{studySummary.todaySentenceCount}</strong><span>오늘 학습한 문장</span></div><div><strong>{studySummary.streakDays}일</strong><span>현재 연속 학습</span></div><p>기록은 이 브라우저에만 저장되며 기기·브라우저 간 동기화되지 않습니다.</p></section>
     {storageNotice && <p className="notice" role="status">{storageNotice}</p>}
-    <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
+    <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'history' ? 'page' : undefined} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>학습 기록</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
     {speechNotice && <p className="hint" role="status">{speechNotice}</p>}
 
     {tab === 'practice' && <section className="study-panel" aria-labelledby="practice-heading">
@@ -266,9 +281,11 @@ export default function LearningApp() {
       {dialogueOpen && dialogue && <section className="mini-dialogue" aria-labelledby="dialogue-heading"><h2 id="dialogue-heading">Day {selectedDay} 미니 대화</h2><p className="turn-pill">{dialogue.turns.length}턴 · {topicName(dialogue.topic)}</p><div className="dialogue-transcript">{dialogue.turns.map((turn, index) => <p key={`${turn.role}-${index}`}><strong>{turn.role}:</strong> {turn.english}<span>{turn.korean}</span></p>)}</div><button className="button" onClick={() => setDialogueOpen(false)}>대화 마치기</button></section>}
     </section>}
 
-    {tab === 'cards' && <section className="study-panel" aria-labelledby="cards-heading"><div className="panel-heading"><div><p className="eyebrow">Flashcards</p><h2 id="cards-heading">뜻을 보고 영어를 떠올려 보세요.</h2></div><label className="filter"><input type="checkbox" checked={hideMastered} onChange={(event) => setHideMastered(event.target.checked)} /> 마스터 숨기기</label></div><div className="card-grid">{(hideMastered ? flashcardSentences.filter((sentence) => !mastered.has(sentence.id)) : flashcardSentences).map((sentence) => <article key={sentence.id} className="flashcard"><div className="card-copy"><span className="korean-copy">{sentence.korean}</span><span className="reveal-copy">{revealed === sentence.id ? sentence.english : null}</span></div><div className="card-actions"><button className="card-action" onClick={() => setRevealed(revealed === sentence.id ? null : sentence.id)} aria-expanded={revealed === sentence.id}>{revealed === sentence.id ? '영어 문장 숨기기' : '영어 문장 보기'}</button><button className="card-action" onClick={() => speakEnglish(sentence.english, '영어 문장을 재생했습니다.')}>음성으로 듣기</button></div><button className="master-button" aria-pressed={mastered.has(sentence.id)} onClick={() => toggleMastered(sentence.id)}>{mastered.has(sentence.id) ? '마스터 해제' : '마스터로 표시'}</button></article>)}</div></section>}
+    {tab === 'cards' && <section className="study-panel" aria-labelledby="cards-heading"><div className="panel-heading"><div><p className="eyebrow">Flashcards</p><h2 id="cards-heading">뜻을 보고 영어를 떠올려 보세요.</h2></div><label className="filter"><input type="checkbox" checked={hideMastered} onChange={(event) => setHideMastered(event.target.checked)} /> 마스터 숨기기</label></div><div className="card-grid">{(hideMastered ? flashcardSentences.filter((sentence) => !mastered.has(sentence.id)) : flashcardSentences).map((sentence) => <article key={sentence.id} className="flashcard"><div className="card-copy"><span className="korean-copy">{sentence.korean}</span><span className="reveal-copy">{revealed === sentence.id ? sentence.english : null}</span></div><div className="card-actions"><button className="card-action" onClick={() => setRevealed(revealed === sentence.id ? null : sentence.id)} aria-expanded={revealed === sentence.id}>{revealed === sentence.id ? '영어 문장 숨기기' : '영어 문장 보기'}</button><button className="card-action" onClick={() => speakEnglish(sentence.english, '영어 문장을 재생했습니다.')}>음성으로 듣기</button></div><button className="master-button" aria-pressed={mastered.has(sentence.id)} onClick={() => toggleMastered(sentence)}>{mastered.has(sentence.id) ? '마스터 해제' : '마스터로 표시'}</button></article>)}</div></section>}
 
     {tab === 'review' && <section className="study-panel" aria-labelledby="review-heading"><p className="eyebrow">Review queue</p><h2 id="review-heading">오답과 즐겨찾기 복습</h2>{reviewSentences.length === 0 && state.favoriteIds.length === 0 ? <p className="empty-state">아직 복습할 문장이 없습니다. 답을 확인하거나 즐겨찾기를 선택해 보세요.</p> : <ul className="review-list">{sentences.filter((sentence) => state.reviewQueueIds.includes(sentence.id) || state.favoriteIds.includes(sentence.id)).map((sentence) => <li key={sentence.id}><div><strong>{sentence.korean}</strong><span>{sentence.english}</span></div><button className="text-button" onClick={() => practiceAgain(sentence)}>다시 연습</button></li>)}</ul>}</section>}
+
+    {tab === 'history' && <section className="study-panel" aria-labelledby="history-heading"><p className="eyebrow">Study timeline</p><h2 id="history-heading">학습 기록</h2>{historyByDate.length === 0 ? <p className="empty-state">아직 기록이 없습니다. 정답을 확인하거나 문장을 마스터하면 실제 학습 기록이 남습니다.</p> : <div className="study-timeline">{historyByDate.map(([date, activities]) => <section key={date}><h3>{formatStudyTimestamp(activities[0].timestamp).split(' ')[0]}</h3>{[...new Set(activities.map((activity) => activity.day))].sort((left, right) => left - right).map((day) => { const dayActivities = activities.filter((activity) => activity.day === day); const completed = new Set(dayActivities.filter((activity) => activity.correct || activity.action === 'mastered').map((activity) => activity.sentenceId)).size; return <article key={day}><div><strong>Day {day}</strong><span>{completed}/10 완료 문장</span></div><p>{formatStudyTimestamp(dayActivities[dayActivities.length - 1].timestamp)} 시작 · {formatStudyTimestamp(dayActivities[0].timestamp)} 최근 학습</p></article> })}</section>)}</div>}</section>}
 
     {tab === 'manage' && <section className="study-panel" aria-labelledby="manage-heading"><div className="panel-heading"><div><p className="eyebrow">Personal sentences</p><h2 id="manage-heading">나만의 문장을 추가하세요.</h2></div><button className="button" onClick={() => startEditing()}>문장 추가</button></div>{editing && <form className="sentence-form" onSubmit={saveCustom}><label>영어 문장<input value={english} onChange={(event) => setEnglish(event.target.value)} required /></label><label>한국어 뜻<input value={korean} onChange={(event) => setKorean(event.target.value)} required /></label><div className="actions"><button className="button" type="submit">저장</button><button className="button secondary" type="button" onClick={() => setEditing(null)}>취소</button></div></form>}{state.customSentences.length === 0 ? <p className="empty-state">아직 내 문장이 없습니다. 자주 쓰는 문장을 추가해 보세요.</p> : <ul className="custom-list">{state.customSentences.map((sentence) => <li key={sentence.id}><div><strong>{sentence.english}</strong><span>{sentence.korean}</span></div><div className="row-actions"><button className="text-button" onClick={() => startEditing(sentence)}>수정</button><button className="text-button danger" onClick={() => deleteCustom(sentence.id)}>삭제</button></div></li>)}</ul>}</section>}
   </main>
