@@ -135,7 +135,7 @@ export function parseLearningState(raw: string | null): LearningState {
 }
 
 function migrateV1LearningState(state: Record<string, unknown>): LearningState {
-  return { ...readLegacyLearningFields(state), ...createSequentialState(), studyActivities: [] }
+  return { ...readLegacyLearningFields(state), ...createSequentialState(state), studyActivities: [] }
 }
 
 function migrateV2LearningState(state: Record<string, unknown>): LearningState {
@@ -213,6 +213,12 @@ export function formatStudyTimestamp(timestamp: string, timeZone?: string) {
   const parts = new Intl.DateTimeFormat('ko-KR', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(timestamp))
   const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? ''
   return `${value('year')}. ${value('month')}. ${value('day')}.(${value('weekday')}) ${value('hour')}:${value('minute')}`
+}
+
+export function formatStudyDate(timestamp: string, timeZone?: string) {
+  const parts = new Intl.DateTimeFormat('ko-KR', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short' }).formatToParts(new Date(timestamp))
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? ''
+  return `${value('year')}. ${value('month')}. ${value('day')}.(${value('weekday')})`
 }
 
 export function getStudySummary(state: LearningState, now = new Date()): StudySummary {

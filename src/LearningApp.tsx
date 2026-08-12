@@ -13,7 +13,9 @@ import {
   LEARNING_STORAGE_KEY,
   LEARNING_STORAGE_VERSION,
   createEmptyLearningState,
+  formatStudyDate,
   formatStudyTimestamp,
+  getLocalDateKey,
   getStudySummary,
   getTodayKey,
   getWordFeedback,
@@ -130,7 +132,7 @@ export default function LearningApp() {
   const historyByDate = useMemo(() => {
     const groups = new Map<string, typeof state.studyActivities>()
     for (const activity of state.studyActivities) {
-      const date = new Intl.DateTimeFormat('en-CA').format(new Date(activity.timestamp))
+      const date = getLocalDateKey(new Date(activity.timestamp))
       groups.set(date, [...(groups.get(date) ?? []), activity])
     }
     return [...groups.entries()].sort(([left], [right]) => right.localeCompare(left))
@@ -285,7 +287,7 @@ export default function LearningApp() {
 
     {tab === 'review' && <section className="study-panel" aria-labelledby="review-heading"><p className="eyebrow">Review queue</p><h2 id="review-heading">오답과 즐겨찾기 복습</h2>{reviewSentences.length === 0 && state.favoriteIds.length === 0 ? <p className="empty-state">아직 복습할 문장이 없습니다. 답을 확인하거나 즐겨찾기를 선택해 보세요.</p> : <ul className="review-list">{sentences.filter((sentence) => state.reviewQueueIds.includes(sentence.id) || state.favoriteIds.includes(sentence.id)).map((sentence) => <li key={sentence.id}><div><strong>{sentence.korean}</strong><span>{sentence.english}</span></div><button className="text-button" onClick={() => practiceAgain(sentence)}>다시 연습</button></li>)}</ul>}</section>}
 
-    {tab === 'history' && <section className="study-panel" aria-labelledby="history-heading"><p className="eyebrow">Study timeline</p><h2 id="history-heading">학습 기록</h2>{historyByDate.length === 0 ? <p className="empty-state">아직 기록이 없습니다. 정답을 확인하거나 문장을 마스터하면 실제 학습 기록이 남습니다.</p> : <div className="study-timeline">{historyByDate.map(([date, activities]) => <section key={date}><h3>{formatStudyTimestamp(activities[0].timestamp).split(' ')[0]}</h3>{[...new Set(activities.map((activity) => activity.day))].sort((left, right) => left - right).map((day) => { const dayActivities = activities.filter((activity) => activity.day === day); const completed = new Set(dayActivities.filter((activity) => activity.correct || activity.action === 'mastered').map((activity) => activity.sentenceId)).size; return <article key={day}><div><strong>Day {day}</strong><span>{completed}/10 완료 문장</span></div><p>{formatStudyTimestamp(dayActivities[dayActivities.length - 1].timestamp)} 시작 · {formatStudyTimestamp(dayActivities[0].timestamp)} 최근 학습</p></article> })}</section>)}</div>}</section>}
+    {tab === 'history' && <section className="study-panel" aria-labelledby="history-heading"><p className="eyebrow">Study timeline</p><h2 id="history-heading">학습 기록</h2>{historyByDate.length === 0 ? <p className="empty-state">아직 기록이 없습니다. 정답을 확인하거나 문장을 마스터하면 실제 학습 기록이 남습니다.</p> : <div className="study-timeline">{historyByDate.map(([date, activities]) => <section key={date}><h3>{formatStudyDate(activities[0].timestamp)}</h3>{[...new Set(activities.map((activity) => activity.day))].sort((left, right) => left - right).map((day) => { const dayActivities = activities.filter((activity) => activity.day === day); const completed = new Set(dayActivities.filter((activity) => activity.correct || activity.action === 'mastered').map((activity) => activity.sentenceId)).size; return <article key={day}><div><strong>Day {day}</strong><span>{completed}/10 완료 문장</span></div><p>{formatStudyTimestamp(dayActivities[dayActivities.length - 1].timestamp)} 시작 · {formatStudyTimestamp(dayActivities[0].timestamp)} 최근 학습</p></article> })}</section>)}</div>}</section>}
 
     {tab === 'manage' && <section className="study-panel" aria-labelledby="manage-heading"><div className="panel-heading"><div><p className="eyebrow">Personal sentences</p><h2 id="manage-heading">나만의 문장을 추가하세요.</h2></div><button className="button" onClick={() => startEditing()}>문장 추가</button></div>{editing && <form className="sentence-form" onSubmit={saveCustom}><label>영어 문장<input value={english} onChange={(event) => setEnglish(event.target.value)} required /></label><label>한국어 뜻<input value={korean} onChange={(event) => setKorean(event.target.value)} required /></label><div className="actions"><button className="button" type="submit">저장</button><button className="button secondary" type="button" onClick={() => setEditing(null)}>취소</button></div></form>}{state.customSentences.length === 0 ? <p className="empty-state">아직 내 문장이 없습니다. 자주 쓰는 문장을 추가해 보세요.</p> : <ul className="custom-list">{state.customSentences.map((sentence) => <li key={sentence.id}><div><strong>{sentence.english}</strong><span>{sentence.korean}</span></div><div className="row-actions"><button className="text-button" onClick={() => startEditing(sentence)}>수정</button><button className="text-button danger" onClick={() => deleteCustom(sentence.id)}>삭제</button></div></li>)}</ul>}</section>}
   </main>
