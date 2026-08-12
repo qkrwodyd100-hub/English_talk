@@ -32,7 +32,37 @@ test('migrates v1 data and persists sequential progress, review, and favorites a
   await expect(page.getByText('Please wait here.')).toBeVisible()
 
   const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}'))
-  expect(persisted).toMatchObject({ version: 2, state: { selectedDay: 2, dayPositions: { 2: 1 }, reviewQueueIds: ['day-02-01'], favoriteIds: ['day-02-01'] } })
+  expect(persisted).toMatchObject({ version: 3, state: { selectedDay: 2, dayPositions: { 2: 1 }, reviewQueueIds: ['day-02-01'], favoriteIds: ['day-02-01'], studyActivities: [{ day: 2, sentenceId: 'day-02-01', action: 'answer-checked', correct: false }] } })
+})
+
+test('creates no history on visits, then persists a correctly scoped real study event and timeline', async ({ page }) => {
+  await page.addInitScript(() => {
+    if (window.sessionStorage.getItem('seeded-history-v2')) return
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({
+      version: 2,
+      state: { masteredIds: ['day-01-01'], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [] },
+    }))
+    window.sessionStorage.setItem('seeded-history-v2', 'true')
+  })
+  await page.goto('/')
+  await page.getByRole('button', { name: '학습 기록' }).click()
+  await expect(page.getByText('아직 기록이 없습니다. 정답을 확인하거나 문장을 마스터하면 실제 학습 기록이 남습니다.')).toBeVisible()
+
+  await page.getByRole('button', { name: '타이핑 연습' }).click()
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('A table for one, please.')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(1)
+  await page.reload()
+
+  const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}'))
+  expect(persisted).toMatchObject({ version: 3, state: { masteredIds: ['day-01-01'], selectedDay: 2, studyActivities: [{ day: 2, sentenceId: 'day-02-01', action: 'answer-checked', correct: true }] } })
+  await expect(page.getByLabel('최근 학습')).toContainText('Day 2')
+  await page.getByRole('button', { name: '학습 기록' }).click()
+  await expect(page.getByRole('heading', { name: '학습 기록' })).toBeVisible()
+  const timeline = page.getByLabel('학습 기록')
+  await expect(timeline.getByText('Day 2', { exact: true })).toBeVisible()
+  await expect(timeline.getByText('1/10 완료 문장')).toBeVisible()
 })
 
 test('keeps overall progress at 100 percent when built-in and custom sentences are all complete', async ({ page }) => {

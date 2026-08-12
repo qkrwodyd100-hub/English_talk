@@ -65,6 +65,24 @@ export type LearningState = {
   attemptCounts: Record<string, number>
   reviewQueueIds: string[]
   favoriteIds: string[]
+  studyActivities: StudyActivity[]
+}
+
+export type StudyAction = 'answer-checked' | 'mastered' | 'review-completed'
+
+export type StudyActivity = {
+  timestamp: string
+  day: number
+  sentenceId: string
+  action: StudyAction
+  correct?: boolean
+}
+
+export type StudySummary = {
+  lastDay: number | null
+  lastActivity: StudyActivity | null
+  todaySentenceCount: number
+  streakDays: number
 }
 
 export type WordFeedback = {
@@ -73,7 +91,7 @@ export type WordFeedback = {
 }
 
 export const LEARNING_STORAGE_KEY = 'english-talk.learning'
-export const LEARNING_STORAGE_VERSION = 2
+export const LEARNING_STORAGE_VERSION = 3
 
 export function createEmptyLearningState(): LearningState {
   return {
@@ -86,6 +104,7 @@ export function createEmptyLearningState(): LearningState {
     attemptCounts: {},
     reviewQueueIds: [],
     favoriteIds: [],
+    studyActivities: [],
   }
 }
 
@@ -98,6 +117,7 @@ export function parseLearningState(raw: string | null): LearningState {
     if (!record.state || typeof record.state !== 'object') return createEmptyLearningState()
     const state = record.state as Record<string, unknown>
     if (record.version === 1) return migrateV1LearningState(state)
+    if (record.version === 2) return migrateV2LearningState(state)
     if (record.version !== LEARNING_STORAGE_VERSION) return createEmptyLearningState()
     return {
       ...readLegacyLearningFields(state),
@@ -107,6 +127,7 @@ export function parseLearningState(raw: string | null): LearningState {
       attemptCounts: readAttemptCounts(state.attemptCounts),
       reviewQueueIds: readStringArray(state.reviewQueueIds),
       favoriteIds: readStringArray(state.favoriteIds),
+      studyActivities: readStudyActivities(state.studyActivities),
     }
   } catch {
     return createEmptyLearningState()
@@ -114,7 +135,11 @@ export function parseLearningState(raw: string | null): LearningState {
 }
 
 function migrateV1LearningState(state: Record<string, unknown>): LearningState {
-  return { ...readLegacyLearningFields(state), ...createSequentialState() }
+  return { ...readLegacyLearningFields(state), ...createSequentialState(), studyActivities: [] }
+}
+
+function migrateV2LearningState(state: Record<string, unknown>): LearningState {
+  return { ...readLegacyLearningFields(state), ...createSequentialState(state), studyActivities: [] }
 }
 
 function readLegacyLearningFields(state: Record<string, unknown>) {
@@ -125,7 +150,12 @@ function readLegacyLearningFields(state: Record<string, unknown>) {
   }
 }
 
-function createSequentialState() {
+function createSequentialState(state?: Record<string, unknown>) {
+  if (state) return {
+    selectedDay: isDay(state.selectedDay) ? state.selectedDay : null,
+    dayPositions: readDayPositions(state.dayPositions), completedSentenceIds: readStringArray(state.completedSentenceIds),
+    attemptCounts: readAttemptCounts(state.attemptCounts), reviewQueueIds: readStringArray(state.reviewQueueIds), favoriteIds: readStringArray(state.favoriteIds),
+  }
   const { selectedDay, dayPositions, completedSentenceIds, attemptCounts, reviewQueueIds, favoriteIds } = createEmptyLearningState()
   return { selectedDay, dayPositions, completedSentenceIds, attemptCounts, reviewQueueIds, favoriteIds }
 }
@@ -153,6 +183,48 @@ function readAttemptCounts(value: unknown): Record<string, number> {
   return Object.fromEntries(Object.entries(value).flatMap(([id, count]) =>
     typeof count === 'number' && Number.isInteger(count) && count >= 0 ? [[id, count]] : [],
   ))
+}
+
+function readStudyActivities(value: unknown): StudyActivity[] {
+  return Array.isArray(value) ? value.filter(isStudyActivity).sort((left, right) => right.timestamp.localeCompare(left.timestamp)) : []
+}
+
+function isStudyActivity(value: unknown): value is StudyActivity {
+  if (!value || typeof value !== 'object') return false
+  const activity = value as Record<string, unknown>
+  return typeof activity.timestamp === 'string' && !Number.isNaN(Date.parse(activity.timestamp)) && isDay(activity.day)
+    && typeof activity.sentenceId === 'string' && ['answer-checked', 'mastered', 'review-completed'].includes(String(activity.action))
+    && (activity.correct === undefined || typeof activity.correct === 'boolean')
+}
+
+export function recordStudyActivity(state: LearningState, activity: StudyActivity, dedupeWindowMs = 60_000): LearningState {
+  const timestamp = Date.parse(activity.timestamp)
+  const duplicate = state.studyActivities.some((existing) => existing.day === activity.day && existing.sentenceId === activity.sentenceId
+    && existing.action === activity.action && Math.abs(Date.parse(existing.timestamp) - timestamp) < dedupeWindowMs)
+  if (duplicate) return state
+  return { ...state, studyActivities: [activity, ...state.studyActivities].sort((left, right) => right.timestamp.localeCompare(left.timestamp)) }
+}
+
+export function getLocalDateKey(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+export function formatStudyTimestamp(timestamp: string, timeZone?: string) {
+  const parts = new Intl.DateTimeFormat('ko-KR', { timeZone, year: 'numeric', month: 'numeric', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(timestamp))
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? ''
+  return `${value('year')}. ${value('month')}. ${value('day')}.(${value('weekday')}) ${value('hour')}:${value('minute')}`
+}
+
+export function getStudySummary(state: LearningState, now = new Date()): StudySummary {
+  const lastActivity = state.studyActivities[0] ?? null
+  const today = getLocalDateKey(now)
+  const todaySentenceCount = new Set(state.studyActivities.filter((activity) => getLocalDateKey(new Date(activity.timestamp)) === today).map((activity) => activity.sentenceId)).size
+  const dates = new Set(state.studyActivities.map((activity) => getLocalDateKey(new Date(activity.timestamp))))
+  const cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  if (!dates.has(getLocalDateKey(cursor))) cursor.setDate(cursor.getDate() - 1)
+  let streakDays = 0
+  while (dates.has(getLocalDateKey(cursor))) { streakDays += 1; cursor.setDate(cursor.getDate() - 1) }
+  return { lastDay: lastActivity?.day ?? null, lastActivity, todaySentenceCount, streakDays }
 }
 
 function isCustomSentence(value: unknown): value is CustomSentence {
