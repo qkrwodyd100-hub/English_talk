@@ -76,4 +76,16 @@ describe('learning helpers', () => {
     expect(duplicate.studyActivities).toHaveLength(1)
     expect(getStudySummary(nextDay, new Date(2026, 7, 12, 15))).toMatchObject({ todaySentenceCount: 1, streakDays: 2, lastDay: 1 })
   })
+
+  it('finds the first and most recent real study actions in empty, single, and unsorted histories', () => {
+    expect(getStudySummary({ ...parseLearningState(null), studyActivities: [] })).toMatchObject({ firstActivity: null, lastActivity: null })
+    const only = { timestamp: '2026-08-12T04:47:00.000Z', day: 1, sentenceId: 'fixture-1', action: 'answer-checked' as const }
+    expect(getStudySummary({ ...parseLearningState(null), studyActivities: [only] })).toMatchObject({ firstActivity: only, lastActivity: only })
+    const history = [
+      { timestamp: '2026-08-14T04:47:00.000Z', day: 3, sentenceId: 'fixture-3', action: 'mastered' as const },
+      only,
+      { timestamp: '2026-08-13T04:47:00.000Z', day: 2, sentenceId: 'fixture-2', action: 'answer-checked' as const },
+    ]
+    expect(getStudySummary({ ...parseLearningState(null), studyActivities: history })).toMatchObject({ firstActivity: only, lastActivity: history[0] })
+  })
 })

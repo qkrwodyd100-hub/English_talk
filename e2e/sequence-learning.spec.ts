@@ -47,7 +47,7 @@ test('creates no history on visits, then persists a correctly scoped real study 
   })
   await page.goto('/')
   await page.getByRole('button', { name: '학습 기록' }).click()
-  await expect(page.getByText('아직 기록이 없습니다. 정답을 확인하거나 문장을 마스터하면 실제 학습 기록이 남습니다.')).toBeVisible()
+  await expect(page.getByText('아직 학습 기록이 없어요')).toBeVisible()
 
   await page.getByRole('button', { name: '타이핑 연습' }).click()
   await page.getByLabel('학습 Day 선택').selectOption('2')
@@ -342,4 +342,26 @@ test('keeps typing practice topic-free and visually aligned across responsive vi
     await expect(panel.getByText('수정 필요')).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   }
+})
+
+test('distinguishes persisted first and recent real learning timestamps', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
+      masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [],
+      studyActivities: [
+        { timestamp: '2026-08-13T04:47:00.000Z', day: 2, sentenceId: 'day-02-01', action: 'answer-checked', correct: true },
+        { timestamp: '2026-08-12T04:47:00.000Z', day: 1, sentenceId: 'day-01-01', action: 'answer-checked', correct: true },
+      ],
+    } }))
+  })
+  await page.goto('/')
+  await page.getByRole('button', { name: '학습 기록' }).click()
+  const summary = page.getByLabel('학습 날짜 요약')
+  await expect(summary.getByRole('heading', { name: '학습 시작일' })).toBeVisible()
+  await expect(summary.getByRole('heading', { name: '최근 학습일' })).toBeVisible()
+  await expect(summary).toContainText('2026. 8. 12.(수) 13:47')
+  await expect(summary).toContainText('2026. 8. 13.(목) 13:47')
+  await page.reload()
+  await page.getByRole('button', { name: '학습 기록' }).click()
+  await expect(page.getByLabel('학습 날짜 요약')).toContainText('2026. 8. 12.(수) 13:47')
 })

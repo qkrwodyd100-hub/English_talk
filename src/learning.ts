@@ -79,6 +79,7 @@ export type StudyActivity = {
 }
 
 export type StudySummary = {
+  firstActivity: StudyActivity | null
   lastDay: number | null
   lastActivity: StudyActivity | null
   todaySentenceCount: number
@@ -222,7 +223,8 @@ export function formatStudyDate(timestamp: string, timeZone?: string) {
 }
 
 export function getStudySummary(state: LearningState, now = new Date()): StudySummary {
-  const lastActivity = state.studyActivities[0] ?? null
+  const firstActivity = state.studyActivities.reduce<StudyActivity | null>((earliest, activity) => !earliest || Date.parse(activity.timestamp) < Date.parse(earliest.timestamp) ? activity : earliest, null)
+  const lastActivity = state.studyActivities.reduce<StudyActivity | null>((latest, activity) => !latest || Date.parse(activity.timestamp) > Date.parse(latest.timestamp) ? activity : latest, null)
   const today = getLocalDateKey(now)
   const todaySentenceCount = new Set(state.studyActivities.filter((activity) => getLocalDateKey(new Date(activity.timestamp)) === today).map((activity) => activity.sentenceId)).size
   const dates = new Set(state.studyActivities.map((activity) => getLocalDateKey(new Date(activity.timestamp))))
@@ -230,7 +232,7 @@ export function getStudySummary(state: LearningState, now = new Date()): StudySu
   if (!dates.has(getLocalDateKey(cursor))) cursor.setDate(cursor.getDate() - 1)
   let streakDays = 0
   while (dates.has(getLocalDateKey(cursor))) { streakDays += 1; cursor.setDate(cursor.getDate() - 1) }
-  return { lastDay: lastActivity?.day ?? null, lastActivity, todaySentenceCount, streakDays }
+  return { firstActivity, lastDay: lastActivity?.day ?? null, lastActivity, todaySentenceCount, streakDays }
 }
 
 function isCustomSentence(value: unknown): value is CustomSentence {
