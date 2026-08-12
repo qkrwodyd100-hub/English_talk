@@ -52,6 +52,20 @@ test('flashcards render only the selected day and topic scope', async ({ page })
   await expect(page.getByText('사진 좀 찍어 주시겠어요?')).toHaveCount(0)
 })
 
+test('unrevealed flashcards keep the English region empty and the reveal control fits at 320px', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 })
+  await page.goto('/')
+  await page.getByRole('button', { name: '플래시카드' }).click()
+
+  const firstCard = page.locator('.flashcard').first()
+  await expect(firstCard.locator('.reveal-copy')).toBeEmpty()
+  await expect(page.getByText('영어 문장을 확인해 보세요.')).toHaveCount(0)
+  const revealButton = firstCard.getByRole('button', { name: '영어 문장 보기' })
+  await expect(revealButton).toHaveCSS('white-space', 'nowrap')
+  expect(await revealButton.evaluate((element) => element.scrollHeight <= element.clientHeight)).toBe(true)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+})
+
 test('flashcards prefer the most natural available English voice without revealing the sentence', async ({ page }) => {
   await page.addInitScript(() => {
     type Voice = { name: string; lang: string; localService: boolean }

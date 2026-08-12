@@ -111,15 +111,16 @@ test('uses declared alternatives and slots with the engine answer contract', asy
     await page.getByRole('button', { name: '다음 문장' }).click()
   }
 
-  await page.getByRole('button', { name: "What's good here?" }).click()
+  await page.getByRole('textbox', { name: '영어 답변' }).fill("What's good here?")
   await page.getByRole('button', { name: '정답 확인' }).click()
   await expect(page.getByText('허용 표현')).toBeVisible()
 
   await page.getByLabel('학습 Day 선택').selectOption('8')
-  await page.getByRole('button', { name: 'Mina Lee · 미나 리' }).click()
-  await expect(page.getByRole('textbox', { name: '영어 답변' })).toHaveValue('I have a reservation under the name Mina Lee.')
+  await expect(page.getByRole('button', { name: 'Mina Lee · 미나 리' })).toHaveCount(0)
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('I have a reservation under the name Mina Lee.')
   await page.getByRole('button', { name: '정답 확인' }).click()
   await expect(page.getByText('수정 필요')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Mina Lee · 미나 리' })).toBeVisible()
 })
 
 test('shows real topic metadata and the selected day mini dialogue on mobile', async ({ page }) => {
@@ -132,7 +133,8 @@ test('shows real topic metadata and the selected day mini dialogue on mobile', a
 
   await page.getByLabel('주제 필터').selectOption('restaurant-basics')
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
-  await expect(page.getByText('식당 기본 표현 · beginner · 우선순위 1')).toBeVisible()
+  await expect(page.locator('.practice-prompt span')).toHaveText('식당 기본 표현')
+  await expect(page.getByText(/Beginner|우선순위/i)).toHaveCount(0)
   await page.getByRole('button', { name: '미니 대화 연습' }).click()
   await expect(page.getByRole('heading', { name: 'Day 2 미니 대화' })).toBeVisible()
   await expect(page.getByText('Of course. Here is the menu.')).toBeVisible()
