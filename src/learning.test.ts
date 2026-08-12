@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getStudySummary, getTodayChallenge, getWordFeedback, normalizeAnswer, parseLearningState, recordStudyActivity, type Sentence } from './learning'
+import { formatStudyDate, formatStudyTimestamp, getStudySummary, getTodayChallenge, getWordFeedback, normalizeAnswer, parseLearningState, recordStudyActivity, type Sentence } from './learning'
 
 const sentences: Sentence[] = [
   { id: 'fixture-1', english: 'I would like a cup of tea.', korean: '차 한 잔 주세요.', day: 1, source: 'builtIn', topic: 'cafe-orders', level: 'beginner', priority: 1 },
@@ -28,26 +28,34 @@ describe('learning helpers', () => {
     ])
   })
 
-  it('migrates v1 persisted learning state without losing legacy data', () => {
+  it('migrates v1 persisted learning state without losing legacy and sequential data', () => {
     expect(parseLearningState(JSON.stringify({
       version: 1,
       state: {
         masteredIds: ['fixture-1'],
         customSentences: [{ id: 'custom-1', english: 'Hello.', korean: '안녕하세요.', day: 1, source: 'custom' }],
         completedChallengeDates: ['2026-08-10'],
+        selectedDay: 2,
+        reviewQueueIds: ['fixture-2'],
+        favoriteIds: ['fixture-1'],
       },
     }))).toEqual({
       masteredIds: ['fixture-1'],
       customSentences: [{ id: 'custom-1', english: 'Hello.', korean: '안녕하세요.', day: 1, source: 'custom' }],
       completedChallengeDates: ['2026-08-10'],
-      selectedDay: null,
+      selectedDay: 2,
       dayPositions: {},
       completedSentenceIds: [],
       attemptCounts: {},
-      reviewQueueIds: [],
-      favoriteIds: [],
+      reviewQueueIds: ['fixture-2'],
+      favoriteIds: ['fixture-1'],
       studyActivities: [],
     })
+  })
+
+  it('formats Korean study timestamps with the browser timezone formatter', () => {
+    expect(formatStudyTimestamp('2026-08-12T04:47:00.000Z', 'Asia/Seoul')).toBe('2026. 8. 12.(수) 13:47')
+    expect(formatStudyDate('2026-08-12T04:47:00.000Z', 'Asia/Seoul')).toBe('2026. 8. 12.(수)')
   })
 
   it('falls back safely when persisted learning state is corrupt or incompatible', () => {
