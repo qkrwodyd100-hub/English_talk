@@ -33,7 +33,7 @@ test('migrates v1 data and persists sequential progress, review, and favorites a
   await expect(page.getByText('Please wait here.')).toBeVisible()
 
   const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}'))
-  expect(persisted).toMatchObject({ version: 3, state: { selectedDay: 2, dayPositions: { 2: 1 }, reviewQueueIds: ['day-02-01'], favoriteIds: ['day-02-01'], studyActivities: [{ day: 2, sentenceId: 'day-02-01', action: 'answer-checked', correct: false }] } })
+  expect(persisted).toMatchObject({ version: 4, state: { selectedDay: 2, dayPositions: { 2: 1 }, reviewQueueIds: ['day-02-01'], favoriteIds: ['day-02-01'], studyActivities: [{ day: 2, sentenceId: 'day-02-01', action: 'answer-checked', correct: false }] } })
 })
 
 test('opens Day 2 after a persisted completed Day 1', async ({ page }) => {
@@ -71,7 +71,7 @@ test('creates no history on visits, then persists a correctly scoped real study 
   await page.reload()
 
   const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}'))
-  expect(persisted).toMatchObject({ version: 3, state: { masteredIds: ['day-01-01'], selectedDay: 2, studyActivities: [{ day: 2, sentenceId: 'day-02-01', action: 'answer-checked', correct: true }] } })
+  expect(persisted).toMatchObject({ version: 4, state: { masteredIds: ['day-01-01'], selectedDay: 2, studyActivities: [{ day: 2, sentenceId: 'day-02-01', action: 'answer-checked', correct: true }] } })
   await expect(page.getByLabel('최근 학습')).toContainText('Day 2')
   await page.getByRole('button', { name: '학습 기록' }).click()
   await expect(page.getByRole('heading', { name: '학습 기록' })).toBeVisible()

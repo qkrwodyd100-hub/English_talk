@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatStudyDate, formatStudyTimestamp, getLegacyHistory, getStudySummary, getTodayChallenge, getWordFeedback, isPersistableLearningPayload, mergeLearningStates, normalizeAnswer, parseLearningState, recordStudyActivity, type Sentence } from './learning'
+import { appendAnswerAttempt, formatStudyDate, formatStudyTimestamp, getLegacyHistory, getStudySummary, getTodayChallenge, getWordFeedback, isPersistableLearningPayload, mergeLearningStates, normalizeAnswer, parseLearningState, recordStudyActivity, saveSentenceNote, type Sentence } from './learning'
 
 const sentences: Sentence[] = [
   { id: 'fixture-1', english: 'I would like a cup of tea.', korean: '차 한 잔 주세요.', day: 1, source: 'builtIn', topic: 'cafe-orders', level: 'beginner', priority: 1 },
@@ -50,6 +50,8 @@ describe('learning helpers', () => {
       reviewQueueIds: ['fixture-2'],
       favoriteIds: ['fixture-1'],
       studyActivities: [],
+      sentenceNotes: {},
+      answerHistory: {},
     })
   })
 
@@ -59,13 +61,14 @@ describe('learning helpers', () => {
   })
 
   it('falls back safely when persisted learning state is corrupt or incompatible', () => {
-    expect(parseLearningState('{"version":999}')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [] })
-    expect(parseLearningState('not-json')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [] })
+    expect(parseLearningState('{"version":999}')).toMatchObject({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [], sentenceNotes: {}, answerHistory: {} })
+    expect(parseLearningState('not-json')).toMatchObject({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [], sentenceNotes: {}, answerHistory: {} })
   })
 
   it('marks only recognized versioned payloads as safe to overwrite', () => {
     expect(isPersistableLearningPayload(null)).toBe(true)
     expect(isPersistableLearningPayload('{"version":3,"state":{}}')).toBe(true)
+    expect(isPersistableLearningPayload('{"version":4,"state":{}}')).toBe(true)
     expect(isPersistableLearningPayload('not-json')).toBe(false)
     expect(isPersistableLearningPayload('{"version":999,"state":{}}')).toBe(false)
   })
@@ -123,5 +126,30 @@ describe('learning helpers', () => {
       { timestamp: '2026-08-13T04:47:00.000Z', day: 2, sentenceId: 'fixture-2', action: 'answer-checked' as const },
     ]
     expect(getStudySummary({ ...parseLearningState(null), studyActivities: history })).toMatchObject({ firstActivity: only, lastActivity: history[0] })
+  })
+
+  it('migrates v3 data without losing progress and recovers valid notes and answer history', () => {
+    const migrated = parseLearningState(JSON.stringify({ version: 3, state: {
+      masteredIds: ['fixture-1'], customSentences: [], completedChallengeDates: ['2026-08-10'], selectedDay: 2,
+      dayPositions: { 2: 1 }, completedSentenceIds: ['fixture-2'], attemptCounts: { 'fixture-2': 2 }, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
+      sentenceNotes: { 'fixture-2': { text: '  baggage is for checked bags  ', updatedAt: '2026-08-13T10:00:00.000Z' }, broken: { text: 3 } },
+      answerHistory: { 'fixture-2': [{ timestamp: '2026-08-13T10:00:00.000Z', attempt: 'Where can I find my luggage?', verdict: 'contextual', reason: 'A natural alternative.' }], broken: [{}] },
+    } }))
+    expect(migrated).toMatchObject({ masteredIds: ['fixture-1'], selectedDay: 2, dayPositions: { 2: 1 }, completedSentenceIds: ['fixture-2'], sentenceNotes: { 'fixture-2': { text: 'baggage is for checked bags' } } })
+    expect(migrated.answerHistory['fixture-2']).toHaveLength(1)
+  })
+
+  it('saves, edits, deletes bounded notes and keeps only five newest answer attempts', () => {
+    const initial = parseLearningState(null)
+    const saved = saveSentenceNote(initial, 'fixture-1', 'first note', '2026-08-13T10:00:00.000Z')
+    const edited = saveSentenceNote(saved, 'fixture-1', 'edited note', '2026-08-13T11:00:00.000Z')
+    const deleted = saveSentenceNote(edited, 'fixture-1', '   ', '2026-08-13T12:00:00.000Z')
+    expect(edited.sentenceNotes['fixture-1']).toEqual({ text: 'edited note', updatedAt: '2026-08-13T11:00:00.000Z' })
+    expect(deleted.sentenceNotes).toEqual({})
+    expect(saveSentenceNote(initial, 'fixture-1', 'x'.repeat(2001), '2026-08-13T10:00:00.000Z')).toBe(initial)
+    const attempts = Array.from({ length: 6 }, (_, index) => ({ timestamp: `2026-08-13T10:0${index}:00.000Z`, attempt: `attempt ${index}`, verdict: 'needs-fix' as const }))
+    const withHistory = attempts.reduce((state, entry) => appendAnswerAttempt(state, 'fixture-1', entry), initial)
+    expect(withHistory.answerHistory['fixture-1']).toHaveLength(5)
+    expect(withHistory.answerHistory['fixture-1'][0].attempt).toBe('attempt 5')
   })
 })

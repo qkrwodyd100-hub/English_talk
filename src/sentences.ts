@@ -339,7 +339,15 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "airport-services",
     "level": "beginner",
-    "priority": 1
+    "priority": 1,
+    "contextualTips": [
+      {
+        "english": "Where can I find my luggage?",
+        "korean": "제 짐을 어디서 찾을 수 있나요?",
+        "reason": "두 표현 모두 일반적으로 자연스럽습니다. baggage는 운송·수하물 맥락에서, luggage는 개인 여행 가방 맥락에서 흔합니다.",
+        "recommendedWhen": "pick up은 수하물을 실제로 수취하는 행동을 더 구체적으로 말할 때 쓰기 좋습니다."
+      }
+    ]
   },
   {
     "id": "day-04-02",

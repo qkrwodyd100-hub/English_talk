@@ -187,3 +187,25 @@ test('learner creates, edits, deletes, and restores a custom sentence', async ({
   await page.getByRole('button', { name: '내 문장', exact: true }).click()
   await expect(page.getByText('아직 내 문장이 없습니다. 자주 쓰는 문장을 추가해 보세요.')).toBeVisible()
 })
+
+test('a note persists across sentence navigation and reload without absorbing typing shortcuts', async ({ page }) => {
+  await page.goto('/')
+  const note = page.getByRole('textbox', { name: '내 학습 노트' })
+  await note.fill('pick up means collecting baggage')
+  await note.press('Enter')
+  await note.press('ArrowRight')
+  await expect(note).toHaveValue('pick up means collecting baggage\n')
+  await page.getByRole('button', { name: '노트 저장' }).click()
+  await expect(page.getByText('저장됨')).toBeVisible()
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
+  await page.getByRole('button', { name: '정답 확인' }).click()
+  await page.getByRole('button', { name: '다음 문장' }).click()
+  await expect(note).toHaveValue('')
+  await page.evaluate(() => {
+    const payload = JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}')
+    payload.state.dayPositions[1] = 0
+    window.localStorage.setItem('english-talk.learning', JSON.stringify(payload))
+  })
+  await page.reload()
+  await expect(page.getByRole('textbox', { name: '내 학습 노트' })).toHaveValue('pick up means collecting baggage')
+})

@@ -70,7 +70,13 @@ export type LearningState = {
   reviewQueueIds: string[]
   favoriteIds: string[]
   studyActivities: StudyActivity[]
+  sentenceNotes: Record<string, SentenceNote>
+  answerHistory: Record<string, AnswerAttempt[]>
 }
+
+export type SentenceNote = { text: string; updatedAt: string }
+export type AnswerVerdict = 'correct' | 'equivalent' | 'contextual' | 'needs-fix'
+export type AnswerAttempt = { timestamp: string; attempt: string; verdict: AnswerVerdict; reason?: string }
 
 export type StudyAction = 'answer-checked' | 'mastered' | 'review-completed'
 
@@ -101,7 +107,9 @@ export type WordFeedback = {
 }
 
 export const LEARNING_STORAGE_KEY = 'english-talk.learning'
-export const LEARNING_STORAGE_VERSION = 3
+export const LEARNING_STORAGE_VERSION = 4
+export const MAX_SENTENCE_NOTE_LENGTH = 2000
+export const MAX_ANSWER_HISTORY = 5
 
 export function createEmptyLearningState(): LearningState {
   return {
@@ -115,6 +123,8 @@ export function createEmptyLearningState(): LearningState {
     reviewQueueIds: [],
     favoriteIds: [],
     studyActivities: [],
+    sentenceNotes: {},
+    answerHistory: {},
   }
 }
 
@@ -128,6 +138,7 @@ export function parseLearningState(raw: string | null): LearningState {
     const state = record.state as Record<string, unknown>
     if (record.version === 1) return migrateV1LearningState(state)
     if (record.version === 2) return migrateV2LearningState(state)
+    if (record.version === 3) return migrateV3LearningState(state)
     if (record.version !== LEARNING_STORAGE_VERSION) return createEmptyLearningState()
     return {
       ...readLegacyLearningFields(state),
@@ -138,6 +149,8 @@ export function parseLearningState(raw: string | null): LearningState {
       reviewQueueIds: readStringArray(state.reviewQueueIds),
       favoriteIds: readStringArray(state.favoriteIds),
       studyActivities: readStudyActivities(state.studyActivities),
+      sentenceNotes: readSentenceNotes(state.sentenceNotes),
+      answerHistory: readAnswerHistory(state.answerHistory),
     }
   } catch {
     return createEmptyLearningState()
@@ -150,7 +163,7 @@ export function isPersistableLearningPayload(raw: string | null) {
     const value: unknown = JSON.parse(raw)
     if (!value || typeof value !== 'object') return false
     const record = value as Record<string, unknown>
-    return [1, 2, LEARNING_STORAGE_VERSION].includes(Number(record.version)) && Boolean(record.state) && typeof record.state === 'object'
+    return [1, 2, 3, LEARNING_STORAGE_VERSION].includes(Number(record.version)) && Boolean(record.state) && typeof record.state === 'object'
   } catch {
     return false
   }
@@ -193,11 +206,15 @@ export function mergeLearningStates(current: LearningState, backup: LearningStat
 }
 
 function migrateV1LearningState(state: Record<string, unknown>): LearningState {
-  return { ...readLegacyLearningFields(state), ...createSequentialState(state), studyActivities: [] }
+  return { ...readLegacyLearningFields(state), ...createSequentialState(state), studyActivities: [], sentenceNotes: {}, answerHistory: {} }
 }
 
 function migrateV2LearningState(state: Record<string, unknown>): LearningState {
-  return { ...readLegacyLearningFields(state), ...createSequentialState(state), studyActivities: [] }
+  return { ...readLegacyLearningFields(state), ...createSequentialState(state), studyActivities: [], sentenceNotes: {}, answerHistory: {} }
+}
+
+function migrateV3LearningState(state: Record<string, unknown>): LearningState {
+  return { ...readLegacyLearningFields(state), ...createSequentialState(state), studyActivities: readStudyActivities(state.studyActivities), sentenceNotes: readSentenceNotes(state.sentenceNotes), answerHistory: readAnswerHistory(state.answerHistory) }
 }
 
 function readLegacyLearningFields(state: Record<string, unknown>) {
@@ -245,6 +262,45 @@ function readAttemptCounts(value: unknown): Record<string, number> {
 
 function readStudyActivities(value: unknown): StudyActivity[] {
   return Array.isArray(value) ? value.filter(isStudyActivity).sort((left, right) => right.timestamp.localeCompare(left.timestamp)) : []
+}
+
+function readSentenceNotes(value: unknown): Record<string, SentenceNote> {
+  if (!value || typeof value !== 'object') return {}
+  return Object.fromEntries(Object.entries(value).flatMap(([id, note]) => {
+    if (!note || typeof note !== 'object') return []
+    const record = note as Record<string, unknown>
+    const text = typeof record.text === 'string' ? record.text.trim() : ''
+    return text && text.length <= MAX_SENTENCE_NOTE_LENGTH && typeof record.updatedAt === 'string' && !Number.isNaN(Date.parse(record.updatedAt)) ? [[id, { text, updatedAt: record.updatedAt }]] : []
+  }))
+}
+
+function readAnswerHistory(value: unknown): Record<string, AnswerAttempt[]> {
+  if (!value || typeof value !== 'object') return {}
+  return Object.fromEntries(Object.entries(value).flatMap(([id, history]) => {
+    if (!Array.isArray(history)) return []
+    const entries = history.filter(isAnswerAttempt).sort((left, right) => right.timestamp.localeCompare(left.timestamp)).slice(0, MAX_ANSWER_HISTORY)
+    return entries.length ? [[id, entries]] : []
+  }))
+}
+
+function isAnswerAttempt(value: unknown): value is AnswerAttempt {
+  if (!value || typeof value !== 'object') return false
+  const attempt = value as Record<string, unknown>
+  return typeof attempt.timestamp === 'string' && !Number.isNaN(Date.parse(attempt.timestamp)) && typeof attempt.attempt === 'string' && attempt.attempt.length <= MAX_SENTENCE_NOTE_LENGTH && ['correct', 'equivalent', 'contextual', 'needs-fix'].includes(String(attempt.verdict)) && (attempt.reason === undefined || typeof attempt.reason === 'string')
+}
+
+export function saveSentenceNote(state: LearningState, sentenceId: string, value: string, updatedAt: string): LearningState {
+  const text = value.trim()
+  if (text.length > MAX_SENTENCE_NOTE_LENGTH || !sentenceId || Number.isNaN(Date.parse(updatedAt))) return state
+  const sentenceNotes = { ...state.sentenceNotes }
+  if (text) sentenceNotes[sentenceId] = { text, updatedAt }
+  else delete sentenceNotes[sentenceId]
+  return { ...state, sentenceNotes }
+}
+
+export function appendAnswerAttempt(state: LearningState, sentenceId: string, entry: AnswerAttempt): LearningState {
+  if (!sentenceId || !isAnswerAttempt(entry)) return state
+  return { ...state, answerHistory: { ...state.answerHistory, [sentenceId]: [entry, ...(state.answerHistory[sentenceId] ?? [])].sort((left, right) => right.timestamp.localeCompare(left.timestamp)).slice(0, MAX_ANSWER_HISTORY) } }
 }
 
 function isStudyActivity(value: unknown): value is StudyActivity {

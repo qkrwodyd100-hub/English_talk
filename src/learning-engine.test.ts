@@ -69,6 +69,12 @@ describe('sequential learning engine', () => {
     expect(judgeAnswer(sentence, 'I will have that.')).toEqual({ kind: 'needs-correction', isCorrect: false })
   })
 
+  it('accepts the declared luggage alternative as contextual rather than a mistake', () => {
+    const baggageSentence = builtInSentences.find((sentence) => sentence.id === 'day-04-01')
+    expect(baggageSentence).toBeDefined()
+    expect(judgeAnswer(baggageSentence!, 'Where can I find my luggage?')).toEqual({ kind: 'contextual-correct', isCorrect: true })
+  })
+
   it('keeps all 600 curriculum targets and declared alternatives within the verified contraction contract', () => {
     for (const sentence of builtInSentences) {
       for (const expression of [sentence.english, ...(sentence.alternatives?.map((alternative) => alternative.english) ?? [])]) {
