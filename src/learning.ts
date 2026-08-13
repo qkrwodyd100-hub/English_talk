@@ -139,6 +139,18 @@ export function parseLearningState(raw: string | null): LearningState {
   }
 }
 
+export function isPersistableLearningPayload(raw: string | null) {
+  if (!raw) return true
+  try {
+    const value: unknown = JSON.parse(raw)
+    if (!value || typeof value !== 'object') return false
+    const record = value as Record<string, unknown>
+    return [1, 2, LEARNING_STORAGE_VERSION].includes(Number(record.version)) && Boolean(record.state) && typeof record.state === 'object'
+  } catch {
+    return false
+  }
+}
+
 function migrateV1LearningState(state: Record<string, unknown>): LearningState {
   return { ...readLegacyLearningFields(state), ...createSequentialState(state), studyActivities: [] }
 }

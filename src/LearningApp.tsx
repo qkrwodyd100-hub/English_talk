@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import {
   getDayProgress,
+  getResumeTarget,
   getReviewQueue,
   getSequentialDayChallenge,
   getTopicProgress,
@@ -19,6 +20,7 @@ import {
   getStudySummary,
   getTodayKey,
   getWordFeedback,
+  isPersistableLearningPayload,
   parseLearningState,
   recordStudyActivity,
   type CustomSentence,
@@ -42,6 +44,8 @@ type SpeechRecognitionLike = {
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike
 type CheckedAnswer = { sentence: Sentence; judgment: AnswerJudgment }
 
+const LEARNING_BACKUP_STORAGE_KEY = `${LEARNING_STORAGE_KEY}.backup`
+
 const topicNames: Record<string, string> = {
   'airport-services': '공항 이용', 'asking-for-directions': '길 묻기', 'asking-for-help': '도움 요청', 'asking-for-photo-help': '사진 부탁', 'asking-locals-for-help': '현지인에게 도움 요청', 'attraction-information': '관광지 정보', 'business-meetings': '비즈니스 미팅', 'cafe-orders': '카페 주문', 'checking-understanding': '이해 확인', 'clothing-shopping': '옷 쇼핑', 'compliments-and-encouragement': '칭찬과 격려', 'confident-conversation-closings': '자신 있는 대화 마무리', 'conversation-reactions': '대화 반응', 'day-trip-booking': '당일 여행 예약', 'detailed-travel-questions': '상세 여행 질문', 'dining-requests': '식사 요청', 'emergencies-and-local-help': '긴급 상황과 현지 도움', 'emergencies-and-police': '긴급 상황과 경찰', 'ending-a-conversation': '대화 마무리', 'everyday-conversation': '일상 대화', 'feelings-and-emotions': '감정 표현', 'flight-booking': '항공권 예약', 'getting-oriented': '방향 파악', 'hobbies-and-interests': '취미와 관심사', 'hotel-and-dining': '호텔과 식사', 'hotel-check-in': '호텔 체크인', 'hotel-check-out': '호텔 체크아웃', 'hotel-room-problems': '호텔 객실 문제', 'hotel-services': '호텔 서비스', 'immigration-and-customs': '입국 심사와 세관', 'local-culture-and-language': '현지 문화와 언어', 'local-dining-customs': '현지 식사 예절', 'local-information': '현지 정보', 'market-bargaining': '시장 흥정', 'medical-symptoms': '증상 설명', 'meeting-locals': '현지인 만나기', 'meeting-new-people': '새로운 사람 만나기', 'messages-and-email': '메시지와 이메일', 'opinions-and-recommendations': '의견과 추천', 'payments-and-returns': '결제와 반품', 'pharmacy-and-medicine': '약국과 의약품', 'phone-and-tech-support': '전화와 기술 지원', 'phone-calls': '전화 통화', 'phone-calls-and-arrangements': '전화와 약속 잡기', 'polite-disagreement': '정중한 반대', 'polite-formal-requests': '격식 있는 정중한 요청', 'polite-requests': '정중한 요청', 'public-transportation': '대중교통', 'restaurant-basics': '식당 기본 표현', 'restaurant-reservations-and-ordering': '식당 예약과 주문', 'scenery-appreciation': '풍경 감상', 'scheduling-and-appointments': '일정과 약속', 'sharing-travel-experiences': '여행 경험 나누기', 'shopping-and-payments': '쇼핑과 결제', 'shows-and-nightlife': '공연과 밤 문화', 'sightseeing-and-transport': '관광과 교통', 'sizes-and-store-policies': '사이즈와 매장 정책', 'souvenirs-and-shipping': '기념품과 배송', 'survival-communication': '기본 생존 회화', 'taxis-and-rides': '택시와 차량 호출', 'travel-essentials': '여행 필수 표현', 'travel-photos': '여행 사진', 'travel-purpose': '여행 목적', 'travel-review-essentials': '여행 복습 핵심', 'travel-support-calls': '여행 지원 전화', 'weather-and-climate': '날씨와 기후', 'weather-forecast': '일기 예보', 'weather-small-talk': '날씨 잡담',
 }
@@ -54,6 +58,8 @@ function getRecognition() {
 }
 
 function persist(state: LearningState) {
+  const previous = window.localStorage.getItem(LEARNING_STORAGE_KEY)
+  if (previous) window.localStorage.setItem(LEARNING_BACKUP_STORAGE_KEY, previous)
   window.localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify({ version: LEARNING_STORAGE_VERSION, state }))
 }
 
@@ -89,8 +95,15 @@ export default function LearningApp() {
   const recognition = useRef<SpeechRecognitionLike | null>(null)
   const isComposingAnswer = useRef(false)
   const answerInput = useRef<HTMLInputElement | null>(null)
+  const hasExplicitDaySelection = useRef(false)
+  const hasAppliedResumeTarget = useRef(false)
 
   useEffect(() => {
+    const raw = window.localStorage.getItem(LEARNING_STORAGE_KEY)
+    if (!isPersistableLearningPayload(raw)) {
+      setStorageNotice('저장된 학습 데이터를 읽지 못했습니다. 기존 데이터는 덮어쓰지 않았습니다. 브라우저 저장소에서 백업 JSON을 복사한 뒤 지원팀에 전달해 주세요.')
+      return
+    }
     try { persist(state) }
     catch { setStorageNotice('브라우저 저장소를 읽을 수 없습니다. 이번 학습은 계속할 수 있지만 저장되지 않을 수 있습니다.') }
   // The initial snapshot is deliberately written once to complete v1/v2 migration.
@@ -109,6 +122,7 @@ export default function LearningApp() {
 
   const selectedDay = state.selectedDay ?? 1
   const sentences = useMemo(() => [...builtInSentences, ...state.customSentences], [state.customSentences])
+  const resumeTarget = useMemo(() => getResumeTarget(sentences, state), [sentences, state])
   const topics = useMemo(() => [...new Set(builtInSentences.map((sentence) => sentence.topic))], [])
   const dayChallenge = getSequentialDayChallenge(sentences, state, selectedDay)
   const currentDayTopic = builtInSentences.find((sentence) => sentence.day === selectedDay)?.topic
@@ -140,6 +154,16 @@ export default function LearningApp() {
     return [...groups.entries()].sort(([left], [right]) => right.localeCompare(left))
   }, [state.studyActivities])
 
+  useEffect(() => {
+    if (hasAppliedResumeTarget.current) return
+    hasAppliedResumeTarget.current = true
+    if (hasExplicitDaySelection.current || resumeTarget.isCourseComplete) return
+    if (resumeTarget.day === selectedDay && (state.dayPositions[resumeTarget.day] ?? 0) === resumeTarget.position) return
+    const next = { ...state, selectedDay: resumeTarget.day, dayPositions: { ...state.dayPositions, [resumeTarget.day]: resumeTarget.position } }
+    setState(next)
+    try { persist(next) } catch { setStorageNotice('저장에 실패했습니다. 화면의 학습은 계속되지만 새로고침하면 변경사항이 사라질 수 있습니다.') }
+  }, [resumeTarget, selectedDay, state])
+
   function updateState(next: LearningState) {
     setState(next)
     try {
@@ -158,6 +182,7 @@ export default function LearningApp() {
   }
 
   function selectDay(day: number) {
+    hasExplicitDaySelection.current = true
     updateState({ ...state, selectedDay: day })
     setSelectedTopic('all')
     resetPracticeContext()

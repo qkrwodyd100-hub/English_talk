@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatStudyDate, formatStudyTimestamp, getStudySummary, getTodayChallenge, getWordFeedback, normalizeAnswer, parseLearningState, recordStudyActivity, type Sentence } from './learning'
+import { formatStudyDate, formatStudyTimestamp, getStudySummary, getTodayChallenge, getWordFeedback, isPersistableLearningPayload, normalizeAnswer, parseLearningState, recordStudyActivity, type Sentence } from './learning'
 
 const sentences: Sentence[] = [
   { id: 'fixture-1', english: 'I would like a cup of tea.', korean: '차 한 잔 주세요.', day: 1, source: 'builtIn', topic: 'cafe-orders', level: 'beginner', priority: 1 },
@@ -61,6 +61,13 @@ describe('learning helpers', () => {
   it('falls back safely when persisted learning state is corrupt or incompatible', () => {
     expect(parseLearningState('{"version":999}')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [] })
     expect(parseLearningState('not-json')).toEqual({ masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: null, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [] })
+  })
+
+  it('marks only recognized versioned payloads as safe to overwrite', () => {
+    expect(isPersistableLearningPayload(null)).toBe(true)
+    expect(isPersistableLearningPayload('{"version":3,"state":{}}')).toBe(true)
+    expect(isPersistableLearningPayload('not-json')).toBe(false)
+    expect(isPersistableLearningPayload('{"version":999,"state":{}}')).toBe(false)
   })
 
   it('migrates v2 data, records only distinct study actions, and calculates calendar-day streaks', () => {

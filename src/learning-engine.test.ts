@@ -3,6 +3,7 @@ import {
   advanceDayPosition,
   createSequentialLearningState,
   getDayProgress,
+  getResumeTarget,
   getReviewQueue,
   getSequentialDayChallenge,
   getTopicProgress,
@@ -25,6 +26,19 @@ function state(overrides: Partial<SequentialLearningState> = {}): SequentialLear
 }
 
 describe('sequential learning engine', () => {
+  it('resumes the first incomplete sentence and advances a completed Day to the next Day', () => {
+    const partial = state({ selectedDay: 2, dayPositions: { 2: 9 } })
+    expect(getResumeTarget(sentences, partial)).toEqual({ day: 2, position: 0, isCourseComplete: false })
+
+    const dayOneComplete = state({ selectedDay: 1, completedSentenceIds: sentences.filter((sentence) => sentence.day === 1).map((sentence) => sentence.id) })
+    expect(getResumeTarget(sentences, dayOneComplete)).toEqual({ day: 2, position: 0, isCourseComplete: false })
+  })
+
+  it('keeps Day 60 selected after the course is complete', () => {
+    const daySixty = Array.from({ length: 10 }, (_, index) => ({ id: `day-60-${index + 1}`, english: '', korean: '', day: 60, source: 'custom' as const }))
+    expect(getResumeTarget(daySixty, state({ selectedDay: 60, completedSentenceIds: daySixty.map((sentence) => sentence.id) }))).toEqual({ day: 60, position: 0, isCourseComplete: true })
+  })
+
   it('resumes a selected day from its persisted position', () => {
     const learning = state({ selectedDay: 1, dayPositions: { 1: 1 } })
 

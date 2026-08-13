@@ -15,6 +15,12 @@ export type TopicProgress = Progress & {
   topic: string
 }
 
+export type ResumeTarget = {
+  day: number
+  position: number
+  isCourseComplete: boolean
+}
+
 export type SequentialLearningState = {
   selectedDay: number | null
   dayPositions: Record<number, number>
@@ -41,6 +47,29 @@ export function getSequentialDayChallenge(sentences: Sentence[], state: Sequenti
   if (daySentences.length === 0) return []
   const start = state.dayPositions[day] ?? 0
   return Array.from({ length: daySentences.length }, (_, index) => daySentences[(start + index) % daySentences.length])
+}
+
+/** Chooses the first unfinished sentence of the current day, or the next unfinished day. */
+export function getResumeTarget(sentences: Sentence[], state: SequentialLearningState): ResumeTarget {
+  const days = [...new Set(sentences.map((sentence) => sentence.day))].sort((left, right) => left - right)
+  const selectedDay = state.selectedDay ?? days[0] ?? 1
+  const completed = new Set(state.completedSentenceIds)
+  const targetForDay = (day: number) => {
+    const daySentences = sentences.filter((sentence) => sentence.day === day)
+    const savedPosition = state.dayPositions[day] ?? 0
+    const currentPosition = savedPosition % daySentences.length
+    if (daySentences[currentPosition] && !completed.has(daySentences[currentPosition].id)) return currentPosition
+    return daySentences.findIndex((sentence) => !completed.has(sentence.id))
+  }
+
+  const selectedPosition = targetForDay(selectedDay)
+  if (selectedPosition >= 0) return { day: selectedDay, position: selectedPosition, isCourseComplete: false }
+
+  for (const day of [...days.filter((value) => value > selectedDay), ...days]) {
+    const position = targetForDay(day)
+    if (position >= 0) return { day, position, isCourseComplete: false }
+  }
+  return { day: Math.min(60, selectedDay), position: 0, isCourseComplete: true }
 }
 
 export function advanceDayPosition(state: SequentialLearningState, day: number, sentenceCount: number): SequentialLearningState {

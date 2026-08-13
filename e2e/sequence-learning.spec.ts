@@ -36,6 +36,20 @@ test('migrates v1 data and persists sequential progress, review, and favorites a
   expect(persisted).toMatchObject({ version: 3, state: { selectedDay: 2, dayPositions: { 2: 1 }, reviewQueueIds: ['day-02-01'], favoriteIds: ['day-02-01'], studyActivities: [{ day: 2, sentenceId: 'day-02-01', action: 'answer-checked', correct: false }] } })
 })
 
+test('opens Day 2 after a persisted completed Day 1', async ({ page }) => {
+  await page.addInitScript(() => {
+    const completed = Array.from({ length: 10 }, (_, index) => `day-01-${String(index + 1).padStart(2, '0')}`)
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
+      masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 1, dayPositions: { 1: 10 }, completedSentenceIds: completed, attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
+    } }))
+  })
+  await page.goto('/')
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
+  await expect(page.getByRole('heading', { name: /1 \/ 10/ })).toBeVisible()
+  await page.reload()
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
+})
+
 test('creates no history on visits, then persists a correctly scoped real study event and timeline', async ({ page }) => {
   await page.addInitScript(() => {
     if (window.sessionStorage.getItem('seeded-history-v2')) return
