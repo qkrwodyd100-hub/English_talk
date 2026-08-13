@@ -80,6 +80,35 @@ test('creates no history on visits, then persists a correctly scoped real study 
   await expect(timeline.getByText('1/10 완료 문장')).toBeVisible()
 })
 
+test('shows date-unknown legacy completions and exports a JSON backup', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 2, state: {
+      masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: { 1: 10 },
+      completedSentenceIds: Array.from({ length: 10 }, (_, index) => `day-01-${String(index + 1).padStart(2, '0')}`), attemptCounts: {}, reviewQueueIds: [], favoriteIds: [],
+    } }))
+  })
+  await page.goto('/')
+  await page.getByRole('button', { name: '학습 기록' }).click()
+
+  await expect(page.getByText('이전 학습 기록 (날짜 미상)')).toBeVisible()
+  await expect(page.getByText('Day 1')).toBeVisible()
+  await expect(page.getByText('10/10 완료 문장')).toBeVisible()
+  const download = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'JSON 백업 내보내기' }).click()
+  expect((await download).suggestedFilename()).toBe('english-talk-learning-backup.json')
+
+  await page.getByRole('button', { name: 'JSON 백업 복원' }).click()
+  await page.locator('input[type="file"]').setInputFiles({
+    name: 'restore.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify({ version: 3, state: {
+      masteredIds: ['day-02-01'], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: {}, completedSentenceIds: ['day-02-01'], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
+    } })),
+  })
+  await expect(page.getByRole('status')).toContainText('기존 데이터는 유지됩니다')
+  await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.completedSentenceIds)).toEqual(expect.arrayContaining(['day-01-01', 'day-02-01']))
+})
+
 test('keeps overall progress at 100 percent when built-in and custom sentences are all complete', async ({ page }) => {
   await page.addInitScript(() => {
     const builtInIds = Array.from({ length: 60 }, (_, dayIndex) =>

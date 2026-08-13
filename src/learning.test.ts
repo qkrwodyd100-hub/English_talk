@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatStudyDate, formatStudyTimestamp, getStudySummary, getTodayChallenge, getWordFeedback, isPersistableLearningPayload, normalizeAnswer, parseLearningState, recordStudyActivity, type Sentence } from './learning'
+import { formatStudyDate, formatStudyTimestamp, getLegacyHistory, getStudySummary, getTodayChallenge, getWordFeedback, isPersistableLearningPayload, mergeLearningStates, normalizeAnswer, parseLearningState, recordStudyActivity, type Sentence } from './learning'
 
 const sentences: Sentence[] = [
   { id: 'fixture-1', english: 'I would like a cup of tea.', korean: '차 한 잔 주세요.', day: 1, source: 'builtIn', topic: 'cafe-orders', level: 'beginner', priority: 1 },
@@ -82,6 +82,35 @@ describe('learning helpers', () => {
     const nextDay = recordStudyActivity(duplicate, { timestamp: '2026-08-12T12:00:00', day: 1, sentenceId: 'fixture-1', action: 'mastered' })
     expect(duplicate.studyActivities).toHaveLength(1)
     expect(getStudySummary(nextDay, new Date(2026, 7, 12, 15))).toMatchObject({ todaySentenceCount: 1, streakDays: 2, lastDay: 1 })
+  })
+
+  it('preserves legacy completions as date-unknown history without inventing timestamps', () => {
+    const migrated = parseLearningState(JSON.stringify({
+      version: 2,
+      state: {
+        masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 2,
+        dayPositions: { 1: 10, 2: 3 },
+        completedSentenceIds: Array.from({ length: 10 }, (_, index) => `day-01-${String(index + 1).padStart(2, '0')}`),
+        attemptCounts: {}, reviewQueueIds: [], favoriteIds: [],
+      },
+    }))
+
+    expect(getLegacyHistory(migrated)).toEqual([{ day: 1, completedSentenceCount: 10 }])
+    expect(migrated.studyActivities).toEqual([])
+  })
+
+  it('merges a validated backup without discarding the learner current progress', () => {
+    const current = parseLearningState(JSON.stringify({ version: 3, state: {
+      masteredIds: ['day-01-01'], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: { 2: 1 }, completedSentenceIds: ['day-01-01'], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
+    } }))
+    const backup = parseLearningState(JSON.stringify({ version: 2, state: {
+      masteredIds: ['day-01-02'], customSentences: [{ id: 'custom-backup', english: 'Backup.', korean: '백업.', day: 1, source: 'custom' }], completedChallengeDates: [], selectedDay: 1, dayPositions: { 1: 10 }, completedSentenceIds: Array.from({ length: 10 }, (_, index) => `day-01-${String(index + 1).padStart(2, '0')}`), attemptCounts: {}, reviewQueueIds: [], favoriteIds: [],
+    } }))
+
+    expect(mergeLearningStates(current, backup)).toMatchObject({
+      masteredIds: ['day-01-01', 'day-01-02'], selectedDay: 2, dayPositions: { 1: 10, 2: 1 }, customSentences: [{ id: 'custom-backup' }],
+    })
+    expect(getLegacyHistory(mergeLearningStates(current, backup))).toEqual([{ day: 1, completedSentenceCount: 10 }])
   })
 
   it('finds the first and most recent real study actions in empty, single, and unsorted histories', () => {

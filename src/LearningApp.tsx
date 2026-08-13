@@ -17,10 +17,12 @@ import {
   formatStudyDate,
   formatStudyTimestamp,
   getLocalDateKey,
+  getLegacyHistory,
   getStudySummary,
   getTodayKey,
   getWordFeedback,
   isPersistableLearningPayload,
+  mergeLearningStates,
   parseLearningState,
   recordStudyActivity,
   type CustomSentence,
@@ -93,6 +95,7 @@ export default function LearningApp() {
   const [dialogueOpen, setDialogueOpen] = useState(false)
   const [topicsExpanded, setTopicsExpanded] = useState(false)
   const recognition = useRef<SpeechRecognitionLike | null>(null)
+  const backupInput = useRef<HTMLInputElement | null>(null)
   const isComposingAnswer = useRef(false)
   const answerInput = useRef<HTMLInputElement | null>(null)
   const hasExplicitDaySelection = useRef(false)
@@ -153,6 +156,7 @@ export default function LearningApp() {
     }
     return [...groups.entries()].sort(([left], [right]) => right.localeCompare(left))
   }, [state.studyActivities])
+  const legacyHistory = useMemo(() => getLegacyHistory(state), [state])
 
   useEffect(() => {
     if (hasAppliedResumeTarget.current) return
@@ -172,6 +176,27 @@ export default function LearningApp() {
     } catch {
       setStorageNotice('저장에 실패했습니다. 화면의 학습은 계속되지만 새로고침하면 변경사항이 사라질 수 있습니다.')
     }
+  }
+
+  function exportBackup() {
+    const payload = JSON.stringify({ version: LEARNING_STORAGE_VERSION, state }, null, 2)
+    const url = URL.createObjectURL(new Blob([payload], { type: 'application/json' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'english-talk-learning-backup.json'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  async function restoreBackup(file: File | undefined) {
+    if (!file) return
+    const raw = await file.text()
+    if (!isPersistableLearningPayload(raw)) {
+      setStorageNotice('백업 파일 형식을 확인할 수 없습니다. 기존 학습 데이터는 변경하지 않았습니다.')
+      return
+    }
+    updateState(mergeLearningStates(state, parseLearningState(raw)))
+    setStorageNotice('백업을 현재 학습 기록과 합쳤습니다. 기존 데이터는 유지됩니다.')
   }
 
   function resetPracticeContext() {
@@ -330,7 +355,7 @@ export default function LearningApp() {
 
     {tab === 'review' && <section className="study-panel" aria-labelledby="review-heading"><p className="eyebrow">Review queue</p><h2 id="review-heading">오답과 즐겨찾기 복습</h2>{reviewSentences.length === 0 && state.favoriteIds.length === 0 ? <p className="empty-state">아직 복습할 문장이 없습니다. 답을 확인하거나 즐겨찾기를 선택해 보세요.</p> : <ul className="review-list">{sentences.filter((sentence) => state.reviewQueueIds.includes(sentence.id) || state.favoriteIds.includes(sentence.id)).map((sentence) => <li key={sentence.id}><div><strong>{sentence.korean}</strong><span>{sentence.english}</span></div><button className="text-button" onClick={() => practiceAgain(sentence)}>다시 연습</button></li>)}</ul>}</section>}
 
-    {tab === 'history' && <section className="study-panel" aria-labelledby="history-heading"><p className="eyebrow">Study timeline</p><h2 id="history-heading">학습 기록</h2>{historyByDate.length === 0 ? <p className="empty-state">아직 학습 기록이 없어요</p> : <><section className="history-summary" aria-label="학습 날짜 요약"><article className="history-summary-start"><h3>학습 시작일</h3><p>{formatStudyTimestamp(studySummary.firstActivity!.timestamp)}</p><span>첫 실제 학습 행동을 시작한 시각</span></article><article className="history-summary-recent"><h3>최근 학습일</h3><p>{formatStudyTimestamp(studySummary.lastActivity!.timestamp)}</p><span>가장 최근 실제 학습 행동 시각</span></article></section><div className="study-timeline">{historyByDate.map(([date, activities]) => <section key={date}><h3>{formatStudyDate(activities[0].timestamp)}</h3>{[...new Set(activities.map((activity) => activity.day))].sort((left, right) => left - right).map((day) => { const dayActivities = activities.filter((activity) => activity.day === day); const completed = new Set(dayActivities.filter((activity) => activity.correct || activity.action === 'mastered').map((activity) => activity.sentenceId)).size; return <article key={day}><div><strong>Day {day}</strong><span>{completed}/10 완료 문장</span></div><p>{formatStudyTimestamp(dayActivities[dayActivities.length - 1].timestamp)} 시작 · {formatStudyTimestamp(dayActivities[0].timestamp)} 최근 학습</p></article> })}</section>)}</div></>}</section>}
+    {tab === 'history' && <section className="study-panel" aria-labelledby="history-heading"><p className="eyebrow">Study timeline</p><h2 id="history-heading">학습 기록</h2><section className="backup-controls" aria-label="학습 데이터 백업"><p>기록은 이 브라우저·이 도메인에만 저장됩니다. JSON 백업을 내려받아 다른 브라우저에서 안전하게 복원할 수 있습니다.</p><div className="actions"><button type="button" className="button secondary" onClick={exportBackup}>JSON 백업 내보내기</button><button type="button" className="button secondary" onClick={() => backupInput.current?.click()}>JSON 백업 복원</button><input ref={backupInput} type="file" accept="application/json,.json" hidden onChange={(event) => { void restoreBackup(event.target.files?.[0]); event.target.value = '' }} /></div></section>{legacyHistory.length > 0 && <section className="study-timeline" aria-label="이전 학습 기록"><h3>이전 학습 기록 (날짜 미상)</h3>{legacyHistory.map((item) => <article key={item.day}><div><strong>Day {item.day}</strong><span>{item.completedSentenceCount}/10 완료 문장</span></div><p>기존 저장 데이터에 정확한 학습 시각이 없어 날짜를 추정하지 않았습니다.</p></article>)}</section>}{historyByDate.length === 0 ? legacyHistory.length === 0 && <p className="empty-state">아직 학습 기록이 없어요</p> : <><section className="history-summary" aria-label="학습 날짜 요약"><article className="history-summary-start"><h3>학습 시작일</h3><p>{formatStudyTimestamp(studySummary.firstActivity!.timestamp)}</p><span>첫 실제 학습 행동을 시작한 시각</span></article><article className="history-summary-recent"><h3>최근 학습일</h3><p>{formatStudyTimestamp(studySummary.lastActivity!.timestamp)}</p><span>가장 최근 실제 학습 행동 시각</span></article></section><div className="study-timeline">{historyByDate.map(([date, activities]) => <section key={date}><h3>{formatStudyDate(activities[0].timestamp)}</h3>{[...new Set(activities.map((activity) => activity.day))].sort((left, right) => left - right).map((day) => { const dayActivities = activities.filter((activity) => activity.day === day); const completed = new Set(dayActivities.filter((activity) => activity.correct || activity.action === 'mastered').map((activity) => activity.sentenceId)).size; return <article key={day}><div><strong>Day {day}</strong><span>{completed}/10 완료 문장</span></div><p>{formatStudyTimestamp(dayActivities[dayActivities.length - 1].timestamp)} 시작 · {formatStudyTimestamp(dayActivities[0].timestamp)} 최근 학습</p></article> })}</section>)}</div></>}</section>}
 
     {tab === 'manage' && <section className="study-panel" aria-labelledby="manage-heading"><div className="panel-heading"><div><p className="eyebrow">Personal sentences</p><h2 id="manage-heading">나만의 문장을 추가하세요.</h2></div><button className="button" onClick={() => startEditing()}>문장 추가</button></div>{editing && <form className="sentence-form" onSubmit={saveCustom}><label>영어 문장<input value={english} onChange={(event) => setEnglish(event.target.value)} required /></label><label>한국어 뜻<input value={korean} onChange={(event) => setKorean(event.target.value)} required /></label><div className="actions"><button className="button" type="submit">저장</button><button className="button secondary" type="button" onClick={() => setEditing(null)}>취소</button></div></form>}{state.customSentences.length === 0 ? <p className="empty-state">아직 내 문장이 없습니다. 자주 쓰는 문장을 추가해 보세요.</p> : <ul className="custom-list">{state.customSentences.map((sentence) => <li key={sentence.id}><div><strong>{sentence.english}</strong><span>{sentence.korean}</span></div><div className="row-actions"><button className="text-button" onClick={() => startEditing(sentence)}>수정</button><button className="text-button danger" onClick={() => deleteCustom(sentence.id)}>삭제</button></div></li>)}</ul>}</section>}
   </main>

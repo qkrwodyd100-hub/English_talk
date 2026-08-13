@@ -90,6 +90,11 @@ export type StudySummary = {
   streakDays: number
 }
 
+export type LegacyHistoryItem = {
+  day: number
+  completedSentenceCount: number
+}
+
 export type WordFeedback = {
   word: string
   status: 'correct' | 'missing'
@@ -148,6 +153,42 @@ export function isPersistableLearningPayload(raw: string | null) {
     return [1, 2, LEARNING_STORAGE_VERSION].includes(Number(record.version)) && Boolean(record.state) && typeof record.state === 'object'
   } catch {
     return false
+  }
+}
+
+export function getLegacyHistory(state: LearningState): LegacyHistoryItem[] {
+  const completedByDay = new Map<number, Set<string>>()
+  for (const sentenceId of state.completedSentenceIds) {
+    const match = /^day-(\d{2})-\d{2}$/.exec(sentenceId)
+    if (!match) continue
+    const day = Number(match[1])
+    if (!isDay(day)) continue
+    const ids = completedByDay.get(day) ?? new Set<string>()
+    ids.add(sentenceId)
+    completedByDay.set(day, ids)
+  }
+  const datedDays = new Set(state.studyActivities.map((activity) => activity.day))
+  return [...completedByDay.entries()]
+    .filter(([day, ids]) => ids.size > 0 && !datedDays.has(day))
+    .map(([day, ids]) => ({ day, completedSentenceCount: ids.size }))
+    .sort((left, right) => left.day - right.day)
+}
+
+export function mergeLearningStates(current: LearningState, backup: LearningState): LearningState {
+  const unique = <T>(values: T[]) => [...new Set(values)]
+  const customSentences = new Map(current.customSentences.map((sentence) => [sentence.id, sentence]))
+  for (const sentence of backup.customSentences) if (!customSentences.has(sentence.id)) customSentences.set(sentence.id, sentence)
+  return {
+    ...current,
+    masteredIds: unique([...current.masteredIds, ...backup.masteredIds]),
+    customSentences: [...customSentences.values()],
+    completedChallengeDates: unique([...current.completedChallengeDates, ...backup.completedChallengeDates]),
+    dayPositions: { ...backup.dayPositions, ...current.dayPositions },
+    completedSentenceIds: unique([...current.completedSentenceIds, ...backup.completedSentenceIds]),
+    attemptCounts: { ...backup.attemptCounts, ...current.attemptCounts },
+    reviewQueueIds: unique([...current.reviewQueueIds, ...backup.reviewQueueIds]),
+    favoriteIds: unique([...current.favoriteIds, ...backup.favoriteIds]),
+    studyActivities: readStudyActivities([...current.studyActivities, ...backup.studyActivities]),
   }
 }
 
