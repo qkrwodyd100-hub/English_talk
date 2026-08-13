@@ -18,6 +18,7 @@ import {
   formatStudyTimestamp,
   getLocalDateKey,
   getLegacyHistory,
+  getLearningNotes,
   getStudySummary,
   getTodayKey,
   getWordFeedback,
@@ -35,7 +36,7 @@ import {
 import { builtInDialogues } from './dialogues'
 import { builtInSentences } from './sentences'
 
-type Tab = 'practice' | 'cards' | 'review' | 'manage' | 'history'
+type Tab = 'practice' | 'cards' | 'review' | 'manage' | 'history' | 'notes'
 type SpeechRecognitionLike = {
   lang: string
   interimResults: boolean
@@ -88,6 +89,10 @@ export default function LearningApp() {
   const [revealed, setRevealed] = useState<string | null>(null)
   const [selectedTopic, setSelectedTopic] = useState('all')
   const [attempt, setAttempt] = useState('')
+  const [noteQuery, setNoteQuery] = useState('')
+  const [noteDay, setNoteDay] = useState('all')
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
+  const [listNoteDraft, setListNoteDraft] = useState('')
   const [noteDraft, setNoteDraft] = useState('')
   const [noteStatus, setNoteStatus] = useState('')
   const [attemptHistoryOpen, setAttemptHistoryOpen] = useState(false)
@@ -163,6 +168,7 @@ export default function LearningApp() {
     return [...groups.entries()].sort(([left], [right]) => right.localeCompare(left))
   }, [state.studyActivities])
   const legacyHistory = useMemo(() => getLegacyHistory(state), [state])
+  const learningNotes = useMemo(() => getLearningNotes(sentences, state, noteQuery, noteDay === 'all' ? undefined : Number(noteDay)), [sentences, state, noteDay, noteQuery])
 
   useEffect(() => {
     setNoteDraft(current ? state.sentenceNotes[current.id]?.text ?? '' : '')
@@ -357,12 +363,22 @@ export default function LearningApp() {
     setTab('practice')
   }
 
+  function openNoteEditor(sentence: Sentence) {
+    setEditingNoteId(sentence.id)
+    setListNoteDraft(state.sentenceNotes[sentence.id]?.text ?? '')
+  }
+
+  function saveListNote(sentence: Sentence) {
+    updateState(saveSentenceNote(state, sentence.id, listNoteDraft, new Date().toISOString()))
+    setEditingNoteId(null)
+  }
+
   return <main className="learning-shell">
     <header className="learning-header"><div><p className="eyebrow">English Talk · 60-day study</p><h1>더 넓은 세상으로의 시작</h1></div><p className="fixture-note">60일 동안 매일 10문장씩 학습해요. 마지막으로 학습한 Day와 문장부터 이어집니다.</p></header>
     <section className="dashboard" aria-label="학습 현황"><div><strong>{sentences.length}</strong><span>전체 문장</span></div><div><strong>{state.masteredIds.length}</strong><span>마스터</span></div><div><strong>{overallProgress}%</strong><span>학습 진행률</span></div><div><strong>{completedToday ? '완료' : `Day ${selectedDay}`}</strong><span>현재 학습</span></div><div className="progress-track" role="progressbar" aria-label="마스터 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteryProgress}><span style={{ width: `${masteryProgress}%` }} /></div></section>
     <section className="recent-study" aria-label="최근 학습"><div><strong>최근 학습</strong><span>{studySummary.lastActivity ? `Day ${studySummary.lastDay} · ${formatStudyTimestamp(studySummary.lastActivity.timestamp)}` : '아직 실제 학습 기록이 없습니다.'}</span></div><div><strong>{studySummary.todaySentenceCount}</strong><span>오늘 학습한 문장</span></div><div><strong>{studySummary.streakDays}일</strong><span>현재 연속 학습</span></div><p>기록은 이 브라우저에만 저장되며 기기·브라우저 간 동기화되지 않습니다.</p></section>
     {storageNotice && <p className="notice" role="status">{storageNotice}</p>}
-    <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'history' ? 'page' : undefined} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>학습 기록</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
+    <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'history' ? 'page' : undefined} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>학습 기록</button><button aria-current={tab === 'notes' ? 'page' : undefined} className={tab === 'notes' ? 'active' : ''} onClick={() => setTab('notes')}>학습 노트</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
     {speechNotice && <p className="hint" role="status">{speechNotice}</p>}
 
     {tab === 'practice' && <section className="study-panel" aria-labelledby="practice-heading">
@@ -379,6 +395,8 @@ export default function LearningApp() {
     {tab === 'review' && <section className="study-panel" aria-labelledby="review-heading"><p className="eyebrow">Review queue</p><h2 id="review-heading">오답과 즐겨찾기 복습</h2>{reviewSentences.length === 0 && state.favoriteIds.length === 0 ? <p className="empty-state">아직 복습할 문장이 없습니다. 답을 확인하거나 즐겨찾기를 선택해 보세요.</p> : <ul className="review-list">{sentences.filter((sentence) => state.reviewQueueIds.includes(sentence.id) || state.favoriteIds.includes(sentence.id)).map((sentence) => <li key={sentence.id}><div><strong>{sentence.korean}</strong><span>{sentence.english}</span></div><button className="text-button" onClick={() => practiceAgain(sentence)}>다시 연습</button></li>)}</ul>}</section>}
 
     {tab === 'history' && <section className="study-panel" aria-labelledby="history-heading"><p className="eyebrow">Study timeline</p><h2 id="history-heading">학습 기록</h2><section className="backup-controls" aria-label="학습 데이터 백업"><p>기록은 이 브라우저·이 도메인에만 저장됩니다. JSON 백업을 내려받아 다른 브라우저에서 안전하게 복원할 수 있습니다.</p><div className="actions"><button type="button" className="button secondary" onClick={exportBackup}>JSON 백업 내보내기</button><button type="button" className="button secondary" onClick={() => backupInput.current?.click()}>JSON 백업 복원</button><input ref={backupInput} type="file" accept="application/json,.json" hidden onChange={(event) => { void restoreBackup(event.target.files?.[0]); event.target.value = '' }} /></div></section>{legacyHistory.length > 0 && <section className="study-timeline" aria-label="이전 학습 기록"><h3>이전 학습 기록 (날짜 미상)</h3>{legacyHistory.map((item) => <article key={item.day}><div><strong>Day {item.day}</strong><span>{item.completedSentenceCount}/10 완료 문장</span></div><p>기존 저장 데이터에 정확한 학습 시각이 없어 날짜를 추정하지 않았습니다.</p></article>)}</section>}{historyByDate.length === 0 ? legacyHistory.length === 0 && <p className="empty-state">아직 학습 기록이 없어요</p> : <><section className="history-summary" aria-label="학습 날짜 요약"><article className="history-summary-start"><h3>학습 시작일</h3><p>{formatStudyTimestamp(studySummary.firstActivity!.timestamp)}</p><span>첫 실제 학습 행동을 시작한 시각</span></article><article className="history-summary-recent"><h3>최근 학습일</h3><p>{formatStudyTimestamp(studySummary.lastActivity!.timestamp)}</p><span>가장 최근 실제 학습 행동 시각</span></article></section><div className="study-timeline">{historyByDate.map(([date, activities]) => <section key={date}><h3>{formatStudyDate(activities[0].timestamp)}</h3>{[...new Set(activities.map((activity) => activity.day))].sort((left, right) => left - right).map((day) => { const dayActivities = activities.filter((activity) => activity.day === day); const completed = new Set(dayActivities.filter((activity) => activity.correct || activity.action === 'mastered').map((activity) => activity.sentenceId)).size; return <article key={day}><div><strong>Day {day}</strong><span>{completed}/10 완료 문장</span></div><p>{formatStudyTimestamp(dayActivities[dayActivities.length - 1].timestamp)} 시작 · {formatStudyTimestamp(dayActivities[0].timestamp)} 최근 학습</p></article> })}</section>)}</div></>}</section>}
+
+    {tab === 'notes' && <section className="study-panel" aria-labelledby="notes-heading"><p className="eyebrow">Saved learning notes</p><h2 id="notes-heading">학습 노트</h2><p className="resume-copy">저장한 노트, 한국어 prompt, 기준 영어 문장을 함께 검색합니다. 최근 수정한 노트부터 표시해요.</p><div className="learning-controls"><label>노트 검색<input type="search" value={noteQuery} onChange={(event) => setNoteQuery(event.target.value)} placeholder="상황, 한국어, 영어로 검색" /></label><label>Day 필터<select value={noteDay} onChange={(event) => setNoteDay(event.target.value)}><option value="all">전체 Day</option>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label></div>{Object.keys(state.sentenceNotes).length === 0 ? <p className="empty-state">아직 저장한 노트가 없어요. 타이핑 연습에서 문장별 노트를 작성해 보세요.</p> : learningNotes.length === 0 ? <p className="empty-state">검색하거나 선택한 Day에 맞는 노트가 없어요.</p> : <ul className="learning-notes-list">{learningNotes.map(({ sentence, note }) => <li key={sentence.id}><div className="note-heading"><strong>Day {sentence.day} · 문장 {sentences.filter((item) => item.day === sentence.day).findIndex((item) => item.id === sentence.id) + 1}</strong><span>최근 수정 {formatStudyTimestamp(note.updatedAt)}</span></div>{editingNoteId === sentence.id ? <><label className="sr-only" htmlFor={`note-${sentence.id}`}>학습 노트 수정</label><textarea id={`note-${sentence.id}`} value={listNoteDraft} maxLength={2000} onChange={(event) => setListNoteDraft(event.target.value)} /><div className="actions"><button type="button" className="button" onClick={() => saveListNote(sentence)}>저장</button><button type="button" className="button secondary" onClick={() => setEditingNoteId(null)}>취소</button></div></> : <><p className="note-copy">{note.text}</p><p className="note-prompt"><strong>한국어:</strong> {sentence.korean}</p><p className="note-answer"><strong>영어:</strong> {sentence.english}</p><div className="actions"><button type="button" className="text-button" onClick={() => practiceAgain(sentence)}>이 문장으로 이동</button><button type="button" className="text-button" onClick={() => openNoteEditor(sentence)}>노트 수정</button></div></>}</li>)}</ul>}</section>}
 
     {tab === 'manage' && <section className="study-panel" aria-labelledby="manage-heading"><div className="panel-heading"><div><p className="eyebrow">Personal sentences</p><h2 id="manage-heading">나만의 문장을 추가하세요.</h2></div><button className="button" onClick={() => startEditing()}>문장 추가</button></div>{editing && <form className="sentence-form" onSubmit={saveCustom}><label>영어 문장<input value={english} onChange={(event) => setEnglish(event.target.value)} required /></label><label>한국어 뜻<input value={korean} onChange={(event) => setKorean(event.target.value)} required /></label><div className="actions"><button className="button" type="submit">저장</button><button className="button secondary" type="button" onClick={() => setEditing(null)}>취소</button></div></form>}{state.customSentences.length === 0 ? <p className="empty-state">아직 내 문장이 없습니다. 자주 쓰는 문장을 추가해 보세요.</p> : <ul className="custom-list">{state.customSentences.map((sentence) => <li key={sentence.id}><div><strong>{sentence.english}</strong><span>{sentence.korean}</span></div><div className="row-actions"><button className="text-button" onClick={() => startEditing(sentence)}>수정</button><button className="text-button danger" onClick={() => deleteCustom(sentence.id)}>삭제</button></div></li>)}</ul>}</section>}
   </main>

@@ -75,6 +75,7 @@ export type LearningState = {
 }
 
 export type SentenceNote = { text: string; updatedAt: string }
+export type LearningNoteEntry = { sentence: Sentence; note: SentenceNote }
 export type AnswerVerdict = 'correct' | 'equivalent' | 'contextual' | 'needs-fix'
 export type AnswerAttempt = { timestamp: string; attempt: string; verdict: AnswerVerdict; reason?: string }
 
@@ -202,6 +203,8 @@ export function mergeLearningStates(current: LearningState, backup: LearningStat
     reviewQueueIds: unique([...current.reviewQueueIds, ...backup.reviewQueueIds]),
     favoriteIds: unique([...current.favoriteIds, ...backup.favoriteIds]),
     studyActivities: readStudyActivities([...current.studyActivities, ...backup.studyActivities]),
+    sentenceNotes: { ...backup.sentenceNotes, ...current.sentenceNotes },
+    answerHistory: Object.fromEntries([...new Set([...Object.keys(backup.answerHistory), ...Object.keys(current.answerHistory)])].map((id) => [id, readAnswerHistory({ [id]: [...(current.answerHistory[id] ?? []), ...(backup.answerHistory[id] ?? [])] })[id] ?? []]).filter(([, history]) => history.length)),
   }
 }
 
@@ -301,6 +304,16 @@ export function saveSentenceNote(state: LearningState, sentenceId: string, value
 export function appendAnswerAttempt(state: LearningState, sentenceId: string, entry: AnswerAttempt): LearningState {
   if (!sentenceId || !isAnswerAttempt(entry)) return state
   return { ...state, answerHistory: { ...state.answerHistory, [sentenceId]: [entry, ...(state.answerHistory[sentenceId] ?? [])].sort((left, right) => right.timestamp.localeCompare(left.timestamp)).slice(0, MAX_ANSWER_HISTORY) } }
+}
+
+export function getLearningNotes(sentences: Sentence[], state: LearningState, query = '', day?: number): LearningNoteEntry[] {
+  const normalizedQuery = query.trim().toLocaleLowerCase()
+  return sentences.flatMap((sentence) => {
+    const note = state.sentenceNotes[sentence.id]
+    if (!note || (day !== undefined && sentence.day !== day)) return []
+    const searchable = `${note.text}\n${sentence.korean}\n${sentence.english}`.toLocaleLowerCase()
+    return !normalizedQuery || searchable.includes(normalizedQuery) ? [{ sentence, note }] : []
+  }).sort((left, right) => right.note.updatedAt.localeCompare(left.note.updatedAt))
 }
 
 function isStudyActivity(value: unknown): value is StudyActivity {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { appendAnswerAttempt, formatStudyDate, formatStudyTimestamp, getLegacyHistory, getStudySummary, getTodayChallenge, getWordFeedback, isPersistableLearningPayload, mergeLearningStates, normalizeAnswer, parseLearningState, recordStudyActivity, saveSentenceNote, type Sentence } from './learning'
+import { appendAnswerAttempt, formatStudyDate, formatStudyTimestamp, getLearningNotes, getLegacyHistory, getStudySummary, getTodayChallenge, getWordFeedback, isPersistableLearningPayload, mergeLearningStates, normalizeAnswer, parseLearningState, recordStudyActivity, saveSentenceNote, type Sentence } from './learning'
 
 const sentences: Sentence[] = [
   { id: 'fixture-1', english: 'I would like a cup of tea.', korean: '차 한 잔 주세요.', day: 1, source: 'builtIn', topic: 'cafe-orders', level: 'beginner', priority: 1 },
@@ -151,5 +151,21 @@ describe('learning helpers', () => {
     const withHistory = attempts.reduce((state, entry) => appendAnswerAttempt(state, 'fixture-1', entry), initial)
     expect(withHistory.answerHistory['fixture-1']).toHaveLength(5)
     expect(withHistory.answerHistory['fixture-1'][0].attempt).toBe('attempt 5')
+  })
+
+  it('searches saved notes across note text, Korean prompts, and English answers in recent-update order', () => {
+    const state = parseLearningState(null)
+    state.sentenceNotes = {
+      'fixture-1': { text: 'Ask for a quiet table.', updatedAt: '2026-08-13T10:00:00.000Z' },
+      'fixture-2': { text: 'Use this when you need help.', updatedAt: '2026-08-13T12:00:00.000Z' },
+    }
+
+    expect(getLearningNotes(sentences, state, 'help')).toEqual([{ sentence: sentences[1], note: state.sentenceNotes['fixture-2'] }])
+    expect(getLearningNotes(sentences, state, '차')).toEqual([{ sentence: sentences[0], note: state.sentenceNotes['fixture-1'] }])
+    expect(getLearningNotes(sentences, state, 'could')).toEqual([{ sentence: sentences[1], note: state.sentenceNotes['fixture-2'] }])
+    expect(getLearningNotes(sentences, state)).toEqual([
+      { sentence: sentences[1], note: state.sentenceNotes['fixture-2'] },
+      { sentence: sentences[0], note: state.sentenceNotes['fixture-1'] },
+    ])
   })
 })
