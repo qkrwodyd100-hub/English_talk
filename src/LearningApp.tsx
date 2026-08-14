@@ -44,7 +44,8 @@ type SpeechRecognitionLike = {
   continuous: boolean
   start: () => void
   stop: () => void
-  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null
+  abort?: () => void
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string; isFinal?: boolean }>> }) => void) | null
   onerror: ((event: { error: string }) => void) | null
   onend: (() => void) | null
 }
@@ -118,6 +119,17 @@ export default function LearningApp() {
   const hasAppliedResumeTarget = useRef(false)
   const cloud = useLearningCloud(state, applyCloudState)
 
+  function cancelListening() {
+    const activeRecognition = recognition.current
+    if (!activeRecognition) return
+    recognition.current = null
+    activeRecognition.onresult = null
+    activeRecognition.onerror = null
+    activeRecognition.onend = null
+    try { activeRecognition.abort?.() ?? activeRecognition.stop() } catch { /* The browser already stopped the recognition session. */ }
+    setIsListening(false)
+  }
+
   useEffect(() => {
     const raw = window.localStorage.getItem(LEARNING_STORAGE_KEY)
     if (!isPersistableLearningPayload(raw)) {
@@ -139,6 +151,8 @@ export default function LearningApp() {
     synth.addEventListener?.('voiceschanged', refresh)
     return () => synth.removeEventListener?.('voiceschanged', refresh)
   }, [])
+
+  useEffect(() => () => cancelListening(), [])
 
   const selectedDay = state.selectedDay ?? 1
   const sentences = useMemo(() => [...builtInSentences, ...state.customSentences], [state.customSentences])
@@ -224,6 +238,7 @@ export default function LearningApp() {
   }
 
   function resetPracticeContext() {
+    cancelListening()
     setAttempt('')
     setCheckedAnswer(null)
     setSpeechNotice('')
@@ -325,14 +340,48 @@ export default function LearningApp() {
   function toggleListening() {
     const Recognition = getRecognition()
     if (!Recognition) { setSpeechNotice('이 브라우저에서는 음성 입력을 지원하지 않습니다. 텍스트 입력으로 계속 학습할 수 있습니다.'); return }
-    if (isListening) { recognition.current?.stop(); return }
+    if (isListening) {
+      cancelListening()
+      setSpeechNotice('음성 입력을 중지했습니다. 텍스트를 수정한 뒤 정답을 제출하세요.')
+      return
+    }
     const instance = new Recognition()
     instance.lang = 'en-US'; instance.interimResults = false; instance.continuous = false
-    instance.onresult = (event) => setAttempt(event.results[0][0].transcript)
-    instance.onerror = (event) => { setIsListening(false); setSpeechNotice(event.error === 'not-allowed' || event.error === 'service-not-allowed' ? '마이크 권한이 거부되었습니다. 텍스트 입력으로 계속 학습할 수 있습니다.' : '음성 입력을 시작할 수 없습니다. 텍스트 입력으로 계속 학습할 수 있습니다.') }
-    instance.onend = () => setIsListening(false)
+    let receivedFinalTranscript = false
+    instance.onresult = (event) => {
+      if (recognition.current !== instance || receivedFinalTranscript) return
+      const result = event.results[0]?.[0]
+      if (!result || result.isFinal === false) return
+      const transcript = result.transcript.trim()
+      if (!transcript) return
+      receivedFinalTranscript = true
+      setAttempt((currentAttempt) => `${currentAttempt}${currentAttempt.trim() ? ' ' : ''}${transcript}`)
+      setSpeechNotice('음성 입력이 완료되었습니다. 내용을 확인한 뒤 정답을 제출하세요.')
+    }
+    instance.onerror = (event) => {
+      if (recognition.current !== instance) return
+      recognition.current = null
+      setIsListening(false)
+      setSpeechNotice(event.error === 'not-allowed' || event.error === 'service-not-allowed'
+        ? '마이크 권한이 거부되었습니다. 텍스트 입력으로 계속 학습할 수 있습니다.'
+        : event.error === 'no-speech'
+          ? '음성이 감지되지 않았습니다. 다시 시도하거나 텍스트로 입력하세요.'
+          : '음성 입력 중 오류가 발생했습니다. 텍스트 입력으로 계속 학습할 수 있습니다.')
+    }
+    instance.onend = () => {
+      if (recognition.current !== instance) return
+      recognition.current = null
+      setIsListening(false)
+    }
     recognition.current = instance
-    try { instance.start(); setIsListening(true); setSpeechNotice('듣는 중입니다. 자동 녹음이나 저장은 하지 않습니다.') } catch { setSpeechNotice('음성 입력을 시작할 수 없습니다. 텍스트 입력으로 계속 학습할 수 있습니다.') }
+    try {
+      instance.start()
+      setIsListening(true)
+      setSpeechNotice('듣는 중입니다. 음성은 브라우저 또는 기기 공급자의 음성 인식 서비스에서 처리될 수 있으며 자동 저장·제출하지 않습니다.')
+    } catch {
+      recognition.current = null
+      setSpeechNotice('음성 입력을 시작할 수 없습니다. 텍스트 입력으로 계속 학습할 수 있습니다.')
+    }
   }
 
   function startEditing(sentence?: CustomSentence) {
