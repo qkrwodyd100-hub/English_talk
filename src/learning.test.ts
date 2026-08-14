@@ -168,4 +168,14 @@ describe('learning helpers', () => {
       { sentence: sentences[0], note: state.sentenceNotes['fixture-1'] },
     ])
   })
+
+  it('keeps event and answer histories idempotent across repeated cloud reconciliation', () => {
+    const activity = { timestamp: '2026-08-14T10:00:00.000Z', day: 1, sentenceId: 'fixture-1', action: 'answer-checked' as const, correct: true }
+    const answer = { timestamp: '2026-08-14T10:00:00.000Z', attempt: 'I would like a cup of tea.', verdict: 'correct' as const }
+    const original = { ...parseLearningState(null), studyActivities: [activity], answerHistory: { 'fixture-1': [answer] } }
+    const once = mergeLearningStates(original, original)
+    const twice = mergeLearningStates(once, original)
+    expect(twice.studyActivities).toEqual([activity])
+    expect(twice.answerHistory['fixture-1']).toEqual([answer])
+  })
 })

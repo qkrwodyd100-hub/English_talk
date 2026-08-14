@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import {
   getDayProgress,
   getResumeTarget,
@@ -35,6 +35,7 @@ import {
 } from './learning'
 import { builtInDialogues } from './dialogues'
 import { builtInSentences } from './sentences'
+import { useLearningCloud } from './use-learning-cloud'
 
 type Tab = 'practice' | 'cards' | 'review' | 'manage' | 'history' | 'notes'
 type SpeechRecognitionLike = {
@@ -85,6 +86,10 @@ export default function LearningApp() {
     catch { return createEmptyLearningState() }
   })
   const [storageNotice, setStorageNotice] = useState('')
+  const applyCloudState = useCallback((next: LearningState) => {
+    setState(next)
+    try { persist(next) } catch { setStorageNotice('클라우드 기록을 읽었지만 브라우저 저장소에 저장하지 못했습니다.') }
+  }, [])
   const [hideMastered, setHideMastered] = useState(false)
   const [revealed, setRevealed] = useState<string | null>(null)
   const [selectedTopic, setSelectedTopic] = useState('all')
@@ -111,6 +116,7 @@ export default function LearningApp() {
   const answerInput = useRef<HTMLInputElement | null>(null)
   const hasExplicitDaySelection = useRef(false)
   const hasAppliedResumeTarget = useRef(false)
+  const cloud = useLearningCloud(state, applyCloudState)
 
   useEffect(() => {
     const raw = window.localStorage.getItem(LEARNING_STORAGE_KEY)
@@ -375,8 +381,9 @@ export default function LearningApp() {
 
   return <main className="learning-shell">
     <header className="learning-header"><div><p className="eyebrow">English Talk · 60-day study</p><h1>더 넓은 세상으로의 시작</h1></div><p className="fixture-note">60일 동안 매일 10문장씩 학습해요. 마지막으로 학습한 Day와 문장부터 이어집니다.</p></header>
+    <CloudAccountPanel cloud={cloud} />
     <section className="dashboard" aria-label="학습 현황"><div><strong>{sentences.length}</strong><span>전체 문장</span></div><div><strong>{state.masteredIds.length}</strong><span>마스터</span></div><div><strong>{overallProgress}%</strong><span>학습 진행률</span></div><div><strong>{completedToday ? '완료' : `Day ${selectedDay}`}</strong><span>현재 학습</span></div><div className="progress-track" role="progressbar" aria-label="마스터 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteryProgress}><span style={{ width: `${masteryProgress}%` }} /></div></section>
-    <section className="recent-study" aria-label="최근 학습"><div><strong>최근 학습</strong><span>{studySummary.lastActivity ? `Day ${studySummary.lastDay} · ${formatStudyTimestamp(studySummary.lastActivity.timestamp)}` : '아직 실제 학습 기록이 없습니다.'}</span></div><div><strong>{studySummary.todaySentenceCount}</strong><span>오늘 학습한 문장</span></div><div><strong>{studySummary.streakDays}일</strong><span>현재 연속 학습</span></div><p>기록은 이 브라우저에만 저장되며 기기·브라우저 간 동기화되지 않습니다.</p></section>
+    <section className="recent-study" aria-label="최근 학습"><div><strong>최근 학습</strong><span>{studySummary.lastActivity ? `Day ${studySummary.lastDay} · ${formatStudyTimestamp(studySummary.lastActivity.timestamp)}` : '아직 실제 학습 기록이 없습니다.'}</span></div><div><strong>{studySummary.todaySentenceCount}</strong><span>오늘 학습한 문장</span></div><div><strong>{studySummary.streakDays}일</strong><span>현재 연속 학습</span></div><p>{cloud.user ? '로그인한 계정의 기록은 이 기기와 클라우드에 함께 저장됩니다.' : '로그인 전 기록은 이 브라우저에 즉시 저장됩니다.'}</p></section>
     {storageNotice && <p className="notice" role="status">{storageNotice}</p>}
     <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'history' ? 'page' : undefined} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>학습 기록</button><button aria-current={tab === 'notes' ? 'page' : undefined} className={tab === 'notes' ? 'active' : ''} onClick={() => setTab('notes')}>학습 노트</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
     {speechNotice && <p className="hint" role="status">{speechNotice}</p>}
@@ -400,6 +407,35 @@ export default function LearningApp() {
 
     {tab === 'manage' && <section className="study-panel" aria-labelledby="manage-heading"><div className="panel-heading"><div><p className="eyebrow">Personal sentences</p><h2 id="manage-heading">나만의 문장을 추가하세요.</h2></div><button className="button" onClick={() => startEditing()}>문장 추가</button></div>{editing && <form className="sentence-form" onSubmit={saveCustom}><label>영어 문장<input value={english} onChange={(event) => setEnglish(event.target.value)} required /></label><label>한국어 뜻<input value={korean} onChange={(event) => setKorean(event.target.value)} required /></label><div className="actions"><button className="button" type="submit">저장</button><button className="button secondary" type="button" onClick={() => setEditing(null)}>취소</button></div></form>}{state.customSentences.length === 0 ? <p className="empty-state">아직 내 문장이 없습니다. 자주 쓰는 문장을 추가해 보세요.</p> : <ul className="custom-list">{state.customSentences.map((sentence) => <li key={sentence.id}><div><strong>{sentence.english}</strong><span>{sentence.korean}</span></div><div className="row-actions"><button className="text-button" onClick={() => startEditing(sentence)}>수정</button><button className="text-button danger" onClick={() => deleteCustom(sentence.id)}>삭제</button></div></li>)}</ul>}</section>}
   </main>
+}
+
+function CloudAccountPanel({ cloud }: { cloud: ReturnType<typeof useLearningCloud> }) {
+  const [email, setEmail] = useState('')
+  const [authMessage, setAuthMessage] = useState('')
+  const [sending, setSending] = useState(false)
+
+  async function sendMagicLink(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!email.trim()) return
+    setSending(true)
+    setAuthMessage(await cloud.signIn(email.trim()))
+    setSending(false)
+  }
+
+  return <section className={`cloud-account cloud-${cloud.status}`} aria-label="계정 및 동기화">
+    <div>
+      <strong>{cloud.user?.email ?? '기기 간 학습 기록 동기화'}</strong>
+      <p>{authMessage || cloud.message}</p>
+    </div>
+    {cloud.user ? <div className="cloud-actions">
+      {cloud.status === 'error' && <button type="button" className="button secondary" onClick={cloud.retry}>동기화 다시 시도</button>}
+      <button type="button" className="text-button" onClick={() => { void cloud.signOut() }}>로그아웃</button>
+    </div> : cloud.configured ? <form className="cloud-login" onSubmit={sendMagicLink}>
+      <label htmlFor="login-email">로그인 이메일</label>
+      <input id="login-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" />
+      <button type="submit" className="button" disabled={sending}>{sending ? '보내는 중…' : '로그인 링크 받기'}</button>
+    </form> : null}
+  </section>
 }
 
 function PhraseChoices({ sentence, onChoose }: { sentence: Sentence; onChoose: (value: string) => void }) {

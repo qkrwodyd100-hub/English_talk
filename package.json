@@ -12,6 +12,7 @@
     "test:contract": "node --test tests/session-contract.test.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
     "@vitejs/plugin-react": "latest",
     "react": "latest",
     "react-dom": "latest",
@@ -21,6 +22,7 @@
     "@playwright/test": "^1.62.1",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "cross-env": "^10.1.0",
     "typescript": "latest",
     "vitest": "latest"
   }
