@@ -20,6 +20,18 @@ export type LearningProfileRow = {
   updated_at: string
 }
 
+export type LearningGroupMemberRow = {
+  group_id: string
+  user_id: string
+}
+
+export type LearningGroupProfileRow = {
+  group_id: string
+  learning_state: unknown
+  revision: number
+  updated_at: string
+}
+
 export function hasMeaningfulLearningState(state: LearningState) {
   return state.masteredIds.length > 0
     || state.customSentences.length > 0
