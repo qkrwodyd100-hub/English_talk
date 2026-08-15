@@ -1,5 +1,50 @@
 import { expect, test } from '@playwright/test'
 
+test('previous and next browse an unsubmitted day without recording learning', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  const previous = page.getByRole('button', { name: '이전', exact: true })
+  const next = page.getByRole('button', { name: '다음', exact: true })
+  await expect(previous).toBeDisabled()
+  await expect(next).toBeEnabled()
+  for (const button of [page.getByRole('button', { name: '정답 확인' }), previous, next]) {
+    expect((await button.boundingBox())?.height).toBeGreaterThanOrEqual(44)
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  const learningRecord = () => page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem('english-talk.learning') ?? '{}').state
+    return {
+      answerHistory: state.answerHistory,
+      attemptCounts: state.attemptCounts,
+      completedSentenceIds: state.completedSentenceIds,
+      masteredIds: state.masteredIds,
+      reviewQueueIds: state.reviewQueueIds,
+      studyActivities: state.studyActivities,
+      completedChallengeDates: state.completedChallengeDates,
+    }
+  })
+  const before = await learningRecord()
+
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('not submitted')
+  await next.click()
+  await expect(page.getByRole('heading', { name: /2 \/ 10/ })).toBeVisible()
+  await expect(page.getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+  await expect(page.getByRole('textbox', { name: '영어 답변' })).toHaveValue('')
+  expect(await learningRecord()).toEqual(before)
+
+  await previous.click()
+  await expect(page.getByRole('heading', { name: /1 \/ 10/ })).toBeVisible()
+  await expect(page.getByText('한 명 자리 부탁해요.')).toBeVisible()
+  await expect(previous).toBeDisabled()
+  expect(await learningRecord()).toEqual(before)
+
+  for (let position = 1; position < 10; position += 1) await next.click()
+  await expect(page.getByRole('heading', { name: /10 \/ 10/ })).toBeVisible()
+  await expect(next).toBeDisabled()
+  expect(await learningRecord()).toEqual(before)
+})
+
 test('migrates v1 data and persists sequential progress, review, and favorites across reloads', async ({ page }) => {
   await page.addInitScript(() => {
     if (window.sessionStorage.getItem('seeded-v1')) return
@@ -276,8 +321,8 @@ test('topic-filtered practice persists the displayed sentence position across to
   await expect(page.getByText('맛있었어요.')).toBeVisible()
   await page.getByRole('textbox', { name: '영어 답변' }).fill('It was delicious.')
   await page.getByRole('button', { name: '정답 확인' }).click()
-  await page.getByRole('button', { name: '다음 문장' }).click()
-  await expect(page.getByText('한 명 자리 부탁해요.')).toBeVisible()
+  await expect(page.getByRole('button', { name: '다음 문장' })).toBeDisabled()
+  await expect(page.getByText('맛있었어요.')).toBeVisible()
 })
 
 test('keeps practice usable and announces a persistence failure without horizontal overflow on mobile', async ({ page }) => {
@@ -417,7 +462,7 @@ test('does not advance an answered practice with composing or modified ArrowRigh
   await expect(answer).toBeFocused()
 })
 
-test('uses the existing last-sentence wrap policy when ArrowRight advances practice', async ({ page }) => {
+test('keeps the last sentence selected instead of wrapping to another day', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
       masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: { 2: 9 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
@@ -430,10 +475,11 @@ test('uses the existing last-sentence wrap policy when ArrowRight advances pract
   await expect(answer).toHaveAccessibleDescription('정답 확인 후 오른쪽 화살표 키로 다음 문장으로 이동할 수 있습니다.')
   await answer.fill('It was delicious.')
   await answer.press('Enter')
+  await expect(page.getByRole('button', { name: '다음 문장' })).toBeDisabled()
   await answer.press('ArrowRight')
 
-  await expect(page.locator('.practice-prompt').getByText('한 명 자리 부탁해요.')).toBeVisible()
-  await expect(answer).toBeFocused()
+  await expect(page.locator('.practice-prompt').getByText('맛있었어요.')).toBeVisible()
+  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
   const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state)
   expect(persisted.dayPositions).toEqual({ 2: 10 })
   expect(persisted.studyActivities).toHaveLength(1)

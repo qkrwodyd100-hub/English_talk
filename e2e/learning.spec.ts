@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { builtInSentences } from '../src/sentences'
 
 test('the 390px learning dashboard remains usable without horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
@@ -149,16 +150,14 @@ test('learner gets explicit speech playback and microphone-permission fallback',
 test('today challenge has ten deterministic items and completion persists after a reload', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: '타이핑 연습' }).click()
+  const dayOneAnswers = builtInSentences.filter((sentence) => sentence.day === 1).map((sentence) => sentence.english)
 
   for (let index = 0; index < 10; index += 1) {
     await expect(page.getByRole('heading', { name: new RegExp(`${index + 1} / 10`) })).toBeVisible()
-    await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
+    await page.getByRole('textbox', { name: '영어 답변' }).fill(dayOneAnswers[index])
     await page.getByRole('button', { name: '정답 확인' }).click()
-    const answer = await page.locator('.answer-feedback p').first().textContent()
-    expect(answer).toBeTruthy()
-    await page.getByRole('textbox', { name: '영어 답변' }).fill(answer!.replace(/^정답:\s*/, ''))
     await expect(page.getByText('정확해요!')).toBeVisible()
-    await page.getByRole('button', { name: '다음 문장' }).click()
+    if (index < 9) await page.getByRole('button', { name: '다음 문장' }).click()
   }
 
   await expect(page.getByLabel('학습 현황')).toContainText('완료')
@@ -196,7 +195,7 @@ test('a note persists across sentence navigation and reload without absorbing ty
   await note.press('ArrowRight')
   await expect(note).toHaveValue('pick up means collecting baggage\n')
   await page.getByRole('button', { name: '노트 저장' }).click()
-  await expect(page.getByText('저장됨')).toBeVisible()
+  await expect(page.getByText('저장됨', { exact: true })).toBeVisible()
   await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
   await page.getByRole('button', { name: '정답 확인' }).click()
   await page.getByRole('button', { name: '다음 문장' }).click()
