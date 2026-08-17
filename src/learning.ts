@@ -64,6 +64,7 @@ export type LearningState = {
   customSentences: CustomSentence[]
   completedChallengeDates: string[]
   selectedDay: number | null
+  selectedDayIsManual?: boolean
   dayPositions: Record<number, number>
   completedSentenceIds: string[]
   attemptCounts: Record<string, number>
@@ -144,6 +145,7 @@ export function parseLearningState(raw: string | null): LearningState {
     return {
       ...readLegacyLearningFields(state),
       selectedDay: isDay(state.selectedDay) ? state.selectedDay : null,
+      ...(state.selectedDayIsManual === true ? { selectedDayIsManual: true } : {}),
       dayPositions: readDayPositions(state.dayPositions),
       completedSentenceIds: readStringArray(state.completedSentenceIds),
       attemptCounts: readAttemptCounts(state.attemptCounts),

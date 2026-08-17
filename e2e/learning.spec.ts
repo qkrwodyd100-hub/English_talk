@@ -58,7 +58,7 @@ test('learner independently reveals and listens to a card, then masters and hide
   await expect(page.getByLabel('학습 현황')).toContainText('1')
 })
 
-test('flashcards render only the selected day and topic scope', async ({ page }) => {
+test('flashcards render only the selected day without inheriting the typing topic scope', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: '플래시카드' }).click()
 
@@ -75,9 +75,9 @@ test('flashcards render only the selected day and topic scope', async ({ page })
   await page.getByRole('button', { name: '타이핑 연습' }).click()
   await page.getByLabel('주제 필터').selectOption('restaurant-basics')
   await page.getByRole('button', { name: '플래시카드' }).click()
-  await expect(page.locator('.flashcard')).toHaveCount(8)
+  await expect(page.locator('.flashcard')).toHaveCount(10)
   await expect(page.getByText('한 명 자리 부탁해요.')).toBeVisible()
-  await expect(page.getByText('사진 좀 찍어 주시겠어요?')).toHaveCount(0)
+  await expect(page.getByText('사진 좀 찍어 주시겠어요?')).toBeVisible()
 })
 
 test('unrevealed flashcards keep the English region empty and the reveal control fits at 320px', async ({ page }) => {
