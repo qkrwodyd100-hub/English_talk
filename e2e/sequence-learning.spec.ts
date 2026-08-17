@@ -462,27 +462,85 @@ test('does not advance an answered practice with composing or modified ArrowRigh
   await expect(answer).toBeFocused()
 })
 
-test('keeps the last sentence selected instead of wrapping to another day', async ({ page }) => {
+test('moves a checked last answer to the next Day first sentence with no extra study event', async ({ page }) => {
   await page.addInitScript(() => {
+    if (window.sessionStorage.getItem('seeded-last-answer-day-transition')) return
     window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
       masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: { 2: 9 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
     } }))
+    window.sessionStorage.setItem('seeded-last-answer-day-transition', 'true')
   })
   await page.goto('/')
 
   const answer = page.getByRole('textbox', { name: '영어 답변' })
   await expect(page.locator('.practice-prompt').getByText('맛있었어요.')).toBeVisible()
   await expect(answer).toHaveAccessibleDescription('정답 확인 후 오른쪽 화살표 키로 다음 문장으로 이동할 수 있습니다.')
+  await answer.press('ArrowRight')
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities)).toEqual([])
   await answer.fill('It was delicious.')
   await answer.press('Enter')
-  await expect(page.getByRole('button', { name: '다음 문장' })).toBeDisabled()
   await answer.press('ArrowRight')
 
-  await expect(page.locator('.practice-prompt').getByText('맛있었어요.')).toBeVisible()
-  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('3')
+  await expect(page.getByLabel('주제 필터')).toHaveValue('all')
+  await expect(page.getByRole('heading', { name: /1 \/ 10/ })).toBeVisible()
+  await expect(page.getByText('정답:', { exact: false })).toHaveCount(0)
+  await expect(answer).toHaveValue('')
+  await expect(answer).toBeFocused()
   const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state)
-  expect(persisted.dayPositions).toEqual({ 2: 10 })
+  expect(persisted.dayPositions).toEqual({ 2: 10, 3: 0 })
   expect(persisted.studyActivities).toHaveLength(1)
+  expect(persisted.studyActivities[0]).toMatchObject({ day: 2, sentenceId: 'day-02-10', action: 'answer-checked', correct: true })
+  await page.reload()
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('3')
+  await expect(page.getByRole('heading', { name: /1 \/ 10/ })).toBeVisible()
+})
+
+test('keeps a checked final Day answer in place when ArrowRight has no later Day', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
+      masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 60, dayPositions: { 60: 9 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
+    } }))
+  })
+  await page.goto('/')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await expect(page.getByRole('heading', { name: /10 \/ 10/ })).toBeVisible()
+  await answer.fill('wrong words')
+  await answer.press('Enter')
+  await answer.press('ArrowRight')
+
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('60')
+  await expect(page.getByRole('heading', { name: /10 \/ 10/ })).toBeVisible()
+  await expect(page.getByText('마지막 Day입니다. 다음 문장이 없습니다.')).toBeVisible()
+  await expect(answer).toHaveValue('wrong words')
+  const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state)
+  expect(persisted.dayPositions).toEqual({ 60: 10 })
+  expect(persisted.studyActivities).toHaveLength(1)
+})
+
+test('persists a corrected final Day answer when ArrowRight announces the terminal state', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
+      masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 60, dayPositions: { 60: 9 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: ['day-60-10'], favoriteIds: [], studyActivities: [],
+    } }))
+  })
+  await page.goto('/')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await answer.fill('wrong words')
+  await answer.press('Enter')
+  await answer.fill('Thank you for making my trip better!')
+  await answer.press('ArrowRight')
+
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('60')
+  await expect(page.getByText('마지막 Day입니다. 다음 문장이 없습니다.')).toBeVisible()
+  const persisted = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state)
+  expect(persisted.completedSentenceIds).toContain('day-60-10')
+  expect(persisted.reviewQueueIds).not.toContain('day-60-10')
+  expect(persisted.studyActivities).toHaveLength(2)
+  expect(persisted.studyActivities).toContainEqual(expect.objectContaining({ day: 60, sentenceId: 'day-60-10', action: 'review-completed', correct: true }))
 })
 
 test('keeps the ArrowRight practice flow usable without horizontal overflow at target widths', async ({ page }) => {
