@@ -222,11 +222,13 @@ test('a note persists across sentence navigation and reload without absorbing ty
   await note.press('ArrowRight')
   await expect(note).toHaveValue('pick up means collecting baggage\n')
   await page.getByRole('button', { name: '노트 저장' }).click()
+  await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => resolve())))
   await expect(page.getByText('저장됨', { exact: true })).toBeVisible()
   await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
   await page.getByRole('button', { name: '정답 확인' }).click()
   await page.getByRole('button', { name: '다음 문장' }).click()
   await expect(note).toHaveValue('')
+  await expect(page.getByText('저장됨', { exact: true })).toHaveCount(0)
   await page.evaluate(() => {
     const payload = JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}')
     payload.state.dayPositions[1] = 0

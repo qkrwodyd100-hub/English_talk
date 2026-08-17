@@ -104,4 +104,12 @@ describe('learning cloud reconciliation', () => {
     const cloud = state({ selectedDay: 5, favoriteIds: ['remove', 'remote'], attemptCounts: { sentence: 3 }, sentenceNotes: { sentence: { text: 'newer remote', updatedAt: '2026-08-14T03:00:00.000Z' } }, customSentences: [{ id: 'delete-me', english: 'Delete.', korean: '삭제', day: 1, source: 'custom' }, { id: 'remote', english: 'Remote.', korean: '원격', day: 2, source: 'custom' }] })
     expect(rebaseLearningState(base, local, cloud)).toMatchObject({ selectedDay: 5, favoriteIds: ['remote', 'local'], attemptCounts: { sentence: 4 }, sentenceNotes: { sentence: { text: 'newer remote' } }, customSentences: [{ id: 'remote' }] })
   })
+
+  it('keeps a manual Day selection coupled during cloud rebase', () => {
+    const base = state({ selectedDay: 1 })
+    const local = state({ selectedDay: 1, selectedDayIsManual: true })
+    const cloud = state({ selectedDay: 5 })
+
+    expect(rebaseLearningState(base, local, cloud)).toMatchObject({ selectedDay: 1, selectedDayIsManual: true })
+  })
 })

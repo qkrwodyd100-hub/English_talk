@@ -116,6 +116,7 @@ export default function LearningApp() {
   const answerInput = useRef<HTMLInputElement | null>(null)
   const hasExplicitDaySelection = useRef(false)
   const hasAppliedResumeTarget = useRef(false)
+  const activeNoteSentenceId = useRef<string | undefined>(undefined)
   const cloud = useLearningCloud(state, applyCloudState)
 
   function cancelListening() {
@@ -193,8 +194,10 @@ export default function LearningApp() {
   const learningNotes = useMemo(() => getLearningNotes(sentences, state, noteQuery, noteDay === 'all' ? undefined : Number(noteDay)), [sentences, state, noteDay, noteQuery])
 
   useEffect(() => {
+    const activeSentenceChanged = activeNoteSentenceId.current !== current?.id
+    activeNoteSentenceId.current = current?.id
     setNoteDraft(current ? state.sentenceNotes[current.id]?.text ?? '' : '')
-    setNoteStatus('')
+    if (activeSentenceChanged) setNoteStatus('')
     setAttemptHistoryOpen(false)
   }, [current?.id, state.sentenceNotes])
 

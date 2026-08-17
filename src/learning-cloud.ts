@@ -120,6 +120,7 @@ export function mergeOwnedRecord<T>(base: Record<string, T>, local: Record<strin
 
 export function rebaseLearningState(base: LearningState, local: LearningState, cloud: LearningState): LearningState {
   const merged = mergeLearningStates(cloud, local)
+  const localDaySelectionChanged = local.selectedDay !== base.selectedDay || local.selectedDayIsManual !== base.selectedDayIsManual
   const attemptCounts = { ...cloud.attemptCounts }
   for (const id of new Set([...Object.keys(base.attemptCounts), ...Object.keys(local.attemptCounts)])) {
     const before = base.attemptCounts[id] ?? 0
@@ -134,7 +135,8 @@ export function rebaseLearningState(base: LearningState, local: LearningState, c
   }
   return {
     ...merged,
-    selectedDay: local.selectedDay !== base.selectedDay ? local.selectedDay : cloud.selectedDay,
+    selectedDay: localDaySelectionChanged ? local.selectedDay : cloud.selectedDay,
+    selectedDayIsManual: localDaySelectionChanged ? local.selectedDayIsManual : cloud.selectedDayIsManual,
     dayPositions: mergeOwnedRecord(base.dayPositions, local.dayPositions, cloud.dayPositions),
     attemptCounts,
     masteredIds: mergeOwnedStringSet(base.masteredIds, local.masteredIds, cloud.masteredIds),
