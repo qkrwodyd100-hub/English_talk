@@ -14,6 +14,33 @@ test('the 390px learning dashboard remains usable without horizontal overflow', 
   await page.screenshot({ path: 'test-results/qa-artifacts/learning-mobile-390.png', fullPage: true })
 })
 
+test('practice answer input opts out of browser history without changing other field semantics', async ({ page }) => {
+  await page.goto('/')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await expect(answer).toHaveAttribute('id', 'practice-answer')
+  await expect(answer).toHaveAttribute('name', 'practice-answer')
+  await expect(answer).toHaveAttribute('autocomplete', 'off')
+  await expect(answer).toHaveAttribute('autocorrect', 'off')
+  await expect(answer).toHaveAttribute('autocapitalize', 'none')
+  await expect(answer).toHaveAttribute('spellcheck', 'false')
+  await expect(answer).toHaveAttribute('data-1p-ignore', 'true')
+  await expect(answer).toHaveAttribute('data-lpignore', 'true')
+  await expect(answer.locator('xpath=ancestor::form')).toHaveAttribute('autocomplete', 'off')
+  await expect(answer).toHaveCount(1)
+  await expect(page.locator('datalist, [role="listbox"]')).toHaveCount(0)
+
+  const note = page.getByRole('textbox', { name: '내 학습 노트' })
+  await expect(note).not.toHaveAttribute('autocomplete')
+  await page.getByRole('textbox', { name: '영어 답변' }).fill('typed answer stays explicit')
+  await expect(answer).toHaveValue('typed answer stays explicit')
+
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  await expect(answer).toHaveValue('')
+  await expect(answer).toHaveCount(1)
+  await expect(answer).toHaveAttribute('id', 'practice-answer')
+})
+
 test('learner independently reveals and listens to a card, then masters and hides it', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: '플래시카드' }).click()
