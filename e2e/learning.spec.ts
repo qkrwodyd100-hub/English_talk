@@ -94,6 +94,24 @@ test('unrevealed flashcards keep the English region empty and the reveal control
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 })
 
+test('flashcard note controls stay touch-sized and unclipped on phone viewports', async ({ page }) => {
+  for (const viewport of [{ width: 360, height: 800 }, { width: 390, height: 844 }, { width: 430, height: 932 }]) {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await page.getByRole('button', { name: '플래시카드' }).click()
+    const firstCard = page.locator('.flashcard').first()
+    const note = firstCard.getByRole('textbox', { name: '학습 노트' })
+    const save = firstCard.getByRole('button', { name: '노트 저장' })
+    await note.scrollIntoViewIfNeeded()
+    await expect(note).toBeVisible()
+    await expect(save).toBeVisible()
+    const [noteBox, saveBox] = await Promise.all([note.boundingBox(), save.boundingBox()])
+    expect(noteBox?.height).toBeGreaterThanOrEqual(44)
+    expect(saveBox?.height).toBeGreaterThanOrEqual(44)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  }
+})
+
 test('flashcards prefer the most natural available English voice without revealing the sentence', async ({ page }) => {
   await page.addInitScript(() => {
     type Voice = { name: string; lang: string; localService: boolean }
@@ -130,6 +148,38 @@ test('flashcards prefer the most natural available English voice without reveali
     rate: 0.92,
     voiceName: 'Microsoft Jenny Online (Natural) - English (United States)',
   })
+})
+
+test('flashcards share each sentence note with typing and learning notes without card shortcuts', async ({ page }) => {
+  await page.goto('/')
+  const typingNote = page.getByRole('textbox', { name: '내 학습 노트' })
+  await typingNote.fill('Remember this exact airport opener.')
+  await page.getByRole('button', { name: '노트 저장' }).click()
+
+  await page.getByRole('button', { name: '플래시카드' }).click()
+  const firstCard = page.locator('.flashcard').first()
+  const cardNote = firstCard.getByRole('textbox', { name: '학습 노트' })
+  await expect(cardNote).toHaveValue('Remember this exact airport opener.')
+  await expect(page.locator('.flashcard').nth(1).getByRole('textbox', { name: '학습 노트' })).toHaveValue('')
+  await cardNote.fill('Updated from flashcards.')
+  await cardNote.press('Enter')
+  await cardNote.press('ArrowRight')
+  await expect(cardNote).toHaveValue('Updated from flashcards.\n')
+  await expect(firstCard.getByRole('button', { name: '영어 문장 보기' })).toBeVisible()
+  await firstCard.getByRole('button', { name: '노트 저장' }).click()
+  await expect(firstCard.getByText('저장됨', { exact: true })).toBeVisible()
+
+  await page.getByRole('button', { name: '타이핑 연습' }).click()
+  await expect(typingNote).toHaveValue('Updated from flashcards.')
+  await page.getByRole('button', { name: '학습 노트' }).click()
+  await expect(page.getByText('Updated from flashcards.')).toBeVisible()
+
+  await page.getByRole('button', { name: '플래시카드' }).click()
+  await firstCard.getByRole('button', { name: '노트 삭제' }).click()
+  await expect(firstCard.getByText('노트를 삭제했어요.', { exact: true })).toBeVisible()
+  await page.reload()
+  await page.getByRole('button', { name: '플래시카드' }).click()
+  await expect(page.locator('.flashcard').first().getByRole('textbox', { name: '학습 노트' })).toHaveValue('')
 })
 
 test('learner gets normalized typing feedback and can use text when speech is unavailable', async ({ page }) => {

@@ -60,6 +60,34 @@ const topicNames: Record<string, string> = {
 
 function topicName(topic: string) { return topicNames[topic] ?? topic }
 
+function FlashcardNoteEditor({ sentence, note, onSave }: { sentence: Sentence; note: LearningState['sentenceNotes'][string] | undefined; onSave: (sentenceId: string, value: string) => boolean }) {
+  const [draft, setDraft] = useState(note?.text ?? '')
+  const [status, setStatus] = useState('')
+
+  useEffect(() => {
+    setDraft(note?.text ?? '')
+  }, [note?.updatedAt])
+
+  function save() {
+    if (!onSave(sentence.id, draft)) {
+      setStatus('노트는 2,000자까지 저장할 수 있어요.')
+      return
+    }
+    setStatus(draft.trim() ? '저장됨' : '노트를 삭제했어요.')
+  }
+
+  function remove() {
+    setDraft('')
+    if (onSave(sentence.id, '')) setStatus('노트를 삭제했어요.')
+  }
+
+  return <section className="flashcard-note" aria-label="학습 노트">
+    <label htmlFor={`flashcard-note-${sentence.id}`}>학습 노트</label>
+    <textarea id={`flashcard-note-${sentence.id}`} aria-label="학습 노트" value={draft} maxLength={2000} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => event.stopPropagation()} placeholder="이 문장에서 기억할 점을 적어 보세요" />
+    <div className="flashcard-note-footer"><span role="status" aria-live="polite">{status}</span><div><button className="text-button" type="button" onClick={save}>노트 저장</button><button className="text-button danger" type="button" onClick={remove} disabled={!note && !draft}>노트 삭제</button></div></div>
+  </section>
+}
+
 function getRecognition() {
   const browser = window as typeof window & { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor }
   return browser.SpeechRecognition ?? browser.webkitSpeechRecognition
@@ -313,6 +341,12 @@ export default function LearningApp() {
     setNoteStatus(noteDraft.trim() ? '저장됨' : '노트를 삭제했어요.')
   }
 
+  function saveFlashcardNote(sentenceId: string, value: string) {
+    if (value.trim().length > 2000) return false
+    updateState(saveSentenceNote(state, sentenceId, value, new Date().toISOString()))
+    return true
+  }
+
   function submitAnswer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!isComposingAnswer.current && attempt.trim()) checkAnswer()
@@ -502,7 +536,7 @@ export default function LearningApp() {
       {dialogueOpen && dialogue && <section className="mini-dialogue" aria-labelledby="dialogue-heading"><h2 id="dialogue-heading">Day {selectedDay} 미니 대화</h2><p className="turn-pill">{dialogue.turns.length}턴 · {topicName(dialogue.topic)}</p><div className="dialogue-transcript">{dialogue.turns.map((turn, index) => <p key={`${turn.role}-${index}`}><strong>{turn.role}:</strong> {turn.english}<span>{turn.korean}</span></p>)}</div><button className="button" onClick={() => setDialogueOpen(false)}>대화 마치기</button></section>}
     </section>}
 
-    {tab === 'cards' && <section className="study-panel" aria-labelledby="cards-heading"><div className="panel-heading"><div><p className="eyebrow">Flashcards</p><h2 id="cards-heading">뜻을 보고 영어를 떠올려 보세요.</h2></div><label className="filter"><input type="checkbox" checked={hideMastered} onChange={(event) => setHideMastered(event.target.checked)} /> 마스터 숨기기</label></div><div className="learning-controls single-control"><label htmlFor="cards-day-select">학습 Day 선택<select id="cards-day-select" aria-label="플래시카드 학습 Day 선택" value={selectedDay} onChange={(event) => selectDay(Number(event.target.value))}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label></div>{visibleFlashcards.length === 0 ? <p className="empty-state">Day {selectedDay}에서 표시할 플래시카드가 없습니다</p> : <div className="card-grid">{visibleFlashcards.map((sentence) => <article key={sentence.id} className="flashcard"><div className="card-copy"><span className="korean-copy">{sentence.korean}</span><span className="reveal-copy">{revealed === sentence.id ? sentence.english : null}</span></div><div className="card-actions"><button className="card-action" onClick={() => setRevealed(revealed === sentence.id ? null : sentence.id)} aria-expanded={revealed === sentence.id}>{revealed === sentence.id ? '영어 문장 숨기기' : '영어 문장 보기'}</button><button className="card-action" onClick={() => speakEnglish(sentence.english, '영어 문장을 재생했습니다.')}>음성으로 듣기</button></div><button className="master-button" aria-pressed={mastered.has(sentence.id)} onClick={() => toggleMastered(sentence)}>{mastered.has(sentence.id) ? '마스터 해제' : '마스터로 표시'}</button></article>)}</div>}</section>}
+    {tab === 'cards' && <section className="study-panel" aria-labelledby="cards-heading"><div className="panel-heading"><div><p className="eyebrow">Flashcards</p><h2 id="cards-heading">뜻을 보고 영어를 떠올려 보세요.</h2></div><label className="filter"><input type="checkbox" checked={hideMastered} onChange={(event) => setHideMastered(event.target.checked)} /> 마스터 숨기기</label></div><div className="learning-controls single-control"><label htmlFor="cards-day-select">학습 Day 선택<select id="cards-day-select" aria-label="플래시카드 학습 Day 선택" value={selectedDay} onChange={(event) => selectDay(Number(event.target.value))}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label></div>{visibleFlashcards.length === 0 ? <p className="empty-state">Day {selectedDay}에서 표시할 플래시카드가 없습니다</p> : <div className="card-grid">{visibleFlashcards.map((sentence) => <article key={sentence.id} className="flashcard"><div className="card-copy"><span className="korean-copy">{sentence.korean}</span><span className="reveal-copy">{revealed === sentence.id ? sentence.english : null}</span></div><FlashcardNoteEditor sentence={sentence} note={state.sentenceNotes[sentence.id]} onSave={saveFlashcardNote} /><div className="card-actions"><button className="card-action" onClick={() => setRevealed(revealed === sentence.id ? null : sentence.id)} aria-expanded={revealed === sentence.id}>{revealed === sentence.id ? '영어 문장 숨기기' : '영어 문장 보기'}</button><button className="card-action" onClick={() => speakEnglish(sentence.english, '영어 문장을 재생했습니다.')}>음성으로 듣기</button></div><button className="master-button" aria-pressed={mastered.has(sentence.id)} onClick={() => toggleMastered(sentence)}>{mastered.has(sentence.id) ? '마스터 해제' : '마스터로 표시'}</button></article>)}</div>}</section>}
 
     {tab === 'review' && <section className="study-panel" aria-labelledby="review-heading"><p className="eyebrow">Review queue</p><h2 id="review-heading">오답과 즐겨찾기 복습</h2><div className="learning-controls single-control"><label htmlFor="review-day-select">학습 Day 선택<select id="review-day-select" aria-label="오답 복습 학습 Day 선택" value={selectedDay} onChange={(event) => selectDay(Number(event.target.value))}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label></div>{reviewSentences.length === 0 ? <p className="empty-state">Day {selectedDay}에는 복습할 문장이 없습니다</p> : <ul className="review-list">{reviewSentences.map((sentence) => <li key={sentence.id}><div><strong>{sentence.korean}</strong><span>{sentence.english}</span></div><div className="row-actions"><button className="text-button" onClick={() => practiceAgain(sentence)}>다시 연습</button>{state.reviewQueueIds.includes(sentence.id) && <button className="text-button" onClick={() => resolveReview(sentence)}>복습 완료</button>}{state.favoriteIds.includes(sentence.id) && <button className="text-button" onClick={() => updateState({ ...state, ...toggleFavorite(state, sentence.id) })}>즐겨찾기 해제</button>}</div></li>)}</ul>}</section>}
 

@@ -92,6 +92,26 @@ test('an already-open device can pull another device change with sync now', asyn
   await deviceB.close()
 })
 
+test('syncs a flashcard note through the shared sentenceNotes payload without account data', async ({ browser }) => {
+  const device = await browser.newContext()
+  await Promise.all([installCloudMock(device), authenticate(device)])
+  const page = await device.newPage()
+
+  await page.goto('/')
+  await expect(page.getByText('learner@example.com')).toBeVisible()
+  await page.getByRole('button', { name: '플래시카드' }).click()
+  const firstCard = page.locator('.flashcard').first()
+  await firstCard.getByRole('textbox', { name: '학습 노트' }).fill('Cloud-shared card note.')
+  await firstCard.getByRole('button', { name: '노트 저장' }).click()
+
+  await expect.poll(() => cloud.row?.learning_state.sentenceNotes).toMatchObject({
+    'day-01-01': { text: 'Cloud-shared card note.' },
+  })
+  expect(JSON.stringify(cloud.row?.learning_state)).not.toContain('learner@example.com')
+  expect(JSON.stringify(cloud.row?.learning_state)).not.toContain('user-fixture')
+  await device.close()
+})
+
 test('restores a session, uploads local v4 data, and reads device B changes in a fresh context', async ({ browser }) => {
   const deviceB = await browser.newContext()
   await installCloudMock(deviceB)
