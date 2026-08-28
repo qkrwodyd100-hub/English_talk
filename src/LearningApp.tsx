@@ -35,8 +35,9 @@ import {
 import { builtInDialogues } from './dialogues'
 import { builtInSentences } from './sentences'
 import { useLearningCloud } from './use-learning-cloud'
+import ListeningPanel from './ListeningPanel'
 
-type Tab = 'practice' | 'cards' | 'review' | 'manage' | 'history' | 'notes'
+type Tab = 'practice' | 'cards' | 'review' | 'manage' | 'history' | 'notes' | 'listening'
 type SpeechRecognitionLike = {
   lang: string
   interimResults: boolean
@@ -110,6 +111,7 @@ export default function LearningApp() {
   const [korean, setKorean] = useState('')
   const [dialogueOpen, setDialogueOpen] = useState(false)
   const [topicsExpanded, setTopicsExpanded] = useState(false)
+  const [listeningStopSignal, setListeningStopSignal] = useState(0)
   const recognition = useRef<SpeechRecognitionLike | null>(null)
   const backupInput = useRef<HTMLInputElement | null>(null)
   const isComposingAnswer = useRef(false)
@@ -128,6 +130,11 @@ export default function LearningApp() {
     activeRecognition.onend = null
     try { activeRecognition.abort?.() ?? activeRecognition.stop() } catch { /* The browser already stopped the recognition session. */ }
     setIsListening(false)
+  }
+
+  function stopListeningPlayback() {
+    try { window.speechSynthesis?.cancel() } catch { /* The browser may already have interrupted speech. */ }
+    setListeningStopSignal((value) => value + 1)
   }
 
   useEffect(() => {
@@ -153,6 +160,10 @@ export default function LearningApp() {
   }, [])
 
   useEffect(() => () => cancelListening(), [])
+
+  useEffect(() => {
+    if (tab !== 'listening') stopListeningPlayback()
+  }, [tab])
 
   const selectedDay = state.selectedDay ?? 1
   const sentences = useMemo(() => [...builtInSentences, ...state.customSentences], [state.customSentences])
@@ -243,6 +254,7 @@ export default function LearningApp() {
   }
 
   function resetPracticeContext() {
+    stopListeningPlayback()
     cancelListening()
     setAttempt('')
     setCheckedAnswer(null)
@@ -365,6 +377,7 @@ export default function LearningApp() {
   }
 
   function speakEnglish(text: string, successMessage: string) {
+    stopListeningPlayback()
     if (!('speechSynthesis' in window)) { setSpeechNotice('이 브라우저에서는 음성 재생을 지원하지 않습니다. 텍스트 정답으로 계속 학습할 수 있습니다.'); return }
     const synth = window.speechSynthesis
     const utterance = new SpeechSynthesisUtterance(text)
@@ -383,6 +396,7 @@ export default function LearningApp() {
       setSpeechNotice('음성 입력을 중지했습니다. 텍스트를 수정한 뒤 정답을 제출하세요.')
       return
     }
+    stopListeningPlayback()
     const instance = new Recognition()
     instance.lang = 'en-US'; instance.interimResults = false; instance.continuous = false
     let receivedFinalTranscript = false
@@ -474,8 +488,10 @@ export default function LearningApp() {
     <section className="dashboard" aria-label="학습 현황"><div><strong>{sentences.length}</strong><span>전체 문장</span></div><div><strong>{state.masteredIds.length}</strong><span>마스터</span></div><div><strong>{overallProgress}%</strong><span>학습 진행률</span></div><div><strong>{completedToday ? '완료' : `Day ${selectedDay}`}</strong><span>현재 학습</span></div><div className="progress-track" role="progressbar" aria-label="마스터 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteryProgress}><span style={{ width: `${masteryProgress}%` }} /></div></section>
     <section className="recent-study" aria-label="최근 학습"><div><strong>최근 학습</strong><span>{studySummary.lastActivity ? `Day ${studySummary.lastDay} · ${formatStudyTimestamp(studySummary.lastActivity.timestamp)}` : '아직 실제 학습 기록이 없습니다.'}</span></div><div><strong>{studySummary.todaySentenceCount}</strong><span>오늘 학습한 문장</span></div><div><strong>{studySummary.streakDays}일</strong><span>현재 연속 학습</span></div><p>{cloud.user ? '로그인한 계정의 기록은 이 기기와 클라우드에 함께 저장됩니다.' : '로그인 전 기록은 이 브라우저에 즉시 저장됩니다.'}</p></section>
     {storageNotice && <p className="notice" role="status">{storageNotice}</p>}
-    <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'history' ? 'page' : undefined} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>학습 기록</button><button aria-current={tab === 'notes' ? 'page' : undefined} className={tab === 'notes' ? 'active' : ''} onClick={() => setTab('notes')}>학습 노트</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
+    <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'listening' ? 'page' : undefined} className={tab === 'listening' ? 'active' : ''} onClick={() => setTab('listening')}>듣기 학습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'history' ? 'page' : undefined} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>학습 기록</button><button aria-current={tab === 'notes' ? 'page' : undefined} className={tab === 'notes' ? 'active' : ''} onClick={() => setTab('notes')}>학습 노트</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
     {speechNotice && <p className="hint" role="status">{speechNotice}</p>}
+
+    {tab === 'listening' && <ListeningPanel sentences={sentences} currentDay={selectedDay} stopSignal={listeningStopSignal} cancelDictation={cancelListening} onPlaybackChange={() => undefined} />}
 
     {tab === 'practice' && <section className="study-panel" aria-labelledby="practice-heading">
       <div className="learning-controls"><label htmlFor="practice-day-select">학습 Day 선택<select id="practice-day-select" value={selectedDay} onChange={(event) => selectDay(Number(event.target.value))}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label><label>주제 필터<select value={selectedTopic} onChange={(event) => chooseTopic(event.target.value)}><option value="all">전체 주제</option>{topics.map((topic) => <option key={topic} value={topic}>{topicName(topic)}</option>)}</select></label></div>
