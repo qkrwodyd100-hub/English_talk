@@ -44,13 +44,62 @@ test('now-playing card exposes only the current bilingual sentences without visi
   await expect(card).not.toContainText(/한국어:|English:|화면 켜짐 유지|재생 중|재생 준비|Day \d|\d+ \/ \d+/)
 })
 
+test('learning menu presents listening immediately after flashcards in DOM, keyboard, and visual order', async ({ page }) => {
+  await page.goto('/')
+
+  const tabs = page.locator('.study-tabs button')
+  await expect(tabs).toHaveText([
+    '타이핑 연습',
+    '플래시카드',
+    '듣기 학습',
+    '오답 복습 (0)',
+    '학습 기록',
+    '학습 노트',
+    '내 문장',
+  ])
+
+  await tabs.nth(0).focus()
+  await page.keyboard.press('Tab')
+  await expect(tabs.nth(1)).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(tabs.nth(2)).toBeFocused()
+
+  const positions = await tabs.evaluateAll((buttons) => buttons.map((button) => button.getBoundingClientRect().left))
+  expect(positions).toEqual([...positions].sort((left, right) => left - right))
+})
+
+test('now-playing English and Korean sentences use the same computed font weight', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: '듣기 학습' }).click()
+  const weights = await page.locator('.now-playing').evaluate((card) => {
+    const korean = card.querySelector('.now-korean')
+    const english = card.querySelector('.now-english')
+    return [korean, english].map((element) => element && getComputedStyle(element).fontWeight)
+  })
+
+  expect(weights).toEqual(['800', '800'])
+})
+
 for (const viewport of [{ width: 360, height: 800 }, { width: 390, height: 844 }, { width: 430, height: 932 }, { width: 1440, height: 900 }]) {
   test(`listening controls stay within the viewport at ${viewport.width}x${viewport.height}`, async ({ page }) => {
     await page.setViewportSize(viewport)
     await page.goto('/')
+
+    const tabs = page.locator('.study-tabs button')
+    await expect(tabs).toHaveText([
+      '타이핑 연습',
+      '플래시카드',
+      '듣기 학습',
+      '오답 복습 (0)',
+      '학습 기록',
+      '학습 노트',
+      '내 문장',
+    ])
     await page.getByRole('button', { name: '듣기 학습' }).click()
 
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+    const tabBoxes = await tabs.evaluateAll((buttons) => buttons.slice(1, 3).map((button) => button.getBoundingClientRect().toJSON()))
+    expect(tabBoxes[0].x).toBeLessThan(tabBoxes[1].x)
     for (const locator of [page.locator('.now-playing'), page.locator('.listening-controls')]) {
       const box = await locator.boundingBox()
       expect(box).not.toBeNull()
