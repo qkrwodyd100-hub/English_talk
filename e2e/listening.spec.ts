@@ -11,6 +11,7 @@ test('listening study plays selected non-contiguous Days as Korean then English 
   })
   await page.goto('/')
   await page.getByRole('button', { name: '듣기 학습' }).click()
+  await page.locator('.listening-setup summary').click()
   await page.getByLabel('Day 1', { exact: true }).check()
   await page.getByLabel('Day 3', { exact: true }).check()
   await expect(page.getByText(/기본 문장 20개/)).toBeVisible()
@@ -28,3 +29,38 @@ test('listening study plays selected non-contiguous Days as Korean then English 
     return payload.state.studyActivities.length
   })).toBe(0)
 })
+
+test('now-playing card exposes only the current bilingual sentences without visible language or wake-lock copy', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: '듣기 학습' }).click()
+  await page.locator('.listening-setup summary').click()
+  await page.getByLabel('Day 1', { exact: true }).check()
+  await page.getByRole('button', { name: '재생 시작' }).click()
+
+  const card = page.locator('.now-playing')
+  await expect(card).toHaveText('실례합니다, 영어 하세요?Excuse me, do you speak English?')
+  await expect(card.locator('[lang="ko"]')).toHaveText('실례합니다, 영어 하세요?')
+  await expect(card.locator('[lang="en"]')).toHaveText('Excuse me, do you speak English?')
+  await expect(card).not.toContainText(/한국어:|English:|화면 켜짐 유지|재생 중|재생 준비|Day \d|\d+ \/ \d+/)
+})
+
+for (const viewport of [{ width: 360, height: 800 }, { width: 390, height: 844 }, { width: 430, height: 932 }, { width: 1440, height: 900 }]) {
+  test(`listening controls stay within the viewport at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport)
+    await page.goto('/')
+    await page.getByRole('button', { name: '듣기 학습' }).click()
+
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
+    for (const locator of [page.locator('.now-playing'), page.locator('.listening-controls')]) {
+      const box = await locator.boundingBox()
+      expect(box).not.toBeNull()
+      expect(box!.x).toBeGreaterThanOrEqual(0)
+      expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width + 1)
+      expect(box!.y).toBeGreaterThanOrEqual(0)
+      expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height + 1)
+    }
+    for (const button of await page.locator('.listening-controls .button').all()) {
+      expect((await button.boundingBox())?.height).toBeGreaterThanOrEqual(44)
+    }
+  })
+}
