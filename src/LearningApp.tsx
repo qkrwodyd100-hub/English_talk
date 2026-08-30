@@ -51,6 +51,18 @@ type SpeechRecognitionLike = {
 }
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike
 type CheckedAnswer = { sentence: Sentence; judgment: AnswerJudgment }
+type PracticeSnapshot = {
+  selectedDay: number
+  position: number
+  selectedTopic: string
+  attempt: string
+  checkedAnswer: CheckedAnswer | null
+  speechNotice: string
+  noteDraft: string
+  noteStatus: string
+  attemptHistoryOpen: boolean
+  dialogueOpen: boolean
+}
 
 const LEARNING_BACKUP_STORAGE_KEY = `${LEARNING_STORAGE_KEY}.backup`
 
@@ -110,12 +122,16 @@ function voiceScore(voice: SpeechSynthesisVoice) {
 
 export default function LearningApp() {
   const [tab, setTab] = useState<Tab>('practice')
+  const practiceHistory = useRef<PracticeSnapshot[]>([])
+  const [hasPracticeHistory, setHasPracticeHistory] = useState(false)
   const [state, setState] = useState<LearningState>(() => {
     try { return parseLearningState(window.localStorage.getItem(LEARNING_STORAGE_KEY)) }
     catch { return createEmptyLearningState() }
   })
   const [storageNotice, setStorageNotice] = useState('')
   const applyCloudState = useCallback((next: LearningState) => {
+    practiceHistory.current = []
+    setHasPracticeHistory(false)
     setState(next)
     try { persist(next) } catch { setStorageNotice('클라우드 기록을 읽었지만 브라우저 저장소에 저장하지 못했습니다.') }
   }, [])
@@ -191,6 +207,11 @@ export default function LearningApp() {
 
   useEffect(() => {
     if (tab !== 'listening') stopListeningPlayback()
+  }, [tab])
+
+  useEffect(() => {
+    practiceHistory.current = []
+    setHasPracticeHistory(false)
   }, [tab])
 
   const selectedDay = state.selectedDay ?? 1
@@ -277,6 +298,7 @@ export default function LearningApp() {
       setStorageNotice('백업 파일 형식을 확인할 수 없습니다. 기존 학습 데이터는 변경하지 않았습니다.')
       return
     }
+    clearPracticeHistory()
     updateState(mergeLearningStates(state, parseLearningState(raw)))
     setStorageNotice('백업을 현재 학습 기록과 합쳤습니다. 기존 데이터는 유지됩니다.')
   }
@@ -291,8 +313,49 @@ export default function LearningApp() {
     setNoteStatus('')
   }
 
+  function clearPracticeHistory() {
+    practiceHistory.current = []
+    setHasPracticeHistory(false)
+  }
+
+  function savePracticeSnapshot() {
+    if (!current) return
+    practiceHistory.current = [...practiceHistory.current.slice(-19), {
+      selectedDay: current.day,
+      position: Math.max(0, daySentences.findIndex((sentence) => sentence.id === current.id)),
+      selectedTopic,
+      attempt,
+      checkedAnswer,
+      speechNotice,
+      noteDraft,
+      noteStatus,
+      attemptHistoryOpen,
+      dialogueOpen,
+    }]
+    setHasPracticeHistory(true)
+  }
+
+  function restorePreviousPractice() {
+    const snapshot = practiceHistory.current.pop()
+    if (!snapshot) return
+    setHasPracticeHistory(practiceHistory.current.length > 0)
+    stopListeningPlayback()
+    cancelListening()
+    updateState({ ...state, selectedDay: snapshot.selectedDay, dayPositions: { ...state.dayPositions, [snapshot.selectedDay]: snapshot.position } })
+    setSelectedTopic(snapshot.selectedTopic)
+    setAttempt(snapshot.attempt)
+    setCheckedAnswer(snapshot.checkedAnswer)
+    setSpeechNotice(snapshot.speechNotice)
+    setNoteDraft(snapshot.noteDraft)
+    setNoteStatus(snapshot.noteStatus)
+    setAttemptHistoryOpen(snapshot.attemptHistoryOpen)
+    setDialogueOpen(snapshot.dialogueOpen)
+    window.requestAnimationFrame(() => answerInput.current?.focus())
+  }
+
   function selectDay(day: number) {
     hasExplicitDaySelection.current = true
+    clearPracticeHistory()
     updateState({ ...state, selectedDay: day, selectedDayIsManual: true })
     setRevealed(null)
     try { window.speechSynthesis?.cancel() } catch { /* Audio was already unavailable or stopped. */ }
@@ -305,6 +368,7 @@ export default function LearningApp() {
   }
 
   function chooseTopic(topic: string) {
+    clearPracticeHistory()
     setSelectedTopic(topic)
     setTopicsExpanded(false)
     if (topic !== 'all') {
@@ -353,10 +417,15 @@ export default function LearningApp() {
   }
 
   function nextPractice(advanceToNextDay = false) {
+    if (!(advanceToNextDay && current && currentPosition === daySentences.length && current.day >= 60)) savePracticeSnapshot()
     let nextState = state
+    if (current && checkedAnswer) {
+      const currentPosition = daySentences.findIndex((sentence) => sentence.id === current.id)
+      nextState = { ...nextState, dayPositions: { ...nextState.dayPositions, [current.day]: Math.min(daySentences.length, Math.max(0, currentPosition + 1)) } }
+    }
     if (current && checkedAnswer && judgment?.isCorrect && !checkedAnswer.judgment.isCorrect) {
       const correctedState = {
-        ...state,
+        ...nextState,
         completedSentenceIds: state.completedSentenceIds.includes(current.id) ? state.completedSentenceIds : [...state.completedSentenceIds, current.id],
         reviewQueueIds: state.reviewQueueIds.filter((id) => id !== current.id),
       }
@@ -387,6 +456,7 @@ export default function LearningApp() {
     const nextSentence = navigationSentences[navigationPosition + offset]
     if (!nextSentence) return
     const nextDayPosition = daySentences.findIndex((sentence) => sentence.id === nextSentence.id)
+    clearPracticeHistory()
     updateState({ ...state, dayPositions: { ...state.dayPositions, [selectedDay]: nextDayPosition } })
     resetPracticeContext()
     window.requestAnimationFrame(() => answerInput.current?.focus())
@@ -397,9 +467,16 @@ export default function LearningApp() {
       event.preventDefault()
       return
     }
-    if (event.key !== 'ArrowRight' || !checkedAnswer || event.nativeEvent.isComposing || isComposingAnswer.current || event.ctrlKey || event.altKey || event.metaKey) return
-    event.preventDefault()
-    nextPractice(true)
+    if (event.nativeEvent.isComposing || isComposingAnswer.current || event.ctrlKey || event.altKey || event.metaKey) return
+    if (event.key === 'ArrowLeft' && event.currentTarget.value === '' && hasPracticeHistory) {
+      event.preventDefault()
+      restorePreviousPractice()
+      return
+    }
+    if (event.key === 'ArrowRight' && checkedAnswer) {
+      event.preventDefault()
+      nextPractice(true)
+    }
   }
 
   function withCompletedDay(next: LearningState, sentence: Sentence, answer: AnswerJudgment) {
@@ -498,6 +575,7 @@ export default function LearningApp() {
   function practiceAgain(sentence: Sentence) {
     const daySentences = sentences.filter((item) => item.day === sentence.day)
     const position = daySentences.findIndex((item) => item.id === sentence.id)
+    clearPracticeHistory()
     updateState({ ...state, selectedDay: sentence.day, dayPositions: { ...state.dayPositions, [sentence.day]: Math.max(0, position) } })
     setSelectedTopic('all')
     resetPracticeContext()
@@ -530,7 +608,7 @@ export default function LearningApp() {
     {tab === 'practice' && <section className="study-panel" aria-labelledby="practice-heading">
       <div className="learning-controls"><label htmlFor="practice-day-select">학습 Day 선택<select id="practice-day-select" value={selectedDay} onChange={(event) => selectDay(Number(event.target.value))}>{Array.from({ length: 60 }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label><label>주제 필터<select value={selectedTopic} onChange={(event) => chooseTopic(event.target.value)}><option value="all">전체 주제</option>{topics.map((topic) => <option key={topic} value={topic}>{topicName(topic)}</option>)}</select></label></div>
       <section className="topic-progress" aria-label="주제별 진행률"><div className="topic-progress-summary"><div><strong>주제별 진행률</strong><span>현재 Day 주제</span></div>{topicProgress.filter((item) => item.topic === currentDayTopic).map((item) => <span className="topic-summary" key={item.topic}>{topicName(item.topic)} <b>{item.completed}/{item.total}</b></span>)}<button type="button" className="text-button" aria-expanded={topicsExpanded} onClick={() => setTopicsExpanded((value) => !value)}>{topicsExpanded ? '전체 주제 진행률 접기' : '전체 주제 진행률 보기'}</button></div>{topicsExpanded && <div className="topic-progress-list">{topicProgress.map((item) => <span key={item.topic}>{topicName(item.topic)} <b>{item.completed}/{item.total}</b></span>)}</div>}</section>
-      {current ? <><p className="eyebrow">Day {selectedDay} 학습</p><h2 id="practice-heading">{currentPosition} / {dayChallenge.length} · 한국어를 영어로 입력하세요.</h2><p className="resume-copy">Day {selectedDay}에서 {progress.completed}/{progress.total}개를 완료했어요. 답을 확인하면 다음 위치가 저장됩니다.</p><div className="practice-workspace"><div><div className="practice-prompt"><strong>{current.korean}</strong></div><form autoComplete="off" onSubmit={submitAnswer}><div className="answer-input-row"><input ref={answerInput} id="practice-answer" name="practice-answer" aria-label="영어 답변" aria-describedby="answer-shortcut" type="text" autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false} data-1p-ignore="true" data-lpignore="true" value={attempt} onChange={(event) => setAttempt(event.target.value)} onCompositionStart={() => { isComposingAnswer.current = true }} onCompositionEnd={() => { isComposingAnswer.current = false }} onKeyDown={handleAnswerKeyDown} placeholder="영어 문장을 입력하세요" enterKeyHint="go" /><button className="text-button" type="button" onClick={toggleListening} aria-pressed={isListening}>{isListening ? '음성 입력 중지' : '음성으로 입력'}</button></div><p id="answer-shortcut" className="sr-only">정답 확인 후 오른쪽 화살표 키로 다음 문장으로 이동할 수 있습니다.</p><div className="actions practice-navigation"><button className="button" type="submit" disabled={Boolean(checkedAnswer)}>정답 확인</button><button className="button secondary" type="button" onClick={() => browsePractice(-1)} disabled={navigationPosition <= 0}>이전</button><button className="button secondary" type="button" aria-label={checkedAnswer ? '다음 문장' : '다음'} onClick={checkedAnswer ? () => nextPractice() : () => browsePractice(1)} disabled={navigationPosition >= navigationSentences.length - 1}>다음</button></div></form></div><aside className="sentence-note" aria-labelledby="note-heading"><h3 id="note-heading">내 학습 노트</h3><textarea aria-label="내 학습 노트" value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} maxLength={2000} placeholder="표현 차이, 기억할 상황을 적어 보세요." /><div className="note-footer"><span>{noteStatus || (state.sentenceNotes[current.id] ? `최근 수정 ${formatStudyTimestamp(state.sentenceNotes[current.id].updatedAt)}` : '아직 저장한 노트가 없어요.')}</span><button type="button" className="button secondary" onClick={saveNote}>노트 저장</button></div>{(state.answerHistory[current.id] ?? []).length > 0 && <><button className="text-button" type="button" aria-expanded={attemptHistoryOpen} onClick={() => setAttemptHistoryOpen((value) => !value)}>이전 답변 기록 있음 ({state.answerHistory[current.id].length})</button>{attemptHistoryOpen && <ul className="attempt-history">{state.answerHistory[current.id].map((entry) => <li key={`${entry.timestamp}-${entry.attempt}`}><strong>{entry.verdict}</strong><span>{entry.attempt}</span><small>{formatStudyTimestamp(entry.timestamp)}{entry.reason ? ` · ${entry.reason}` : ''}</small></li>)}</ul>}</>}</aside></div>
+      {current ? <><p className="eyebrow">Day {selectedDay} 학습</p><h2 id="practice-heading">{currentPosition} / {dayChallenge.length} · 한국어를 영어로 입력하세요.</h2><p className="resume-copy">Day {selectedDay}에서 {progress.completed}/{progress.total}개를 완료했어요. 답을 확인하면 다음 위치가 저장됩니다.</p><div className="practice-workspace"><div><div className="practice-prompt"><strong>{current.korean}</strong></div><form autoComplete="off" onSubmit={submitAnswer}><div className="answer-input-row"><input ref={answerInput} id="practice-answer" name="practice-answer" aria-label="영어 답변" aria-describedby="answer-shortcut" type="text" autoComplete="off" autoCorrect="off" autoCapitalize="none" spellCheck={false} data-1p-ignore="true" data-lpignore="true" value={attempt} onChange={(event) => setAttempt(event.target.value)} onCompositionStart={() => { isComposingAnswer.current = true }} onCompositionEnd={() => { isComposingAnswer.current = false }} onKeyDown={handleAnswerKeyDown} placeholder="영어 문장을 입력하세요" enterKeyHint="go" /><button className="text-button" type="button" onClick={toggleListening} aria-pressed={isListening}>{isListening ? '음성 입력 중지' : '음성으로 입력'}</button></div><p id="answer-shortcut" className="sr-only">정답 확인 후 오른쪽 화살표 키로 다음 문장으로 이동할 수 있습니다.</p><div className="actions practice-navigation"><button className="button" type="submit" disabled={Boolean(checkedAnswer)}>정답 확인</button><button className="button secondary" type="button" onClick={hasPracticeHistory ? restorePreviousPractice : () => browsePractice(-1)} disabled={hasPracticeHistory ? false : navigationPosition <= 0}>{hasPracticeHistory ? '이전 문장' : '이전'}</button><button className="button secondary" type="button" aria-label={checkedAnswer ? '다음 문장' : '다음'} onClick={checkedAnswer ? () => nextPractice() : () => browsePractice(1)} disabled={navigationPosition >= navigationSentences.length - 1}>다음</button></div></form></div><aside className="sentence-note" aria-labelledby="note-heading"><h3 id="note-heading">내 학습 노트</h3><textarea aria-label="내 학습 노트" value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} maxLength={2000} placeholder="표현 차이, 기억할 상황을 적어 보세요." /><div className="note-footer"><span>{noteStatus || (state.sentenceNotes[current.id] ? `최근 수정 ${formatStudyTimestamp(state.sentenceNotes[current.id].updatedAt)}` : '아직 저장한 노트가 없어요.')}</span><button type="button" className="button secondary" onClick={saveNote}>노트 저장</button></div>{(state.answerHistory[current.id] ?? []).length > 0 && <><button className="text-button" type="button" aria-expanded={attemptHistoryOpen} onClick={() => setAttemptHistoryOpen((value) => !value)}>이전 답변 기록 있음 ({state.answerHistory[current.id].length})</button>{attemptHistoryOpen && <ul className="attempt-history">{state.answerHistory[current.id].map((entry) => <li key={`${entry.timestamp}-${entry.attempt}`}><strong>{entry.verdict}</strong><span>{entry.attempt}</span><small>{formatStudyTimestamp(entry.timestamp)}{entry.reason ? ` · ${entry.reason}` : ''}</small></li>)}</ul>}</>}</aside></div>
       {checkedAnswer && judgment && <div className={`answer-feedback ${judgment.kind === 'exact' ? 'feedback-exact' : judgment.isCorrect ? 'feedback-allowed' : 'feedback-needs-work'}`} aria-live="polite"><p><strong>정답:</strong> {current.english}</p><p><strong>{judgment.kind === 'exact' ? '정답 · 정확해요!' : judgment.kind === 'accepted-alternative' ? '정답' : judgment.kind === 'contextual-correct' ? '정답 · 더 자연스러운 표현' : '수정 필요'}</strong>{judgment.kind === 'exact' ? ' · 입력한 표현이 기준 문장과 같거나 축약형만 달라요.' : judgment.kind === 'accepted-alternative' ? ' · 저장된 동등 표현과 일치해요.' : judgment.kind === 'contextual-correct' ? ' · 상황에 맞는 표현이에요. 기준 표현도 함께 익혀 보세요.' : ' · 누락 또는 오타 단어를 확인해 보세요.'}</p>{!judgment.isCorrect && <p>확인할 단어: {missingWords.length ? missingWords.join(', ') : '어순과 표현'}</p>}<PhraseChoices sentence={current} onChoose={setAttempt} /><div className="word-feedback" aria-label="단어별 피드백">{wordFeedback.map((item, index) => <span className={item.status} key={`${item.word}-${index}`}>{item.word}</span>)}</div><div className="actions"><button className="text-button" onClick={() => speakEnglish(current.english, '정답 문장을 재생했습니다.')}>정답 듣기</button><button className="text-button" aria-pressed={state.favoriteIds.includes(current.id)} onClick={() => updateState({ ...state, ...toggleFavorite(state, current.id) })}>{state.favoriteIds.includes(current.id) ? '즐겨찾기 해제' : '즐겨찾기'}</button></div></div>}</> : <p className="empty-state">Day {selectedDay} 문장이 없습니다. 다른 Day를 선택해 보세요.</p>}
       {dialogue && <section className="dialogue-launch"><div><strong>Day {selectedDay} 미니 대화</strong><p>{dialogue.turns.length}턴으로 오늘 표현을 실제 대화처럼 익혀 보세요.</p></div><button className="button secondary" onClick={() => setDialogueOpen(true)}>미니 대화 연습</button></section>}
       {dialogueOpen && dialogue && <section className="mini-dialogue" aria-labelledby="dialogue-heading"><h2 id="dialogue-heading">Day {selectedDay} 미니 대화</h2><p className="turn-pill">{dialogue.turns.length}턴 · {topicName(dialogue.topic)}</p><div className="dialogue-transcript">{dialogue.turns.map((turn, index) => <p key={`${turn.role}-${index}`}><strong>{turn.role}:</strong> {turn.english}<span>{turn.korean}</span></p>)}</div><button className="button" onClick={() => setDialogueOpen(false)}>대화 마치기</button></section>}

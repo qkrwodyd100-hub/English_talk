@@ -438,6 +438,116 @@ test('uses ArrowRight only after checking an answer to advance practice and refo
   expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(1)
 })
 
+test('restores a checked practice from in-memory history with ArrowLeft without duplicating learning', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await answer.fill('A table for one, please.')
+  await answer.press('Enter')
+  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
+  const learningRecord = () => page.evaluate(() => {
+    const state = JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state
+    return {
+      answerHistory: state.answerHistory,
+      attemptCounts: state.attemptCounts,
+      completedSentenceIds: state.completedSentenceIds,
+      masteredIds: state.masteredIds,
+      reviewQueueIds: state.reviewQueueIds,
+      studyActivities: state.studyActivities,
+      completedChallengeDates: state.completedChallengeDates,
+    }
+  })
+  const beforeAdvance = await learningRecord()
+
+  await answer.press('ArrowRight')
+  await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+  await expect(answer).toHaveValue('')
+  await answer.press('ArrowLeft')
+
+  await expect(page.locator('.practice-prompt').getByText('한 명 자리 부탁해요.')).toBeVisible()
+  await expect(answer).toHaveValue('A table for one, please.')
+  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
+  await expect(answer).toBeFocused()
+  expect(await learningRecord()).toEqual(beforeAdvance)
+
+  await answer.press('ArrowRight')
+  await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+  expect(await learningRecord()).toEqual(beforeAdvance)
+})
+
+test('clears practice back history when the learner changes tabs', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await answer.fill('A table for one, please.')
+  await answer.press('Enter')
+  await answer.press('ArrowRight')
+  await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+
+  await page.getByRole('button', { name: '플래시카드' }).click()
+  await page.getByRole('button', { name: '타이핑 연습' }).click()
+  await answer.press('ArrowLeft')
+
+  await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+  await expect(page.getByRole('button', { name: '이전', exact: true })).toBeEnabled()
+})
+
+test('returns from the next Day to a checked final sentence without repeating study activity', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
+      masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 2, dayPositions: { 2: 9 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
+    } }))
+  })
+  await page.goto('/')
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+  await answer.fill('It was delicious.')
+  await answer.press('Enter')
+  await answer.press('ArrowRight')
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('3')
+  const activityCount = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)
+
+  await answer.press('ArrowLeft')
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
+  await expect(page.locator('.practice-prompt').getByText('맛있었어요.')).toBeVisible()
+  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
+  await answer.press('ArrowRight')
+  await expect(page.getByLabel('학습 Day 선택')).toHaveValue('3')
+  expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(activityCount)
+})
+
+test('keeps ArrowLeft native for typed and composing answers while preserving multiple practice snapshots', async ({ page }) => {
+  await page.goto('/')
+  await page.getByLabel('학습 Day 선택').selectOption('2')
+  const answer = page.getByRole('textbox', { name: '영어 답변' })
+
+  await answer.fill('A table for one, please.')
+  await answer.press('Enter')
+  await answer.press('ArrowRight')
+  await answer.fill('Can I see the menu?')
+  await answer.press('Enter')
+  await answer.press('ArrowRight')
+  await expect(page.locator('.practice-prompt').getByText('뭘 추천하시나요?')).toBeVisible()
+
+  await answer.fill('draft')
+  await answer.press('ArrowLeft')
+  await expect(page.locator('.practice-prompt').getByText('뭘 추천하시나요?')).toBeVisible()
+  await expect(answer).toHaveValue('draft')
+
+  await answer.fill('')
+  await answer.dispatchEvent('compositionstart')
+  await answer.dispatchEvent('keydown', { key: 'ArrowLeft', isComposing: true })
+  await answer.dispatchEvent('compositionend')
+  await expect(page.locator('.practice-prompt').getByText('뭘 추천하시나요?')).toBeVisible()
+
+  await answer.press('ArrowLeft')
+  await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
+  await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
+  await answer.fill('')
+  await answer.press('ArrowLeft')
+  await expect(page.locator('.practice-prompt').getByText('한 명 자리 부탁해요.')).toBeVisible()
+})
+
 test('does not advance an answered practice with composing or modified ArrowRight keys and keeps the button fallback', async ({ page }) => {
   await page.goto('/')
   await page.getByLabel('학습 Day 선택').selectOption('2')
