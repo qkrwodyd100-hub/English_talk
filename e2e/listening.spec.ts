@@ -30,6 +30,44 @@ test('listening study plays selected non-contiguous Days as Korean then English 
   })).toBe(0)
 })
 
+test('independent Korean and English speed controls expose 2.5x, speak it, and persist it after reload', async ({ page }) => {
+  await page.addInitScript(() => {
+    class MockUtterance { text = ''; lang = ''; rate = 1; voice = null; onend: (() => void) | null = null; onerror: (() => void) | null = null; constructor(text: string) { this.text = text } }
+    const spoken: MockUtterance[] = []
+    const synth = { speak: (utterance: MockUtterance) => spoken.push(utterance), cancel: () => undefined, pause: () => undefined, resume: () => undefined, getVoices: () => [], addEventListener: () => undefined, removeEventListener: () => undefined }
+    Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: synth })
+    Object.defineProperty(window, 'SpeechSynthesisUtterance', { configurable: true, value: MockUtterance })
+    ;(window as typeof window & { __spoken?: MockUtterance[] }).__spoken = spoken
+  })
+  await page.goto('/')
+  await page.getByRole('button', { name: '듣기 학습' }).click()
+  await page.locator('.listening-setup summary').click()
+  await page.getByLabel('Day 1', { exact: true }).check()
+
+  const koreanRate = page.getByLabel('한국어 속도')
+  const englishRate = page.getByLabel('영어 속도')
+  await expect(koreanRate).toHaveAttribute('min', '0.5')
+  await expect(koreanRate).toHaveAttribute('max', '2.5')
+  await expect(englishRate).toHaveAttribute('max', '2.5')
+  await koreanRate.press('End')
+  await englishRate.press('End')
+  await expect(koreanRate).toHaveValue('2.5')
+  await expect(englishRate).toHaveValue('2.5')
+  await expect(page.locator('.listening-settings output')).toHaveText(['2.50배', '2.50배'])
+
+  await page.getByRole('button', { name: '재생 시작' }).click()
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __spoken: Array<{ lang: string; rate: number }> }).__spoken.map(({ lang, rate }) => ({ lang, rate })))).toEqual([{ lang: 'ko-KR', rate: 2.5 }])
+  await page.evaluate(() => (window as typeof window & { __spoken: Array<{ onend: (() => void) | null }> }).__spoken[0].onend?.())
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { __spoken: Array<{ lang: string; rate: number }> }).__spoken.map(({ lang, rate }) => ({ lang, rate })))).toEqual([{ lang: 'ko-KR', rate: 2.5 }, { lang: 'en-US', rate: 2.5 }])
+  await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.listening.v1') ?? '{}'))).toMatchObject({ koreanRate: 2.5, englishRate: 2.5 })
+
+  await page.reload()
+  await page.getByRole('button', { name: '듣기 학습' }).click()
+  await page.locator('.listening-setup summary').click()
+  await expect(page.getByLabel('한국어 속도')).toHaveValue('2.5')
+  await expect(page.getByLabel('영어 속도')).toHaveValue('2.5')
+})
+
 test('now-playing card exposes only the current bilingual sentences without visible language or wake-lock copy', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: '듣기 학습' }).click()
@@ -96,6 +134,12 @@ for (const viewport of [{ width: 360, height: 800 }, { width: 390, height: 844 }
       '내 문장',
     ])
     await page.getByRole('button', { name: '듣기 학습' }).click()
+
+    await page.locator('.listening-setup summary').click()
+    for (const speedControl of [page.getByLabel('한국어 속도'), page.getByLabel('영어 속도')]) {
+      await expect(speedControl).toHaveAttribute('max', '2.5')
+      expect((await speedControl.boundingBox())?.height).toBeGreaterThanOrEqual(44)
+    }
 
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1)
     const tabBoxes = await tabs.evaluateAll((buttons) => buttons.slice(1, 3).map((button) => button.getBoundingClientRect().toJSON()))

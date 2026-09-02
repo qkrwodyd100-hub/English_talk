@@ -18,6 +18,8 @@ type SynthLike = { speak: (utterance: any) => void; cancel: () => void; pause: (
 
 export const LISTENING_STORAGE_KEY = 'english-talk.listening.v1'
 export const defaultListeningPreferences: ListeningPreferences = { selectedDays: [], includeCustom: false, koreanRate: 0.85, englishRate: 0.92, pauseMs: 600, repeatAll: false, drivingMode: false, position: 0 }
+export const LISTENING_RATE_MIN = 0.5
+export const LISTENING_RATE_MAX = 2.5
 
 export function parseListeningPreferences(raw: string | null): ListeningPreferences {
   try {
@@ -28,7 +30,10 @@ export function parseListeningPreferences(raw: string | null): ListeningPreferen
   } catch { return { ...defaultListeningPreferences } }
 }
 
-function validRate(rate: unknown, fallback: number) { return typeof rate === 'number' && rate >= 0.5 && rate <= 1.5 ? rate : fallback }
+function validRate(rate: unknown, fallback: number) {
+  if (typeof rate !== 'number' || !Number.isFinite(rate)) return fallback
+  return Math.min(LISTENING_RATE_MAX, Math.max(LISTENING_RATE_MIN, rate))
+}
 function validPause(pause: unknown) { return typeof pause === 'number' && pause >= 0 && pause <= 3000 ? pause : defaultListeningPreferences.pauseMs }
 
 export function createListeningPlaylist(sentences: Sentence[], selectedDays: number[], includeCustom: boolean) {
@@ -84,6 +89,9 @@ export function createListeningController(deps: {
       cancel(); playlist = nextPlaylist; preferences = { ...defaultListeningPreferences, ...nextPreferences }; index = Math.min(Math.max(0, startIndex), Math.max(0, playlist.length - 1)); const token = generation
       if (!playlist.length) { stage = 'error'; publish('먼저 들을 Day를 선택하세요.'); return }
       speakKorean(token)
+    },
+    updatePreferences(nextPreferences: Partial<Pick<ListeningPreferences, 'koreanRate' | 'englishRate' | 'pauseMs' | 'repeatAll'>>) {
+      preferences = { ...preferences, ...nextPreferences }
     },
     pause() { if (stage === 'korean' || stage === 'english') { pausedStage = stage; try { deps.synth.pause() } catch { /* browser may have interrupted already */ }; stage = 'paused'; publish() } },
     resume() { if (stage === 'paused') { try { deps.synth.resume() } catch { /* state remains recoverable */ }; stage = pausedStage; publish() } },

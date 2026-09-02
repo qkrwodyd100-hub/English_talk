@@ -17,6 +17,13 @@ describe('listening playlist', () => {
   it('does not convert corrupt stored preferences into an all-Day queue', () => {
     expect(parseListeningPreferences('{bad json}')).toMatchObject({ selectedDays: [], includeCustom: false })
   })
+
+  it('keeps finite 0.5 through 2.5 rates, clamps finite out-of-range values, and falls back for invalid values without losing legacy settings', () => {
+    expect(parseListeningPreferences(JSON.stringify({ selectedDays: [3, 1], position: 4, includeCustom: true, koreanRate: 2.5, englishRate: 0.5 }))).toMatchObject({ selectedDays: [1, 3], position: 4, includeCustom: true, koreanRate: 2.5, englishRate: 0.5 })
+    expect(parseListeningPreferences(JSON.stringify({ koreanRate: 2.51, englishRate: 0.49 }))).toMatchObject({ koreanRate: 2.5, englishRate: 0.5 })
+    expect(parseListeningPreferences(JSON.stringify({ koreanRate: '2.5', englishRate: null }))).toMatchObject({ koreanRate: 0.85, englishRate: 0.92 })
+    expect(parseListeningPreferences(JSON.stringify({ koreanRate: Number.POSITIVE_INFINITY, englishRate: Number.NaN }))).toMatchObject({ koreanRate: 0.85, englishRate: 0.92 })
+  })
 })
 
 describe('listening controller', () => {
@@ -51,5 +58,24 @@ describe('listening controller', () => {
     spoken[2].onend!()
     spoken[3].onend!()
     expect(state).toHaveBeenLastCalledWith(expect.objectContaining({ index: 1, stage: 'complete' }))
+  })
+
+  it('applies a speed change only to the next utterance and preserves paused-resume speech', () => {
+    const spoken: Array<{ text: string; lang: string; rate: number; onend?: () => void }> = []
+    const synth = { speak: vi.fn((utterance) => spoken.push(utterance)), cancel: vi.fn(), pause: vi.fn(), resume: vi.fn() }
+    const controller = createListeningController({ synth, makeUtterance: () => ({}), setTimeout: (callback) => { callback(); return 1 }, clearTimeout: vi.fn(), onState: vi.fn() })
+    controller.start(createListeningPlaylist(sentences, [1], false), { koreanRate: 0.85, englishRate: 0.92, pauseMs: 0 })
+    controller.updatePreferences({ koreanRate: 2.5, englishRate: 2.5 })
+    expect(spoken[0]).toMatchObject({ lang: 'ko-KR', rate: 0.85 })
+
+    controller.pause()
+    controller.updatePreferences({ koreanRate: 0.5, englishRate: 2.5 })
+    controller.resume()
+    expect(synth.speak).toHaveBeenCalledTimes(1)
+
+    spoken[0].onend!()
+    expect(spoken[1]).toMatchObject({ lang: 'en-US', rate: 2.5 })
+    spoken[1].onend!()
+    expect(spoken[2]).toMatchObject({ lang: 'ko-KR', rate: 0.5 })
   })
 })
