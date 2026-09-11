@@ -1,14 +1,16 @@
 # Private learning-group setup
 
-This setup deliberately keeps member email addresses out of Git, the frontend bundle, screenshots, and Vite environment variables. Enter the three real addresses only in the private Supabase SQL Editor query described below.
+This setup deliberately keeps member email addresses out of Git, the frontend bundle, screenshots, and Vite environment variables. Enter the two real addresses only in the private Supabase SQL Editor query described below.
 
-## 1. Confirm the three Auth users
+## 1. Confirm the two Auth users
 
 1. Open Supabase Dashboard → **Authentication** → **Users**.
-2. Confirm all three intended addresses appear exactly once and show a confirmed email.
+2. Confirm both intended addresses appear exactly once and show a confirmed email.
 3. Do not continue while an address is missing, misspelled, duplicated, or unconfirmed. Request and open a Magic Link on that account first.
 
 ## 2. Apply the schema migration
+
+Minimal one-click path: in one new private SQL Editor query, paste the complete migration first, append the operator query from section 3, replace the two placeholders, and select **Run** once. The migration is rerunnable and the account-link operation is atomic. The separate steps below make the same checks easier to inspect.
 
 1. Open **SQL Editor** → **New query**.
 2. Open `supabase/migrations/202608150001_private_learning_groups.sql` locally and paste its complete contents.
@@ -27,109 +29,38 @@ Expected: exactly three rows and `rowsecurity = true` for every row.
 
 ## 3. Privately seed one group
 
-Create a second **New query**. Replace the three placeholders in the first array with the intended addresses. Do not save, share, screenshot, or commit the populated query.
+Create a second **New query**. Open `supabase/operations/link-two-learning-accounts.sql`, replace its two placeholders with the intended addresses, and paste it into SQL Editor. Do not save, share, screenshot, or commit the populated query.
 
-The block is atomic. It refuses to proceed unless there are exactly three distinct confirmed Auth users, none is already in a group, and at most one legacy `learning_profiles` row exists. A legacy row is copied into a private backup table and then into the shared group profile; the old row is not deleted.
+The operation is atomic and safe to rerun with the same pair. It refuses to proceed unless there are exactly two distinct confirmed Auth users and their existing memberships are compatible. It privately backs up zero, one, or two legacy `learning_profiles` rows without deleting them. When both rows exist, the higher revision wins positional values (then newer `updated_at`, then placeholder order as a deterministic tie-break), while sets, history, notes, and custom content are merged with the same precedence as the app's `mergeLearningStates` function. Invalid legacy JSON or a partially conflicting membership aborts the whole transaction.
 
 ```sql
-do $$
-declare
-  target_emails text[] := array[
-    '<MEMBER_EMAIL_1>',
-    '<MEMBER_EMAIL_2>',
-    '<MEMBER_EMAIL_3>'
-  ];
-  target_user_ids uuid[];
-  new_group_id uuid;
-  legacy_count integer;
-begin
-  if cardinality(target_emails) <> 3
-     or (select count(distinct lower(value)) from unnest(target_emails) value) <> 3 then
-    raise exception 'Exactly three distinct member emails are required';
-  end if;
-
-  select array_agg(user_id order by member_order)
-  into target_user_ids
-  from (
-    select requested.member_order, account.id as user_id
-    from unnest(target_emails) with ordinality requested(email, member_order)
-    join auth.users account on lower(account.email) = lower(requested.email)
-    where account.email_confirmed_at is not null
-  ) confirmed;
-
-  if coalesce(cardinality(target_user_ids), 0) <> 3 then
-    raise exception 'All three exact Auth users must exist and have confirmed emails';
-  end if;
-
-  if exists (
-    select 1 from public.learning_group_members
-    where user_id = any(target_user_ids)
-  ) then
-    raise exception 'At least one target user already belongs to a learning group';
-  end if;
-
-  select count(*) into legacy_count
-  from public.learning_profiles
-  where user_id = any(target_user_ids);
-
-  if legacy_count > 1 then
-    raise exception 'More than one legacy profile exists; stop and merge the exported backups before seeding';
-  end if;
-
-  insert into public.learning_groups(created_by)
-  values (target_user_ids[1])
-  returning id into new_group_id;
-
-  insert into private.learning_profile_migration_backups(
-    group_id, source_user_id, learning_state, revision, updated_at
-  )
-  select new_group_id, user_id, learning_state, revision, updated_at
-  from public.learning_profiles
-  where user_id = any(target_user_ids);
-
-  insert into public.learning_group_profiles(
-    group_id, learning_state, revision, updated_at
-  )
-  select new_group_id, learning_state, revision, updated_at
-  from public.learning_profiles
-  where user_id = any(target_user_ids)
-  order by updated_at desc
-  limit 1;
-
-  insert into public.learning_group_members(group_id, user_id)
-  select new_group_id, member.user_id
-  from unnest(target_user_ids) as member(user_id);
-end
-$$;
+select *
+from private.link_two_learning_accounts(
+  '<MEMBER_EMAIL_1>',
+  '<MEMBER_EMAIL_2>'
+);
 ```
 
-Expected: `Success. No rows returned`. If it raises an exception, no group, membership, backup, or profile change from this block is committed.
+Expected: one row with `member_count = 2`, `profile_count = 1`, and `backed_up_legacy_count` from `0` through `2`. If it raises an exception, no group, membership, backup, or profile change from the account-link operation is committed.
 
 ## 4. Read back without exposing emails
 
-Run this query and keep only the counts, not user identifiers:
+Re-run the same private operation query with the same two placeholders populated. This is a read-only no-op for an already linked pair and scopes the readback to those exact accounts. Keep only the three counts, not the group ID or user identifiers:
 
 ```sql
-select
-  groups.id as group_id,
-  count(distinct members.user_id) as member_count,
-  count(distinct profiles.group_id) as profile_count,
-  count(distinct backups.source_user_id) as backed_up_legacy_count
-from public.learning_groups groups
-join public.learning_group_members members on members.group_id = groups.id
-left join public.learning_group_profiles profiles on profiles.group_id = groups.id
-left join private.learning_profile_migration_backups backups on backups.group_id = groups.id
-group by groups.id
-order by max(groups.created_at) desc
-limit 1;
+select *
+from private.link_two_learning_accounts(
+  '<MEMBER_EMAIL_1>',
+  '<MEMBER_EMAIL_2>'
+);
 ```
 
-Expected: `member_count = 3`; `profile_count = 1` when a legacy profile existed, otherwise `0`; `backed_up_legacy_count` equals the number of migrated legacy rows.
+Expected: `member_count = 2`; `profile_count = 1`; `backed_up_legacy_count` is `0`, `1`, or `2` and equals the number of preserved legacy rows.
 
 Security behavior: members can select and initially insert their shared profile, but updates must use the membership-checked `update_learning_group_profile` compare-and-swap RPC. Direct table updates and deletes are not granted. Oversized or structurally malformed learning-state JSON is rejected by the database.
 
-## 5. Verify on the three devices/accounts
+## 5. Verify on the two devices/accounts
 
 1. On each device, request and open its own Magic Link on that same device. Confirm the panel shows the expected current account and **클라우드 동기화됨**.
-2. On account/device A, add a harmless custom sentence. On B, press **지금 동기화** and confirm it appears; add a different sentence on B. On A, press **지금 동기화** and confirm both remain. Repeat the read on C.
-3. Sign out on C and confirm the shared sentences disappear from that device's local signed-out view. A non-member account must show **공유 그룹에 등록되지 않은 계정** and must not read or write the group profile.
+2. On account/device A, add a harmless custom sentence. On B, press **지금 동기화** and confirm it appears; add a different sentence on B. On A, press **지금 동기화** and confirm both remain.
+3. Sign out on B and confirm the shared sentences disappear from that device's signed-out account view. A non-member account must show **공유 그룹에 등록되지 않은 계정** and must not read or write the group profile.
