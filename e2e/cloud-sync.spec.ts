@@ -7,6 +7,13 @@ let insertsUsingUpsert = 0
 let profileReadDelayMs = 0
 const user = { id: 'user-fixture', aud: 'authenticated', role: 'authenticated', email: 'learner@example.com' }
 
+function jsonbRoundTrip(value: Record<string, unknown>) {
+  return JSON.parse(JSON.stringify(value, (_key, item) => {
+    if (!item || Array.isArray(item) || typeof item !== 'object') return item
+    return Object.fromEntries(Object.entries(item).sort(([left], [right]) => left.localeCompare(right)))
+  })) as Record<string, unknown>
+}
+
 async function installCloudMock(context: BrowserContext) {
   await context.route('https://fixture.supabase.co/**', async (route: Route) => {
     const request = route.request()
@@ -29,7 +36,7 @@ async function installCloudMock(context: BrowserContext) {
       }
       cloud.row = {
         group_id: body.group_id,
-        learning_state: body.learning_state,
+        learning_state: jsonbRoundTrip(body.learning_state),
         revision: (cloud.row?.revision ?? 0) + 1,
         updated_at: new Date().toISOString(),
       }
@@ -41,7 +48,7 @@ async function installCloudMock(context: BrowserContext) {
       const body = request.postDataJSON() as { expected_revision: number; next_learning_state: Record<string, unknown> }
       const expectedRevision = body.expected_revision
       if (!cloud.row || cloud.row.revision !== expectedRevision) return route.fulfill({ status: 200, json: [] })
-      cloud.row = { ...cloud.row, learning_state: body.next_learning_state, revision: cloud.row.revision + 1, updated_at: new Date().toISOString() }
+      cloud.row = { ...cloud.row, learning_state: jsonbRoundTrip(body.next_learning_state), revision: cloud.row.revision + 1, updated_at: new Date().toISOString() }
       return route.fulfill({ status: 200, json: [cloud.row] })
     }
     return route.fulfill({ status: 404, json: { message: `Unhandled ${request.method()} ${url.pathname}` } })
@@ -90,6 +97,38 @@ test('an already-open device can pull another device change with sync now', asyn
 
   await deviceA.close()
   await deviceB.close()
+})
+
+test('does not recreate a cloud format warning when JSONB reorders duplicate history fields', async ({ browser }) => {
+  const timestamp = '2026-09-11T02:00:00.000Z'
+  cloud.row = {
+    group_id: groupId,
+    learning_state: {
+      masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 1, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [],
+      studyActivities: [{ action: 'answer-checked', correct: true, day: 1, sentenceId: 'day-01-01', timestamp }],
+      sentenceNotes: {}, answerHistory: { 'day-01-01': [{ attempt: 'Hello.', timestamp, verdict: 'correct' }] },
+    },
+    revision: 1,
+    updated_at: timestamp,
+  }
+  const context = await browser.newContext()
+  await Promise.all([installCloudMock(context), authenticate(context)])
+  const page = await context.newPage()
+  await page.addInitScript(({ syncedAt }) => localStorage.setItem('english-talk.learning', JSON.stringify({ version: 4, state: {
+    masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 1, dayPositions: {}, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [],
+    studyActivities: [{ timestamp: syncedAt, day: 1, sentenceId: 'day-01-01', action: 'answer-checked', correct: true }],
+    sentenceNotes: {}, answerHistory: { 'day-01-01': [{ timestamp: syncedAt, attempt: 'Hello.', verdict: 'correct' }] },
+  } })), { syncedAt: timestamp })
+
+  await page.goto('/')
+  await expect(page.getByLabel('계정 및 동기화')).toContainText('클라우드 동기화됨')
+  await page.reload()
+
+  await expect(page.getByLabel('계정 및 동기화')).toContainText('클라우드 동기화됨')
+  await expect(page.getByLabel('계정 및 동기화')).not.toContainText('클라우드 기록 형식이 올바르지 않아')
+  expect(cloud.row?.learning_state.studyActivities).toHaveLength(1)
+  expect((cloud.row?.learning_state.answerHistory as Record<string, unknown[]>)['day-01-01']).toHaveLength(1)
+  await context.close()
 })
 
 test('syncs a flashcard note through the shared sentenceNotes payload without account data', async ({ browser }) => {
