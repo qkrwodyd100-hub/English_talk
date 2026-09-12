@@ -267,7 +267,13 @@ function readAttemptCounts(value: unknown): Record<string, number> {
 
 function readStudyActivities(value: unknown): StudyActivity[] {
   if (!Array.isArray(value)) return []
-  const unique = new Map(value.filter(isStudyActivity).map((activity) => [JSON.stringify(activity), activity]))
+  const unique = new Map(value.filter(isStudyActivity).map((activity) => [JSON.stringify([
+    activity.timestamp,
+    activity.day,
+    activity.sentenceId,
+    activity.action,
+    activity.correct ?? null,
+  ]), activity]))
   return [...unique.values()].sort((left, right) => right.timestamp.localeCompare(left.timestamp))
 }
 
@@ -285,7 +291,12 @@ function readAnswerHistory(value: unknown): Record<string, AnswerAttempt[]> {
   if (!value || typeof value !== 'object') return {}
   return Object.fromEntries(Object.entries(value).flatMap(([id, history]) => {
     if (!Array.isArray(history)) return []
-    const unique = new Map(history.filter(isAnswerAttempt).map((entry) => [JSON.stringify(entry), entry]))
+    const unique = new Map(history.filter(isAnswerAttempt).map((entry) => [JSON.stringify([
+      entry.timestamp,
+      entry.attempt,
+      entry.verdict,
+      entry.reason ?? null,
+    ]), entry]))
     const entries = [...unique.values()].sort((left, right) => right.timestamp.localeCompare(left.timestamp)).slice(0, MAX_ANSWER_HISTORY)
     return entries.length ? [[id, entries]] : []
   }))

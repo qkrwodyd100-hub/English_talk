@@ -31,6 +31,27 @@ describe('learning cloud reconciliation', () => {
     expect(parseCloudLearningState(createEmptyLearningState())).toEqual(createEmptyLearningState())
   })
 
+  it('keeps semantically identical histories idempotent across JSONB key reordering', () => {
+    const timestamp = '2026-09-11T02:00:00.000Z'
+    const local = state({
+      studyActivities: [{ timestamp, day: 1, sentenceId: 'day-01-01', action: 'answer-checked', correct: true }],
+      answerHistory: { 'day-01-01': [{ timestamp, attempt: 'Hello.', verdict: 'correct' }] },
+    })
+    const cloud = state({
+      studyActivities: [{ action: 'answer-checked', correct: true, day: 1, sentenceId: 'day-01-01', timestamp }],
+      answerHistory: { 'day-01-01': [{ attempt: 'Hello.', timestamp, verdict: 'correct' }] },
+    })
+    const merged = rebaseLearningState(createEmptyLearningState(), local, cloud)
+    const jsonbRoundTrip = JSON.parse(JSON.stringify(merged, (_key, value) => {
+      if (!value || Array.isArray(value) || typeof value !== 'object') return value
+      return Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)))
+    }))
+
+    expect(merged.studyActivities).toHaveLength(1)
+    expect(merged.answerHistory['day-01-01']).toHaveLength(1)
+    expect(parseCloudLearningState(jsonbRoundTrip)).not.toBeNull()
+  })
+
   it('uses the newer profile for positional values while unioning owned sets and history', () => {
     const local = profile(state({
       selectedDay: 4,
