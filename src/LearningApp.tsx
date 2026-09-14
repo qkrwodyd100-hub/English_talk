@@ -35,6 +35,7 @@ import {
 import { builtInDialogues } from './dialogues'
 import { builtInSentences } from './sentences'
 import { useLearningCloud } from './use-learning-cloud'
+import { validateNewPassword } from './auth'
 import ListeningPanel from './ListeningPanel'
 
 type Tab = 'practice' | 'cards' | 'review' | 'manage' | 'history' | 'notes' | 'listening'
@@ -627,16 +628,64 @@ export default function LearningApp() {
 }
 
 function CloudAccountPanel({ cloud }: { cloud: ReturnType<typeof useLearningCloud> }) {
+  const [mode, setMode] = useState<'login' | 'signup' | 'reset'>('login')
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmation, setConfirmation] = useState('')
   const [authMessage, setAuthMessage] = useState('')
-  const [sending, setSending] = useState(false)
+  const [pending, setPending] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [editingPassword, setEditingPassword] = useState(cloud.passwordRecovery)
 
-  async function sendMagicLink(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    if (cloud.passwordRecovery) setEditingPassword(true)
+  }, [cloud.passwordRecovery])
+
+  function selectMode(next: 'login' | 'signup' | 'reset') {
+    setMode(next)
+    setPassword('')
+    setConfirmation('')
+    setAuthMessage('')
+  }
+
+  async function submitLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!email.trim()) return
-    setSending(true)
-    setAuthMessage(await cloud.signIn(email.trim()))
-    setSending(false)
+    if (!email.trim() || !password) return
+    setPending(true)
+    const result = await cloud.signIn(email.trim(), password)
+    setAuthMessage(result.message)
+    if (result.ok) setPassword('')
+    setPending(false)
+  }
+
+  async function submitSignup(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const validation = validateNewPassword(password, confirmation)
+    if (validation) { setAuthMessage(validation); return }
+    setPending(true)
+    const result = await cloud.signUp(email.trim(), password)
+    setAuthMessage(result.message)
+    if (result.ok) { setPassword(''); setConfirmation('') }
+    setPending(false)
+  }
+
+  async function submitReset(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setPending(true)
+    const result = await cloud.requestPasswordReset(email.trim())
+    setAuthMessage(result.message)
+    setPending(false)
+  }
+
+  async function submitNewPassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const validation = validateNewPassword(password, confirmation)
+    if (validation) { setAuthMessage(validation); return }
+    setPending(true)
+    const result = await cloud.updatePassword(password)
+    setAuthMessage(result.message)
+    if (result.ok) { setPassword(''); setConfirmation(''); setEditingPassword(false) }
+    setPending(false)
   }
 
   return <section className={`cloud-account cloud-${cloud.status}`} aria-label="계정 및 동기화">
@@ -644,16 +693,54 @@ function CloudAccountPanel({ cloud }: { cloud: ReturnType<typeof useLearningClou
       <strong>{cloud.user?.email ?? '기기 간 학습 기록 동기화'}</strong>
       <p>{authMessage || cloud.message}</p>
     </div>
-    {cloud.user ? <div className="cloud-actions">
-      {cloud.status === 'error' && <button type="button" className="button secondary" onClick={cloud.retry}>동기화 다시 시도</button>}
-      <button type="button" className="button secondary" onClick={cloud.synchronizeNow} disabled={cloud.status === 'syncing'}>지금 동기화</button>
-      <button type="button" className="text-button" onClick={() => { void cloud.signOut() }}>로그아웃</button>
-    </div> : cloud.configured ? <form className="cloud-login" onSubmit={sendMagicLink}>
-      <label htmlFor="login-email">로그인 이메일</label>
-      <input id="login-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" />
-      <button type="submit" className="button" disabled={sending}>{sending ? '보내는 중…' : '로그인 링크 받기'}</button>
-      <p className="cloud-auth-help">Magic Link를 요청한 기기와 링크를 여는 기기가 다르면 링크를 연 기기에 로그인 세션이 생성됩니다. 동기화할 각 기기에서 로그인 상태를 확인하고, 필요하면 그 기기에서 링크를 다시 요청하세요.</p>
-    </form> : null}
+    {cloud.user ? <>
+      <div className="cloud-actions">
+        {cloud.status === 'error' && <button type="button" className="button secondary" onClick={cloud.retry}>동기화 다시 시도</button>}
+        <button type="button" className="button secondary" onClick={cloud.synchronizeNow} disabled={cloud.status === 'syncing'}>지금 동기화</button>
+        <button type="button" className="text-button" onClick={() => setEditingPassword((value) => !value)}>비밀번호 설정 또는 변경</button>
+        <button type="button" className="text-button" onClick={() => { void cloud.signOut() }}>이 기기에서 로그아웃</button>
+      </div>
+      {editingPassword && <form className="cloud-login password-form" onSubmit={submitNewPassword}>
+        <strong>{cloud.passwordRecovery ? '새 비밀번호를 설정하세요' : '비밀번호 설정 또는 변경'}</strong>
+        <label htmlFor="account-new-password">새 비밀번호</label>
+        <input id="account-new-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} />
+        <label htmlFor="account-new-password-confirmation">새 비밀번호 확인</label>
+        <input id="account-new-password-confirmation" type={showPassword ? 'text' : 'password'} autoComplete="new-password" minLength={8} required value={confirmation} onChange={(event) => setConfirmation(event.target.value)} />
+        <button type="button" className="text-button" aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'} onClick={() => setShowPassword((value) => !value)}>{showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}</button>
+        <button type="submit" className="button" disabled={pending}>{pending ? '저장 중…' : '새 비밀번호 저장'}</button>
+      </form>}
+    </> : cloud.configured ? <div className="cloud-auth">
+      {mode === 'login' && <form className="cloud-login" onSubmit={submitLogin}>
+        <label htmlFor="login-email">로그인 이메일</label>
+        <input id="login-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" />
+        <label htmlFor="login-password">비밀번호</label>
+        <input id="login-password" type={showPassword ? 'text' : 'password'} autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} />
+        <button type="button" className="text-button" aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'} onClick={() => setShowPassword((value) => !value)}>{showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}</button>
+        <button type="submit" className="button" disabled={pending}>{pending ? '로그인 중…' : '이메일로 로그인'}</button>
+      </form>}
+      {mode === 'signup' && <form className="cloud-login" onSubmit={submitSignup}>
+        <label htmlFor="signup-email">가입 이메일</label>
+        <input id="signup-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} />
+        <label htmlFor="signup-password">새 비밀번호</label>
+        <input id="signup-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} />
+        <label htmlFor="signup-password-confirmation">새 비밀번호 확인</label>
+        <input id="signup-password-confirmation" type={showPassword ? 'text' : 'password'} autoComplete="new-password" minLength={8} required value={confirmation} onChange={(event) => setConfirmation(event.target.value)} />
+        <button type="button" className="text-button" aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'} onClick={() => setShowPassword((value) => !value)}>{showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}</button>
+        <button type="submit" className="button" disabled={pending}>{pending ? '가입 요청 중…' : '가입 요청'}</button>
+      </form>}
+      {mode === 'reset' && <form className="cloud-login" onSubmit={submitReset}>
+        <label htmlFor="recovery-email">복구 이메일</label>
+        <input id="recovery-email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} />
+        <button type="submit" className="button" disabled={pending}>{pending ? '보내는 중…' : '재설정 이메일 보내기'}</button>
+        <p className="cloud-auth-help">기존 Magic Link 계정에 로그인 세션이 없다면 비밀번호를 만들기 위해 계정별로 한 번만 소유 확인 이메일을 열어야 합니다.</p>
+      </form>}
+      <div className="cloud-auth-modes">
+        {mode !== 'login' && <button type="button" className="text-button" onClick={() => selectMode('login')}>로그인으로 돌아가기</button>}
+        {mode !== 'signup' && <button type="button" className="text-button" onClick={() => selectMode('signup')}>회원가입</button>}
+        {mode !== 'reset' && <button type="button" className="text-button" onClick={() => selectMode('reset')}>비밀번호를 잊었나요?</button>}
+      </div>
+    </div> : null}
+    {authMessage && <p className="cloud-auth-result" role="status" aria-live="polite">{authMessage}</p>}
     {cloud.user && cloud.lastSuccessfulAt && <p className="cloud-last-success">마지막 성공 {cloud.lastSuccessfulAt.toLocaleString('ko-KR')}</p>}
   </section>
 }

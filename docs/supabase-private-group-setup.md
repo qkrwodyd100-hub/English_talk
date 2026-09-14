@@ -6,7 +6,7 @@ This setup deliberately keeps member email addresses out of Git, the frontend bu
 
 1. Open Supabase Dashboard → **Authentication** → **Users**.
 2. Confirm both intended addresses appear exactly once and show a confirmed email.
-3. Do not continue while an address is missing, misspelled, duplicated, or unconfirmed. Request and open a Magic Link on that account first.
+3. Do not continue while an address is missing, misspelled, duplicated, or unconfirmed. Complete the provider's signup-confirmation or password-recovery ownership check for that account first.
 
 ## 2. Apply the schema migration
 
@@ -59,8 +59,9 @@ Expected: `member_count = 2`; `profile_count = 1`; `backed_up_legacy_count` is `
 
 Security behavior: members can select and initially insert their shared profile, but updates must use the membership-checked `update_learning_group_profile` compare-and-swap RPC. Direct table updates and deletes are not granted. Oversized or structurally malformed learning-state JSON is rejected by the database.
 
-## 5. Verify on the two devices/accounts
+## 5. Verify on the devices/accounts
 
-1. On each device, request and open its own Magic Link on that same device. Confirm the panel shows the expected current account and **클라우드 동기화됨**.
-2. On account/device A, add a harmless custom sentence. On B, press **지금 동기화** and confirm it appears; add a different sentence on B. On A, press **지금 동기화** and confirm both remain.
-3. Sign out on B and confirm the shared sentences disappear from that device's signed-out account view. A non-member account must show **공유 그룹에 등록되지 않은 계정** and must not read or write the group profile.
+1. For an existing passwordless account, set a password while its authenticated session is still open. If no session remains, use **비밀번호를 잊었나요?** once, open the ownership-verification email on that device, and set the new password. Do not sign up again or replace the existing Auth user.
+2. Sign in on each device with the intended verified email and fixed password. The same account may stay signed in on any number of devices; there is no device allowlist. Confirm the panel shows the expected current account and **클라우드 동기화됨** before editing anything.
+3. On device A, add a harmless custom sentence or note. On B, press **지금 동기화** and confirm it appears; add a different change on B. On A, press **지금 동기화** and confirm both remain. A newly opened clean browser must pull the same record without its empty defaults replacing the cloud profile.
+4. Use **이 기기에서 로그아웃** on B and confirm the shared records disappear only from that device's signed-out view while A remains signed in. On a shared PC, decline browser password storage and always log out when finished. A non-member account must show **공유 그룹에 등록되지 않은 계정** and must not read or write the group profile.

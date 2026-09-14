@@ -104,7 +104,7 @@ test('three verified accounts share one private group profile while a non-member
   await expect(outsiderPage.getByLabel('계정 및 동기화')).toContainText('공유 그룹에 등록되지 않은 계정')
   expect(outsiderProfileRequests).toBe(0)
 
-  await pageC.getByRole('button', { name: '로그아웃' }).click()
+  await pageC.getByRole('button', { name: '이 기기에서 로그아웃' }).click()
   await expect(pageC.getByLabel('계정 및 동기화')).toContainText('로그아웃')
   await expect(pageC.getByText('Shared group sentence.')).not.toBeVisible()
   await expect.poll(() => pageC.evaluate(() => localStorage.getItem('english-talk.learning.sync-meta'))).toBeNull()

@@ -5,6 +5,7 @@ const cloud = { row: null as null | { group_id: string; learning_state: Record<s
 let optimisticWrites = 0
 let insertsUsingUpsert = 0
 let profileReadDelayMs = 0
+let logoutScopes: string[] = []
 const user = { id: 'user-fixture', aud: 'authenticated', role: 'authenticated', email: 'learner@example.com' }
 
 function jsonbRoundTrip(value: Record<string, unknown>) {
@@ -20,7 +21,10 @@ async function installCloudMock(context: BrowserContext) {
     const url = new URL(request.url())
     if (url.pathname === '/auth/v1/user') return route.fulfill({ status: 200, json: user })
     if (url.pathname === '/auth/v1/token') return route.fulfill({ status: 200, json: sessionPayload() })
-    if (url.pathname === '/auth/v1/logout') return route.fulfill({ status: 204, body: '' })
+    if (url.pathname === '/auth/v1/logout') {
+      logoutScopes.push(url.searchParams.get('scope') ?? 'global')
+      return route.fulfill({ status: 204, body: '' })
+    }
     if (url.pathname === '/auth/v1/otp') return route.fulfill({ status: 200, json: {} })
     if (url.pathname === '/rest/v1/learning_group_members' && request.method() === 'GET') return route.fulfill({ status: 200, json: [{ group_id: groupId, user_id: user.id }] })
     if (url.pathname === '/rest/v1/learning_group_profiles' && request.method() === 'GET') {
@@ -68,7 +72,7 @@ async function authenticate(context: BrowserContext) {
   }, sessionPayload())
 }
 
-test.beforeEach(() => { cloud.row = null; optimisticWrites = 0; insertsUsingUpsert = 0; profileReadDelayMs = 0 })
+test.beforeEach(() => { cloud.row = null; optimisticWrites = 0; insertsUsingUpsert = 0; profileReadDelayMs = 0; logoutScopes = [] })
 
 test('an already-open device can pull another device change with sync now', async ({ browser }) => {
   const deviceA = await browser.newContext()
@@ -201,7 +205,7 @@ test('restores a session, uploads local v4 data, and reads device B changes in a
   await pageA.reload()
   await pageA.getByRole('button', { name: '내 문장' }).click()
   await expect(pageA.getByText('Device B sentence.')).toBeVisible()
-  await pageA.getByRole('button', { name: '로그아웃' }).click()
+  await pageA.getByRole('button', { name: '이 기기에서 로그아웃' }).click()
   await expect(pageA.getByLabel('계정 및 동기화')).toContainText('로그아웃')
   await expect(pageA.getByText('Device B sentence.')).not.toBeVisible()
   await expect.poll(() => pageA.evaluate(() => JSON.parse(localStorage.getItem('english-talk.learning') ?? '{}').state.customSentences.length)).toBe(0)
@@ -210,25 +214,6 @@ test('restores a session, uploads local v4 data, and reads device B changes in a
   await deviceB.close()
 })
 
-test('sends a magic link with the current origin and keeps local-only mode available', async ({ page }) => {
-  let otpBody: Record<string, unknown> | null = null
-  let redirectTo = ''
-  await page.route('https://fixture.supabase.co/**', async (route) => {
-    if (new URL(route.request().url()).pathname === '/auth/v1/otp') {
-      redirectTo = new URL(route.request().url()).searchParams.get('redirect_to') ?? ''
-      otpBody = route.request().postDataJSON() as Record<string, unknown>
-      return route.fulfill({ status: 200, json: {} })
-    }
-    return route.fulfill({ status: 404, json: {} })
-  })
-  await page.goto('/')
-  await page.getByLabel('로그인 이메일').fill('learner@example.com')
-  await page.getByRole('button', { name: '로그인 링크 받기' }).click()
-  await expect(page.getByLabel('계정 및 동기화')).toContainText('이메일을 확인')
-  await expect(page.getByLabel('계정 및 동기화')).toContainText('링크를 연 기기에 로그인 세션이 생성됩니다')
-  expect(otpBody).toMatchObject({ email: 'learner@example.com' })
-  expect(redirectTo).toBe('http://127.0.0.1:4174')
-})
 
 test('merges two concurrent first-device uploads instead of overwriting either device', async ({ browser }) => {
   profileReadDelayMs = 250
@@ -265,7 +250,7 @@ test('does not apply an old account cloud response after logout', async ({ brows
   const page = await context.newPage()
   await page.goto('/')
   await expect(page.getByText('learner@example.com')).toBeVisible({ timeout: 10_000 })
-  await page.getByRole('button', { name: '로그아웃' }).click()
+  await page.getByRole('button', { name: '이 기기에서 로그아웃' }).click()
   await page.waitForTimeout(700)
   await page.getByRole('button', { name: '내 문장' }).click()
   await expect(page.getByText('Private cloud sentence.')).not.toBeVisible()
@@ -385,4 +370,69 @@ test('keeps debounced edits account-scoped across a direct authenticated account
     { id: 'custom-pending-a', english: 'Pending account A sentence.', korean: 'A 계정', day: 1, source: 'custom' },
   ])
   await expect.poll(() => page.evaluate(() => localStorage.getItem('english-talk.learning.pending.account-a'))).toBeNull()
+})
+
+test('keeps same-user sessions active elsewhere after local logout and lets a clean new device pull the group profile', async ({ browser }) => {
+  cloud.row = {
+    group_id: groupId,
+    learning_state: {
+      masteredIds: ['day-01-01'],
+      customSentences: [{ id: 'custom-shared', english: 'Available on every signed-in device.', korean: '모든 로그인 기기에서 사용', day: 1, source: 'custom' }],
+      completedChallengeDates: ['2026-09-14'],
+      selectedDay: 7,
+      selectedDayIsManual: true,
+      dayPositions: { 7: 3 },
+      completedSentenceIds: ['day-01-01'],
+      attemptCounts: { 'day-01-02': 2 },
+      reviewQueueIds: ['day-01-02'],
+      favoriteIds: ['day-01-03'],
+      studyActivities: [{ timestamp: '2026-09-14T00:00:00.000Z', day: 1, sentenceId: 'day-01-01', action: 'mastered' }],
+      sentenceNotes: { 'day-01-01': { text: 'Shared note.', updatedAt: '2026-09-14T00:00:00.000Z' } },
+      answerHistory: { 'day-01-01': [{ timestamp: '2026-09-14T00:00:00.000Z', attempt: 'Hello.', verdict: 'correct' }] },
+    },
+    revision: 9,
+    updated_at: '2026-09-14T00:00:00.000Z',
+  }
+  const deviceA = await browser.newContext()
+  const deviceB = await browser.newContext()
+  const newDevice = await browser.newContext()
+  await Promise.all([installCloudMock(deviceA), installCloudMock(deviceB), installCloudMock(newDevice), authenticate(deviceA), authenticate(deviceB)])
+  const pageA = await deviceA.newPage()
+  const pageB = await deviceB.newPage()
+  const pageC = await newDevice.newPage()
+
+  await Promise.all([pageA.goto('/'), pageB.goto('/')])
+  await pageA.getByRole('button', { name: '이 기기에서 로그아웃' }).click()
+  await expect(pageA.getByRole('button', { name: '이메일로 로그인' })).toBeVisible()
+  expect(logoutScopes).toEqual(['local'])
+
+  await pageB.getByRole('button', { name: '지금 동기화' }).click()
+  await pageB.getByRole('button', { name: '내 문장' }).click()
+  await expect(pageB.getByText('Available on every signed-in device.')).toBeVisible()
+
+  await pageC.goto('/')
+  await pageC.getByLabel('로그인 이메일').fill('password-user@example.test')
+  await pageC.getByLabel('비밀번호', { exact: true }).fill('fixture-password-123')
+  await pageC.getByRole('button', { name: '이메일로 로그인' }).click()
+  await pageC.getByRole('button', { name: '내 문장' }).click()
+  await expect(pageC.getByText('Available on every signed-in device.')).toBeVisible()
+  await expect.poll(() => pageC.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem('english-talk.learning') ?? '{}').state
+    return {
+      selectedDay: state.selectedDay,
+      selectedDayIsManual: state.selectedDayIsManual,
+      masteredIds: state.masteredIds,
+      completedSentenceIds: state.completedSentenceIds,
+      reviewQueueIds: state.reviewQueueIds,
+      favoriteIds: state.favoriteIds,
+      attemptCount: state.attemptCounts['day-01-02'],
+      note: state.sentenceNotes['day-01-01'].text,
+      activityCount: state.studyActivities.length,
+      answerCount: state.answerHistory['day-01-01'].length,
+    }
+  })).toEqual({ selectedDay: 7, selectedDayIsManual: true, masteredIds: ['day-01-01'], completedSentenceIds: ['day-01-01'], reviewQueueIds: ['day-01-02'], favoriteIds: ['day-01-03'], attemptCount: 2, note: 'Shared note.', activityCount: 1, answerCount: 1 })
+  expect(cloud.row.revision).toBe(9)
+  expect(optimisticWrites).toBe(0)
+
+  await Promise.all([deviceA.close(), deviceB.close(), newDevice.close()])
 })

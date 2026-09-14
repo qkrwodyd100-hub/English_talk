@@ -132,7 +132,7 @@ test('signed-in actions and long account copy remain contained', async ({ page }
     const account = page.getByLabel('계정 및 동기화')
     await expect(account).toContainText(user.email)
     await expect(account.getByRole('button', { name: '지금 동기화' })).toBeVisible()
-    await expect(account.getByRole('button', { name: '로그아웃' })).toBeVisible()
+    await expect(account.getByRole('button', { name: '이 기기에서 로그아웃' })).toBeVisible()
     const containment = await account.evaluate((element) => {
       const section = element as HTMLElement
       const box = section.getBoundingClientRect()
