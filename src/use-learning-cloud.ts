@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { User } from '@supabase/supabase-js'
+import { isPasswordRecoveryEvent, mapAuthError, type AuthResult } from './auth'
 import {
   LEARNING_STORAGE_KEY,
   LEARNING_STORAGE_VERSION,
@@ -80,6 +81,7 @@ export function useLearningCloud(state: LearningState, applyState: (next: Learni
   const [status, setStatus] = useState<SyncStatus>('local')
   const [message, setMessage] = useState(supabase ? '이 기기에만 저장됨—다른 기기와 공유되지 않음. 로그인하면 클라우드 동기화를 사용할 수 있어요.' : 'Supabase 설정이 없어 이 기기에만 저장됩니다.')
   const [lastSuccessfulAt, setLastSuccessfulAt] = useState<Date | null>(null)
+  const [passwordRecovery, setPasswordRecovery] = useState(() => new URLSearchParams(window.location.search).get('password-recovery') === '1')
   const stateRef = useRef(state)
   const readyUserId = useRef<string | null>(null)
   const activeSyncUserId = useRef<string | null>(null)
@@ -309,8 +311,9 @@ export function useLearningCloud(state: LearningState, applyState: (next: Learni
         if (!disposed) setInitialized(true)
       }
     })()
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
       if (disposed) return
+      if (isPasswordRecoveryEvent(event)) setPasswordRecovery(true)
       if (session?.user) void synchronize(session.user)
       else if (currentUserId.current || readyUserId.current || activeSyncUserId.current || localStorage.getItem(PRE_AUTH_STORAGE_KEY) !== null) {
         authGeneration.current += 1
@@ -356,12 +359,53 @@ export function useLearningCloud(state: LearningState, applyState: (next: Learni
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [synchronizeNow, user])
 
-  const signIn = useCallback(async (email: string) => {
-    if (!supabase) return 'Supabase 설정이 없어 로그인할 수 없습니다.'
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } })
-    if (error) return '로그인 링크를 보내지 못했습니다. 이메일을 확인하고 다시 시도해 주세요.'
-    return '로그인 링크를 보냈습니다. 이메일을 확인해 주세요.'
+  const signIn = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: 'Supabase 설정이 없어 로그인할 수 없습니다.' }
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      return error ? { ok: false, message: mapAuthError(error, 'login') } : { ok: true, message: '로그인했습니다. 클라우드 기록을 확인하고 있습니다.' }
+    } catch (error) {
+      return { ok: false, message: mapAuthError(error, 'login') }
+    }
   }, [])
+
+  const signUp = useCallback(async (email: string, password: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: 'Supabase 설정이 없어 가입할 수 없습니다.' }
+    try {
+      const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } })
+      return error
+        ? { ok: false, message: mapAuthError(error, 'signup') }
+        : { ok: true, message: '가입 또는 로그인 준비 이메일을 보냈습니다. 받은 편지함을 확인해 주세요.' }
+    } catch (error) {
+      return { ok: false, message: mapAuthError(error, 'signup') }
+    }
+  }, [])
+
+  const requestPasswordReset = useCallback(async (email: string): Promise<AuthResult> => {
+    if (!supabase) return { ok: false, message: 'Supabase 설정이 없어 재설정할 수 없습니다.' }
+    try {
+      const redirectTo = new URL('/?password-recovery=1', window.location.origin).toString()
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo })
+      return error
+        ? { ok: false, message: mapAuthError(error, 'reset') }
+        : { ok: true, message: '계정이 있는 경우 비밀번호 재설정 이메일을 보냈습니다. 받은 편지함을 확인해 주세요.' }
+    } catch (error) {
+      return { ok: false, message: mapAuthError(error, 'reset') }
+    }
+  }, [])
+
+  const updatePassword = useCallback(async (password: string): Promise<AuthResult> => {
+    if (!supabase || !user) return { ok: false, message: '로그인 또는 복구 세션을 먼저 확인해 주세요.' }
+    try {
+      const { error } = await supabase.auth.updateUser({ password })
+      if (error) return { ok: false, message: mapAuthError(error, 'password') }
+      setPasswordRecovery(false)
+      if (new URLSearchParams(window.location.search).has('password-recovery')) window.history.replaceState({}, '', window.location.pathname)
+      return { ok: true, message: '비밀번호를 저장했습니다. 다음 로그인부터 이메일과 비밀번호를 사용하세요.' }
+    } catch (error) {
+      return { ok: false, message: mapAuthError(error, 'password') }
+    }
+  }, [user])
 
   const signOut = useCallback(async () => {
     if (!supabase) return
@@ -381,11 +425,11 @@ export function useLearningCloud(state: LearningState, applyState: (next: Learni
     currentGroupId.current = null
     readyUserId.current = null
     activeSyncUserId.current = null
-    const { error } = await supabase.auth.signOut()
+    const { error } = await supabase.auth.signOut({ scope: 'local' })
     if (!isCurrentAuthOperation(generation, authGeneration.current, null, currentUserId.current)) return
     if (error) {
       setStatus('error')
-      setMessage('로그아웃하지 못했습니다. 다시 시도해 주세요.')
+      setMessage('이 기기에서 로그아웃하지 못했습니다. 다시 시도해 주세요.')
       if (user) { preAuthRestored.current = false; void synchronize(user) }
       return
     }
@@ -396,12 +440,12 @@ export function useLearningCloud(state: LearningState, applyState: (next: Learni
     setLastSuccessfulAt(null)
     restorePreAuthState()
     setStatus('local')
-    setMessage('로그아웃했습니다. 로그인 전 이 기기의 기록으로 돌아왔습니다.')
+    setMessage('이 기기에서 로그아웃했습니다. 다른 기기의 로그인은 유지됩니다.')
   }, [restorePreAuthState, synchronize, upload, user])
 
   const retry = useCallback(() => {
     if (user) { activeSyncUserId.current = null; void synchronize(user) }
   }, [synchronize, user])
 
-  return { initialized, user, status, message, lastSuccessfulAt, configured: Boolean(supabase), signIn, signOut, retry, synchronizeNow }
+  return { initialized, user, status, message, lastSuccessfulAt, passwordRecovery, configured: Boolean(supabase), signIn, signUp, requestPasswordReset, updatePassword, signOut, retry, synchronizeNow }
 }
