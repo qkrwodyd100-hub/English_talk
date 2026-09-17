@@ -1,4 +1,5 @@
 import type { Sentence } from './learning'
+import { MAX_COURSE_DAY } from './learning'
 
 export type ListeningPreferences = {
   selectedDays: number[]
@@ -24,7 +25,7 @@ export const LISTENING_RATE_MAX = 2.5
 export function parseListeningPreferences(raw: string | null): ListeningPreferences {
   try {
     const value = JSON.parse(raw ?? '') as Partial<ListeningPreferences>
-    const selectedDays = Array.isArray(value.selectedDays) ? [...new Set(value.selectedDays.filter((day) => Number.isInteger(day) && day >= 1 && day <= 60))].sort((a, b) => a - b) : []
+    const selectedDays = Array.isArray(value.selectedDays) ? [...new Set(value.selectedDays.filter((day) => Number.isInteger(day) && day >= 1 && day <= MAX_COURSE_DAY))].sort((a, b) => a - b) : []
     return { ...defaultListeningPreferences, ...value, selectedDays, position: Number.isInteger(value.position) && (value.position ?? -1) >= 0 ? value.position! : 0,
       koreanRate: validRate(value.koreanRate, defaultListeningPreferences.koreanRate), englishRate: validRate(value.englishRate, defaultListeningPreferences.englishRate), pauseMs: validPause(value.pauseMs) }
   } catch { return { ...defaultListeningPreferences } }
