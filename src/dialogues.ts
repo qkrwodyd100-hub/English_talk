@@ -1295,5 +1295,325 @@ export const builtInDialogues: MiniDialogue[] = [
         "korean": "물론이죠. 가장 가까운 편의점이 어디인지도 알려 주시겠어요?"
       }
     ]
+  },
+  {
+    "day": 61,
+    "topic": "airport-transit-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "I might miss my connection. What should I do?",
+        "korean": "연결편을 놓칠 것 같아요. 어떻게 해야 하나요."
+      },
+      {
+        "role": "staff",
+        "english": "I will rebook you on the next flight right away.",
+        "korean": "다음 비행기로 바로 다시 예약해 드릴게요."
+      },
+      {
+        "role": "traveler",
+        "english": "Will my bag follow me to the new flight?",
+        "korean": "제 가방도 새 비행기로 따라오나요?"
+      }
+    ]
+  },
+  {
+    "day": 62,
+    "topic": "airport-transit-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "My suitcase did not arrive. Where do I report it?",
+        "korean": "가방이 안 왔어요. 어디에 신고하나요."
+      },
+      {
+        "role": "staff",
+        "english": "Please fill out this missing baggage form with your tag number.",
+        "korean": "표 번호와 함께 이 분실 신고서를 작성해 주세요."
+      },
+      {
+        "role": "traveler",
+        "english": "And I have a watch to declare. Where is the red channel?",
+        "korean": "그리고 신고할 시계가 있어요. 신고 통로가 어디인가요?"
+      },
+      {
+        "role": "staff",
+        "english": "Follow me. I will guide you to customs.",
+        "korean": "따라오세요. 세관까지 안내해 드릴게요."
+      }
+    ]
+  },
+  {
+    "day": 63,
+    "topic": "urban-transit-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "The driver took a long detour. I want to dispute this fare.",
+        "korean": "기사님이 돌아서 가셨어요. 요금에 이의가 있어요."
+      },
+      {
+        "role": "staff",
+        "english": "I see the route issue. I will refund the extra charge.",
+        "korean": "경로 문제를 확인했어요. 추가 요금을 환불해 드릴게요."
+      },
+      {
+        "role": "traveler",
+        "english": "Thank you. Please also help me find my phone in the car.",
+        "korean": "감사합니다. 차 안의 휴대폰도 찾아주세요."
+      }
+    ]
+  },
+  {
+    "day": 64,
+    "topic": "urban-transit-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Which monthly pass covers the airport line?",
+        "korean": "공항선이 포함된 정기권은 어느 건가요?"
+      },
+      {
+        "role": "staff",
+        "english": "This pass covers all zones, including the airport.",
+        "korean": "이 정기권은 공항 포함 전 구간이 돼요."
+      },
+      {
+        "role": "traveler",
+        "english": "Good. Could you also call me a licensed night taxi?",
+        "korean": "좋아요. 정식 심야 택시도 불러 주시겠어요?"
+      }
+    ]
+  },
+  {
+    "day": 65,
+    "topic": "restaurant-bar-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "I have a peanut allergy. Does this dish contain nuts?",
+        "korean": "땅콩 알레르기가 있어요. 이 요리에 견과류가 있나요?"
+      },
+      {
+        "role": "staff",
+        "english": "Let me confirm with the chef right away.",
+        "korean": "셰프님께 바로 확인해 드릴게요."
+      },
+      {
+        "role": "traveler",
+        "english": "Thank you for taking my allergy seriously.",
+        "korean": "알레르기를 진지하게 받아주셔서 감사합니다."
+      }
+    ]
+  },
+  {
+    "day": 66,
+    "topic": "restaurant-bar-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "What do you recommend with steak?",
+        "korean": "스테이크에는 무엇을 추천하세요?"
+      },
+      {
+        "role": "staff",
+        "english": "This dry red matches the steak very well.",
+        "korean": "이 드라이 레드가 스테이크와 잘 어울려요."
+      },
+      {
+        "role": "traveler",
+        "english": "Could I taste it before ordering a bottle?",
+        "korean": "한 병 주문 전에 시음할 수 있나요?"
+      }
+    ]
+  },
+  {
+    "day": 67,
+    "topic": "restaurant-bar-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "The bill has a charge that is not ours.",
+        "korean": "계산서에 저희 것이 아닌 금액이 있어요."
+      },
+      {
+        "role": "staff",
+        "english": "You are right. I will fix the bill now.",
+        "korean": "맞으시네요. 지금 바로 정정해 드릴게요."
+      },
+      {
+        "role": "traveler",
+        "english": "We will split the corrected bill evenly.",
+        "korean": "정정된 계산서를 똑같이 나눠 주세요."
+      }
+    ]
+  },
+  {
+    "day": 68,
+    "topic": "golf-course-basics",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Our booking is under the name Kim for four players.",
+        "korean": "4명 예약이 김 이름으로 되어 있어요."
+      },
+      {
+        "role": "staff",
+        "english": "Found it. What time should I set for your check-in?",
+        "korean": "확인됐어요. 체크인 시간을 언제로 할까요?"
+      },
+      {
+        "role": "traveler",
+        "english": "Are carts included in the green fee?",
+        "korean": "카트비가 그린피에 포함되나요?"
+      }
+    ]
+  },
+  {
+    "day": 69,
+    "topic": "golf-course-basics",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Whose turn is it to play first?",
+        "korean": "누가 먼저 치는 순서인가요?"
+      },
+      {
+        "role": "local",
+        "english": "You are away, so you play first.",
+        "korean": "손님이 멀리 있으니 먼저 치세요."
+      },
+      {
+        "role": "traveler",
+        "english": "I will repair my ball mark after my putt.",
+        "korean": "퍼트 후에 볼 마크를 수리할게요."
+      }
+    ]
+  },
+  {
+    "day": 70,
+    "topic": "golf-course-basics",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Do you offer same day club repair?",
+        "korean": "당일 클럽 수리가 되나요?"
+      },
+      {
+        "role": "staff",
+        "english": "Yes. We can adjust the loft within an hour.",
+        "korean": "네. 한 시간 안에 로프트를 조정해 드려요."
+      },
+      {
+        "role": "traveler",
+        "english": "Thank you for a wonderful round today.",
+        "korean": "오늘 멋진 라운드 감사합니다."
+      }
+    ]
+  },
+  {
+    "day": 71,
+    "topic": "department-store-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Is this store tax free for tourists?",
+        "korean": "이 매장은 관광객 면세가 되나요?"
+      },
+      {
+        "role": "staff",
+        "english": "Yes. I will prepare the refund form with your passport.",
+        "korean": "네. 여권으로 환급 서류를 준비해 드릴게요."
+      },
+      {
+        "role": "traveler",
+        "english": "Where do I claim the refund at the airport?",
+        "korean": "공항 어디에서 환급받나요?"
+      }
+    ]
+  },
+  {
+    "day": 72,
+    "topic": "department-store-advanced",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "I wore it once, but the seam came apart.",
+        "korean": "한 번 입었는데 박음선이 터졌어요."
+      },
+      {
+        "role": "staff",
+        "english": "I am sorry. We will exchange it for a larger size.",
+        "korean": "죄송합니다. 더 큰 사이즈로 교환해 드릴게요."
+      },
+      {
+        "role": "traveler",
+        "english": "Could you check the stock in another branch?",
+        "korean": "다른 지점 재고를 확인해 주시겠어요?"
+      }
+    ]
+  },
+  {
+    "day": 73,
+    "topic": "daily-life-integration",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "My connection is tight and my phone just died.",
+        "korean": "연결 시간이 촉박한데 휴대폰까지 꺼졌어요."
+      },
+      {
+        "role": "staff",
+        "english": "Stay calm. I will guide you to the express lane.",
+        "korean": "침착하세요. 빠른 통로로 안내해 드릴게요."
+      },
+      {
+        "role": "traveler",
+        "english": "Thank you. Let us solve one problem at a time.",
+        "korean": "감사합니다. 하나씩 해결해요."
+      }
+    ]
+  },
+  {
+    "day": 74,
+    "topic": "daily-life-integration",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "The bus left early and my card was just declined.",
+        "korean": "버스를 놓쳤는데 카드까지 거절됐어요."
+      },
+      {
+        "role": "local",
+        "english": "Use my phone to call the station staff.",
+        "korean": "제 휴대폰으로 역 직원에게 전화하세요."
+      },
+      {
+        "role": "traveler",
+        "english": "Thank you for handling this trouble so kindly.",
+        "korean": "이 문제를 친절히 처리해 주셔서 감사합니다."
+      }
+    ]
+  },
+  {
+    "day": 75,
+    "topic": "daily-life-integration",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "I missed my flight, my bag, and my bus in one day.",
+        "korean": "하루에 비행기, 가방, 버스를 다 놓쳤어요."
+      },
+      {
+        "role": "local",
+        "english": "Yet you asked for help in English all day.",
+        "korean": "그래도 하루 종일 영어로 도움을 요청했잖아요."
+      },
+      {
+        "role": "traveler",
+        "english": "I finished seventy five days and I speak with courage!",
+        "korean": "75일을 마치고 용기 있게 말해요!"
+      }
+    ]
   }
 ]

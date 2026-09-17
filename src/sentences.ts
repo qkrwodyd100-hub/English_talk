@@ -6630,5 +6630,1673 @@ export const builtInSentences: BuiltInSentence[] = [
     "topic": "travel-review-essentials",
     "level": "advanced",
     "priority": 3
+  },
+  {
+    "id": "day-61-01",
+    "english": "My connecting flight leaves from a different terminal.",
+    "korean": "연결편이 다른 터미널에서 출발해요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-61-02",
+    "english": "How much time do I need for the transfer?",
+    "korean": "환승하는 데 시간이 얼마나 걸리나요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-61-03",
+    "english": "Where is the transfer counter?",
+    "korean": "환승 카운터가 어디에 있나요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-61-04",
+    "english": "My first flight was delayed and I might miss my connection.",
+    "korean": "첫 비행기가 연착해서 연결편을 놓칠 것 같아요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "My inbound flight was late, so I may miss my connection.",
+        "korean": "들어오는 비행기가 늦어서 연결편을 놓칠 수 있어요."
+      }
+    ]
+  },
+  {
+    "id": "day-61-05",
+    "english": "Could you rebook me on the next available flight?",
+    "korean": "다음 가능한 비행기로 다시 예약해 주시겠어요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "Please put me on the next flight out.",
+        "korean": "다음 출발 비행기로 옮겨 주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-61-06",
+    "english": "Will my checked baggage go straight through?",
+    "korean": "위탁 수하물이 바로 연결되나요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-61-07",
+    "english": "I need a hotel voucher because of the missed connection.",
+    "korean": "연결편을 놓쳐서 호텔 바우처가 필요해요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "intermediate",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "The missed connection was your delay, so I need a hotel for tonight.",
+        "korean": "연결편을 놓친 건 지연 때문이니 오늘 밤 호텔이 필요해요."
+      }
+    ]
+  },
+  {
+    "id": "day-61-08",
+    "english": "The airline lost my transfer and I need written proof of the delay.",
+    "korean": "항공사 사정으로 환승을 놓쳐서 지연 증명서가 필요해요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "advanced",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "Please give me a written statement confirming the delay.",
+        "korean": "지연을 확인하는 서면을 발급해 주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-61-09",
+    "english": "Am I entitled to compensation for the overnight delay?",
+    "korean": "밤샘 지연에 대해 보상을 받을 수 있나요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-61-10",
+    "english": "Please endorse my ticket so I can fly with another airline.",
+    "korean": "다른 항공사 비행기로 갈 수 있게 표를 넘겨 주세요.",
+    "day": 61,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-62-01",
+    "english": "My suitcase did not arrive.",
+    "korean": "제 여행 가방이 도착하지 않았어요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-62-02",
+    "english": "Where is the lost baggage office?",
+    "korean": "수하물 분실물 센터가 어디에 있나요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-62-03",
+    "english": "I would like to file a missing baggage report.",
+    "korean": "수하물 분실 신고를 하고 싶어요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "Please help me report my missing bag.",
+        "korean": "가방 분실을 신고하게 도와주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-62-04",
+    "english": "My bag tag number is on my boarding pass.",
+    "korean": "수하물 표 번호가 탑승권에 있어요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-62-05",
+    "english": "How long does tracing usually take?",
+    "korean": "수하물 추적에 보통 얼마나 걸리나요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-62-06",
+    "english": "I need basic necessities because my bag is missing.",
+    "korean": "가방이 없어서 기본 생필품이 필요해요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "My luggage is missing, so I need toiletries and a change of clothes.",
+        "korean": "짐이 없어서 세면도구와 갈아입을 옷이 필요해요."
+      }
+    ]
+  },
+  {
+    "id": "day-62-07",
+    "english": "I have goods to declare.",
+    "korean": "신고할 물품이 있어요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-62-08",
+    "english": "The total value is under the duty free allowance.",
+    "korean": "총액이 면세 한도 이내예요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "advanced",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "Everything I bought is within the duty free limit.",
+        "korean": "산 물건이 모두 면세 한도 안에 들어요."
+      }
+    ]
+  },
+  {
+    "id": "day-62-09",
+    "english": "Could you show me where the red channel is?",
+    "korean": "세관 신고 통로가 어디인지 알려 주시겠어요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-62-10",
+    "english": "I bought this watch abroad and I have the receipt.",
+    "korean": "이 시계는 해외에서 샀고 영수증이 있어요.",
+    "day": 62,
+    "source": "builtIn",
+    "topic": "airport-transit-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-63-01",
+    "english": "My driver cancelled the ride.",
+    "korean": "기사님이 운행을 취소했어요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-63-02",
+    "english": "The app charged me a cancellation fee by mistake.",
+    "korean": "앱에서 취소 수수료를 잘못 부과했어요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "I was wrongly charged for a cancellation.",
+        "korean": "취소 요금이 잘못 청구됐어요."
+      }
+    ]
+  },
+  {
+    "id": "day-63-03",
+    "english": "I left my phone in the car.",
+    "korean": "차 안에 휴대폰을 두고 내렸어요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-63-04",
+    "english": "The driver took a much longer route.",
+    "korean": "기사님이 훨씬 돌아서 가셨어요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-63-05",
+    "english": "I would like to dispute this fare.",
+    "korean": "이 요금에 이의를 제기하고 싶어요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "This fare looks wrong, so I want to challenge it.",
+        "korean": "요금이 이상해서 정정을 요청하고 싶어요."
+      }
+    ]
+  },
+  {
+    "id": "day-63-06",
+    "english": "Please refund the surge charge.",
+    "korean": "성수기 할증 요금을 환불해 주세요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-63-07",
+    "english": "The pickup point on the map is wrong.",
+    "korean": "지도상 탑승 위치가 잘못 표시됐어요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-63-08",
+    "english": "My train is delayed by forty minutes.",
+    "korean": "제 기차가 40분 연착됐어요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-63-09",
+    "english": "Is there an alternative route because of the strike?",
+    "korean": "파업 때문에 다른 경로가 있나요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-63-10",
+    "english": "I need a delay certificate for my employer.",
+    "korean": "회사에 낼 연착 증명서가 필요해요.",
+    "day": 63,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "advanced",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "Please issue proof of the delay for work.",
+        "korean": "회사 제출용으로 연착 증명을 발급해 주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-64-01",
+    "english": "I would like to buy a monthly pass.",
+    "korean": "정기권을 사고 싶어요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-64-02",
+    "english": "Which zones does this pass cover?",
+    "korean": "이 정기권은 어느 구간까지 되나요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-64-03",
+    "english": "Where can I top up my travel card?",
+    "korean": "교통카드를 어디에서 충전하나요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-64-04",
+    "english": "My card did not work at the gate.",
+    "korean": "제 카드가 개찰구에서 인식되지 않았어요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-64-05",
+    "english": "I was fined because my ticket had expired.",
+    "korean": "표가 만료돼서 벌금을 물었어요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "intermediate",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "My ticket was out of date, so I got a penalty fare.",
+        "korean": "표 유효기간이 지나서 과태료를 냈어요."
+      }
+    ]
+  },
+  {
+    "id": "day-64-06",
+    "english": "What is the last train to the airport?",
+    "korean": "공항행 막차가 몇 시인가요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-64-07",
+    "english": "Is it safe to walk home from this station at night?",
+    "korean": "밤에 이 역에서 걸어 귀가해도 안전한가요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-64-08",
+    "english": "Could you call me a licensed night taxi?",
+    "korean": "정식 심야 택시를 불러 주시겠어요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-64-09",
+    "english": "Please drop me off under the streetlight over there.",
+    "korean": "저기 가로등 밑에 내려 주세요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-64-10",
+    "english": "I will share my live location with my family.",
+    "korean": "가족에게 실시간 위치를 공유할게요.",
+    "day": 64,
+    "source": "builtIn",
+    "topic": "urban-transit-advanced",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-65-01",
+    "english": "I have a peanut allergy.",
+    "korean": "저는 땅콩 알레르기가 있어요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-65-02",
+    "english": "Does this dish contain nuts?",
+    "korean": "이 요리에 견과류가 들어가나요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Are there any nuts in this?",
+        "korean": "이 음식에 견과류가 있나요."
+      }
+    ]
+  },
+  {
+    "id": "day-65-03",
+    "english": "Could you leave out the shrimp?",
+    "korean": "새우는 빼 주시겠어요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-65-04",
+    "english": "I need a gluten free menu.",
+    "korean": "글루텐 프리 메뉴가 필요해요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-65-05",
+    "english": "My throat feels itchy, so please call for help quickly.",
+    "korean": "목이 간지러우니 빨리 도움을 요청해 주세요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "I think I am having an allergic reaction, so please act fast.",
+        "korean": "알레르기 반응이 온 것 같으니 빨리 조치해 주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-65-06",
+    "english": "Is the kitchen able to avoid cross contact?",
+    "korean": "주방에서 혼입을 피할 수 있나요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-65-07",
+    "english": "I carry an allergy pen in my bag.",
+    "korean": "가방에 알레르기 응급펜이 있어요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-65-08",
+    "english": "Could the chef confirm the ingredients in the sauce?",
+    "korean": "셰프님께 소스 재료를 확인해 주시겠어요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-65-09",
+    "english": "I will have the grilled fish with plain rice.",
+    "korean": "구운 생선에 흰쌀밥으로 주세요.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-65-10",
+    "english": "Thank you for taking my allergy seriously.",
+    "korean": "알레르기를 진지하게 받아주셔서 감사합니다.",
+    "day": 65,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-66-01",
+    "english": "Could I see the wine list?",
+    "korean": "와인 리스트를 볼 수 있을까요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-66-02",
+    "english": "I would like a glass of red wine.",
+    "korean": "레드 와인 한 잔 주세요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-66-03",
+    "english": "What do you recommend with steak?",
+    "korean": "스테이크에는 무엇을 추천하세요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-66-04",
+    "english": "Is this wine dry or sweet?",
+    "korean": "이 와인은 드라이한가요, 달콤한가요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-66-05",
+    "english": "Could I taste it before ordering a bottle?",
+    "korean": "한 병 주문 전에 시음할 수 있나요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "May I try a small sip first?",
+        "korean": "먼저 조금 맛봐도 될까요."
+      }
+    ]
+  },
+  {
+    "id": "day-66-06",
+    "english": "This bottle tastes corked, so I would like another one.",
+    "korean": "이 병은 코르크 맛이 나니 다른 병으로 바꾸고 싶어요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-66-07",
+    "english": "We will share one bottle for the table.",
+    "korean": "테이블에서 한 병을 나눠 마실게요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-66-08",
+    "english": "Could you decant the wine for us?",
+    "korean": "와인을 디캔팅해 주시겠어요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-66-09",
+    "english": "The vintage on the menu is different from this bottle.",
+    "korean": "메뉴의 빈티지와 이 병이 달라요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "This bottle is a different year from the listed vintage.",
+        "korean": "이 병은 적힌 빈티지와 연도가 달라요."
+      }
+    ]
+  },
+  {
+    "id": "day-66-10",
+    "english": "Please keep the change from the wine service.",
+    "korean": "와인 서비스 수고비로 잔돈은 가지세요.",
+    "day": 66,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-67-01",
+    "english": "Could we have the bill, please?",
+    "korean": "계산서 주시겠어요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-67-02",
+    "english": "We would like to split the bill evenly.",
+    "korean": "더치페이로 똑같이 나누고 싶어요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "Please divide the check equally.",
+        "korean": "계산서를 균등하게 나눠 주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-67-03",
+    "english": "This charge is not ours.",
+    "korean": "이 금액은 저희 것이 아니에요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-67-04",
+    "english": "The menu price and the bill are different.",
+    "korean": "메뉴 가격과 계산서가 달라요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-67-05",
+    "english": "The service charge was added without telling us.",
+    "korean": "서비스 요금이 알리지 않고 추가됐어요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-67-06",
+    "english": "I paid by card but the receipt shows cash.",
+    "korean": "카드로 냈는데 영수증에 현금으로 찍혔어요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "I used my card, yet the receipt says cash.",
+        "korean": "카드 결제했는데 영수증에 현금이라고 나와요."
+      }
+    ]
+  },
+  {
+    "id": "day-67-07",
+    "english": "Is there a cover charge for the bar seats?",
+    "korean": "바 좌석에 입장료가 있나요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-67-08",
+    "english": "Could I sit at the bar if a stool opens up?",
+    "korean": "바 자리가 나면 앉아도 될까요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-67-09",
+    "english": "I will buy the next round for our group.",
+    "korean": "다음 한 순배는 제가 살게요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-67-10",
+    "english": "Please close my tab and give me the receipt.",
+    "korean": "제 외상 장부를 마감하고 영수증을 주세요.",
+    "day": 67,
+    "source": "builtIn",
+    "topic": "restaurant-bar-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-68-01",
+    "english": "I would like to book a tee time for Saturday.",
+    "korean": "토요일 티타임을 예약하고 싶어요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-68-02",
+    "english": "We are a group of four players.",
+    "korean": "저희는 4명 일행이에요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-68-03",
+    "english": "What time should we check in?",
+    "korean": "몇 시까지 체크인해야 하나요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-68-04",
+    "english": "Our booking is under the name Kim for four players.",
+    "korean": "4명 예약이 김 이름으로 되어 있어요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-68-05",
+    "english": "Could we rent clubs and shoes?",
+    "korean": "클럽과 신발을 빌릴 수 있나요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-68-06",
+    "english": "Are carts included in the green fee?",
+    "korean": "카트비가 그린피에 포함되나요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "Does the green fee cover the cart?",
+        "korean": "그린피에 카트가 포함되나요."
+      }
+    ]
+  },
+  {
+    "id": "day-68-07",
+    "english": "Where is the driving range?",
+    "korean": "연습장이 어디에 있나요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-68-08",
+    "english": "Could we start from the back nine today?",
+    "korean": "오늘은 백나인부터 시작할 수 있나요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-68-09",
+    "english": "One of our players is a beginner, so please pair us kindly.",
+    "korean": "일행 중 한 명이 초보라 배려해 주세요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-68-10",
+    "english": "Please send the confirmation to my email.",
+    "korean": "확정 메일을 제 이메일로 보내 주세요.",
+    "day": 68,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-69-01",
+    "english": "Could you show me how this cart works?",
+    "korean": "이 카트 사용법을 알려 주시겠어요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-69-02",
+    "english": "Who drives the cart in our group?",
+    "korean": "저희 일행에서 누가 카트를 몰아야 하나요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-69-03",
+    "english": "We will keep the cart on the path.",
+    "korean": "카트는 길 위에만 두겠습니다.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-69-04",
+    "english": "Whose turn is it to play first?",
+    "korean": "누가 먼저 치는 순서인가요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-69-05",
+    "english": "Could you stay quiet while I putt?",
+    "korean": "퍼트할 때 조용히 해 주시겠어요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "Please keep still and quiet on the green.",
+        "korean": "그린에서는 가만히 조용히 해 주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-69-06",
+    "english": "I will repair my ball mark on the green.",
+    "korean": "그린의 볼 마크를 수리할게요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-69-07",
+    "english": "Let the faster group behind us play through.",
+    "korean": "뒤에 빠른 팀을 먼저 보내 드릴게요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-69-08",
+    "english": "I lost my ball, so I will take a penalty and drop.",
+    "korean": "공을 잃어버려서 벌타 받고 드롭할게요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-69-09",
+    "english": "Out of bounds runs along the right side here.",
+    "korean": "여기서는 오른쪽이 OB예요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "The right side of this hole is out of bounds.",
+        "korean": "이 홀 오른쪽은 OB 구역이에요."
+      }
+    ]
+  },
+  {
+    "id": "day-69-10",
+    "english": "Could you watch my ball flight for me?",
+    "korean": "제 공 방향을 봐 주시겠어요.",
+    "day": 69,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-70-01",
+    "english": "Do you sell golf gloves here?",
+    "korean": "여기서 골프 장갑을 파나요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-70-02",
+    "english": "I am looking for a dozen used balls.",
+    "korean": "중고공 한 더즌을 찾고 있어요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-70-03",
+    "english": "Could I try on this polo shirt?",
+    "korean": "이 카라티를 입어 봐도 될까요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-70-04",
+    "english": "Do you offer same day club repair?",
+    "korean": "당일 클럽 수리가 되나요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-70-05",
+    "english": "My driver shaft feels too stiff for me.",
+    "korean": "드라이버 샤프트가 저한테 너무 뻣뻣해요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-70-06",
+    "english": "Could you adjust the loft on this club?",
+    "korean": "이 클럽 로프트를 조정해 주시겠어요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-70-07",
+    "english": "The dress code bans denim, as I read it.",
+    "korean": "복장 규정상 데님은 안 되는 걸로 알아요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "intermediate",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "Denim is not allowed under the dress code.",
+        "korean": "복장 규정상 데님은 허용되지 않아요."
+      }
+    ]
+  },
+  {
+    "id": "day-70-08",
+    "english": "Hats should be removed inside the clubhouse.",
+    "korean": "클럽하우스 안에서는 모자를 벗어야 해요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-70-09",
+    "english": "Tipping the caddie in cash is the custom here.",
+    "korean": "캐디에게는 현금 팁이 관례예요.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-70-10",
+    "english": "Thank you for a wonderful round today.",
+    "korean": "오늘 멋진 라운드 감사합니다.",
+    "day": 70,
+    "source": "builtIn",
+    "topic": "golf-course-basics",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-71-01",
+    "english": "Is this store tax free for tourists?",
+    "korean": "이 매장은 관광객 면세가 되나요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-71-02",
+    "english": "What is the minimum purchase for a refund?",
+    "korean": "환급받으려면 최소 얼마를 사야 하나요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-71-03",
+    "english": "Could I have a tax refund form?",
+    "korean": "면세 환급 서류를 주시겠어요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-71-04",
+    "english": "I need my passport for the tax free process.",
+    "korean": "면세 절차에 여권이 필요해요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-71-05",
+    "english": "Where do I claim the refund at the airport?",
+    "korean": "공항 어디에서 환급받나요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "Where is the tax refund counter at the airport?",
+        "korean": "공항 면세 환급 카운터가 어디에 있나요."
+      }
+    ]
+  },
+  {
+    "id": "day-71-06",
+    "english": "The refund did not arrive on my card.",
+    "korean": "환급금이 카드로 들어오지 않았어요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-71-07",
+    "english": "I was charged twice for the same item.",
+    "korean": "같은 물건이 두 번 결제됐어요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "intermediate",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "My card shows a double charge for one item.",
+        "korean": "카드에 한 물건이 중복 청구됐어요."
+      }
+    ]
+  },
+  {
+    "id": "day-71-08",
+    "english": "This item is faulty, so I would like a full refund.",
+    "korean": "이 물건에 하자가 있어서 전액 환불받고 싶어요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-71-09",
+    "english": "I have the receipt and the original packaging.",
+    "korean": "영수증과 원래 포장이 있어요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-71-10",
+    "english": "Could you send the refund confirmation by email?",
+    "korean": "환불 확인서를 이메일로 보내 주세요.",
+    "day": 71,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-72-01",
+    "english": "Do you offer free alterations?",
+    "korean": "무료 수선해 주나요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-72-02",
+    "english": "These pants are too long for me.",
+    "korean": "이 바지는 저한테 너무 길어요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-72-03",
+    "english": "Could I exchange this for a larger size?",
+    "korean": "더 큰 사이즈로 교환할 수 있나요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-72-04",
+    "english": "I wore it once, but the seam came apart.",
+    "korean": "한 번 입었는데 박음선이 터졌어요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-72-05",
+    "english": "The color faded after one wash.",
+    "korean": "한 번 빨았는데 색이 바랬어요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "intermediate",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "It lost its color after a single wash.",
+        "korean": "한 번 세탁했더니 탈색됐어요."
+      }
+    ]
+  },
+  {
+    "id": "day-72-06",
+    "english": "The sale item has a different return rule.",
+    "korean": "세일 상품은 반품 규정이 다르네요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-72-07",
+    "english": "Could you check the stock in another branch?",
+    "korean": "다른 지점 재고를 확인해 주시겠어요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-72-08",
+    "english": "I would like store credit instead of a refund.",
+    "korean": "환불 대신 매장 적립금으로 받고 싶어요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-72-09",
+    "english": "The manager approved the exchange yesterday.",
+    "korean": "어제 매니저님이 교환을 승인하셨어요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-72-10",
+    "english": "Please note the dispute on my receipt today.",
+    "korean": "오늘 영수증에 분쟁 내용을 적어 주세요.",
+    "day": 72,
+    "source": "builtIn",
+    "topic": "department-store-advanced",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-73-01",
+    "english": "My connection is tight, so please guide me to the express lane.",
+    "korean": "연결 시간이 촉박하니 빠른 통로로 안내해 주세요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-73-02",
+    "english": "The subway is packed, so I will take the next one.",
+    "korean": "지하철이 너무 붐벼서 다음 걸 타겠어요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-73-03",
+    "english": "This menu has no pictures, so please explain the special.",
+    "korean": "이 메뉴에는 사진이 없어서 특선을 설명해 주세요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-73-04",
+    "english": "Our tee time was moved without notice.",
+    "korean": "티타임이 알림 없이 바뀌었어요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-73-05",
+    "english": "The tax free machine rejected my passport scan.",
+    "korean": "면세 기계가 여권 스캔을 거부했어요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-73-06",
+    "english": "A sudden storm just stopped all flights.",
+    "korean": "갑작스러운 폭풍으로 모든 비행기가 멈췄어요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-73-07",
+    "english": "My phone died, so I cannot show my ticket.",
+    "korean": "휴대폰이 꺼져서 표를 보여드릴 수 없어요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-73-08",
+    "english": "Could you write down the address for my driver?",
+    "korean": "기사님께 드릴 주소를 적어 주시겠어요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-73-09",
+    "english": "I feel dizzy, so please call the station staff.",
+    "korean": "어지러우니 역 직원을 불러 주세요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "advanced",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "I am feeling faint, so please get help.",
+        "korean": "기절할 것 같으니 도와주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-73-10",
+    "english": "Let us stay calm and solve one problem at a time.",
+    "korean": "침착하게 한 번에 하나씩 해결해요.",
+    "day": 73,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "Please stay calm while we fix things step by step.",
+        "korean": "단계별로 해결하는 동안 침착해 주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-74-01",
+    "english": "The self checkout charged me for someone else's bag.",
+    "korean": "무인 계산대에서 남의 가방 값이 찍혔어요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-74-02",
+    "english": "My golf shoes broke on the first hole.",
+    "korean": "골프화가 첫 홀에서 망가졌어요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-74-03",
+    "english": "The bar is too loud, so could we move inside?",
+    "korean": "바가 너무 시끄러우니 안쪽으로 옮겨도 될까요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-74-04",
+    "english": "The bus left early and I missed it.",
+    "korean": "버스가 일찍 떠나서 놓쳤어요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "The bus departed ahead of schedule.",
+        "korean": "버스가 예정보다 일찍 출발했어요."
+      }
+    ]
+  },
+  {
+    "id": "day-74-05",
+    "english": "Immigration asked for my return ticket.",
+    "korean": "입국 심사에서 귀국 항공권을 요구했어요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-74-06",
+    "english": "My card was declined though I have enough balance.",
+    "korean": "잔액이 충분한데 카드가 거절됐어요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-74-07",
+    "english": "The caddie gave me the wrong club twice.",
+    "korean": "캐디가 클럽을 두 번 잘못 줬어요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-74-08",
+    "english": "A stranger is following me, so please walk with me.",
+    "korean": "낯선 사람이 따라오니 같이 걸어 주세요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "advanced",
+    "priority": 3,
+    "alternatives": [
+      {
+        "english": "Someone is following me, so please stay with me.",
+        "korean": "누가 따라오니 곁에 있어 주세요."
+      }
+    ]
+  },
+  {
+    "id": "day-74-09",
+    "english": "Could we pause the round because of lightning?",
+    "korean": "낙뢰 때문에 라운드를 중단해도 될까요.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "advanced",
+    "priority": 3
+  },
+  {
+    "id": "day-74-10",
+    "english": "Thank you for handling this trouble so kindly.",
+    "korean": "이 문제를 친절히 처리해 주셔서 감사합니다.",
+    "day": 74,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-75-01",
+    "english": "Everything went wrong today, but I kept my manners.",
+    "korean": "오늘은 다 꼬였지만 예의를 지켰어요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-75-02",
+    "english": "I missed my flight, my bag, and my bus in one day.",
+    "korean": "하루에 비행기, 가방, 버스를 다 놓쳤어요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-75-03",
+    "english": "The waiter, the driver, and the clerk all helped me.",
+    "korean": "웨이터, 기사, 점원이 모두 도와줬어요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-75-04",
+    "english": "I learned to ask for help earlier next time.",
+    "korean": "다음에는 더 빨리 도움을 요청하겠다고 배웠어요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-75-05",
+    "english": "Could you review my whole day and tell me what worked?",
+    "korean": "제 하루를 복기하고 잘한 점을 알려 주시겠어요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-75-06",
+    "english": "I can now handle the airport without fear.",
+    "korean": "이제 공항을 무서워하지 않고 이용할 수 있어요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-75-07",
+    "english": "Ordering wine feels natural to me now.",
+    "korean": "이제 와인 주문이 자연스러워요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-75-08",
+    "english": "I follow golf manners even when I play badly.",
+    "korean": "못 쳐도 골프 예절은 지켜요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-75-09",
+    "english": "Shopping disputes no longer scare me.",
+    "korean": "쇼핑 분쟁이 더는 두렵지 않아요.",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "advanced",
+    "priority": 2
+  },
+  {
+    "id": "day-75-10",
+    "english": "I finished seventy five days and I speak with courage!",
+    "korean": "75일을 마치고 용기 있게 말해요!",
+    "day": 75,
+    "source": "builtIn",
+    "topic": "daily-life-integration",
+    "level": "advanced",
+    "priority": 3
   }
 ]
