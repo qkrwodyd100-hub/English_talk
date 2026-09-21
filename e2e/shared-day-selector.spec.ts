@@ -21,7 +21,7 @@ test('flashcards use their own shared Day selector without inheriting the typing
 
   const selector = page.getByLabel('플래시카드 학습 Day 선택')
   await expect(selector).toHaveAttribute('id', 'cards-day-select')
-  await expect(selector.locator('option')).toHaveCount(60)
+  await expect(selector.locator('option')).toHaveCount(75)
   await selector.selectOption('2')
 
   await expect(page.locator('.flashcard')).toHaveCount(10)

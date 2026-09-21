@@ -34,9 +34,9 @@ describe('sequential learning engine', () => {
     expect(getResumeTarget(sentences, dayOneComplete)).toEqual({ day: 2, position: 0, isCourseComplete: false })
   })
 
-  it('keeps Day 60 selected after the course is complete', () => {
-    const daySixty = Array.from({ length: 10 }, (_, index) => ({ id: `day-60-${index + 1}`, english: '', korean: '', day: 60, source: 'custom' as const }))
-    expect(getResumeTarget(daySixty, state({ selectedDay: 60, completedSentenceIds: daySixty.map((sentence) => sentence.id) }))).toEqual({ day: 60, position: 0, isCourseComplete: true })
+  it('keeps Day 75 selected after the course is complete', () => {
+    const daySeventyFive = Array.from({ length: 10 }, (_, index) => ({ id: `day-75-${index + 1}`, english: '', korean: '', day: 75, source: 'custom' as const }))
+    expect(getResumeTarget(daySeventyFive, state({ selectedDay: 75, completedSentenceIds: daySeventyFive.map((sentence) => sentence.id) }))).toEqual({ day: 75, position: 0, isCourseComplete: true })
   })
 
   it('resumes a selected day from its persisted position', () => {
@@ -75,7 +75,7 @@ describe('sequential learning engine', () => {
     expect(judgeAnswer(baggageSentence!, 'Where can I find my luggage?')).toEqual({ kind: 'contextual-correct', isCorrect: true })
   })
 
-  it('keeps all 600 curriculum targets and declared alternatives within the verified contraction contract', () => {
+  it('keeps all 750 curriculum targets and declared alternatives within the verified contraction contract', () => {
     for (const sentence of builtInSentences) {
       for (const expression of [sentence.english, ...(sentence.alternatives?.map((alternative) => alternative.english) ?? [])]) {
         for (const equivalent of getContractionEquivalentForms(expression)) {

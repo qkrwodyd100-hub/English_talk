@@ -55,7 +55,12 @@ async function measureCloudAccount(page: Page): Promise<LayoutMetrics> {
 function assertReadableLayout(metrics: LayoutMetrics) {
   expect(metrics.rootOverflow, `root overflow at ${metrics.width}px`).toBeLessThanOrEqual(1)
   expect(metrics.intro.width, `intro width at ${metrics.width}px`).toBeGreaterThanOrEqual(150)
-  expect(metrics.title.width, `title width at ${metrics.width}px`).toBeGreaterThanOrEqual(150)
+  // Title is an inline <strong> sized to its intrinsic text width (font-dependent),
+  // so assert containment instead of an absolute width: it must sit fully inside
+  // the account section with non-zero width and no clipping.
+  expect(metrics.title.width, `title rendered at ${metrics.width}px`).toBeGreaterThan(0)
+  expect(metrics.title.x, `title left edge at ${metrics.width}px`).toBeGreaterThanOrEqual(metrics.account.x - 1)
+  expect(metrics.title.right, `title right edge at ${metrics.width}px`).toBeLessThanOrEqual(metrics.account.right + 1)
   expect(metrics.title.height, `title wrapping at ${metrics.width}px`).toBeLessThanOrEqual(metrics.title.lineHeight * 2.1)
   expect(metrics.form.width, `form width at ${metrics.width}px`).toBeGreaterThanOrEqual(150)
   expect(metrics.childrenInsideAccount, `account children at ${metrics.width}px`).toBe(true)

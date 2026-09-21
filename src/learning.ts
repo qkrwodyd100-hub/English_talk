@@ -112,6 +112,9 @@ export const LEARNING_STORAGE_KEY = 'english-talk.learning'
 export const LEARNING_STORAGE_VERSION = 4
 export const MAX_SENTENCE_NOTE_LENGTH = 2000
 export const MAX_ANSWER_HISTORY = 5
+export const MAX_COURSE_DAY = 75
+export const DAILY_COUNT_OPTIONS = [10, 12, 15] as const
+export const DEFAULT_DAILY_COUNT = 10
 
 export function createEmptyLearningState(): LearningState {
   return {
@@ -245,7 +248,7 @@ function readStringArray(value: unknown): string[] {
 }
 
 function isDay(value: unknown): value is number {
-  return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 60
+  return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= MAX_COURSE_DAY
 }
 
 function readDayPositions(value: unknown): Record<number, number> {
@@ -427,11 +430,16 @@ export function getTodayKey(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-export function getTodayChallenge(sentences: Sentence[], date = new Date()) {
+export function clampDailyCount(count: unknown): number {
+  return typeof count === 'number' && (DAILY_COUNT_OPTIONS as readonly number[]).includes(count) ? count : DEFAULT_DAILY_COUNT
+}
+
+export function getTodayChallenge(sentences: Sentence[], date = new Date(), count = DEFAULT_DAILY_COUNT) {
   if (sentences.length === 0) return []
+  const safeCount = Math.max(1, Math.floor(count) || DEFAULT_DAILY_COUNT)
   const key = getTodayKey(date)
   const offset = [...key].reduce((total, character) => total + character.charCodeAt(0), 0) % sentences.length
-  return Array.from({ length: 10 }, (_, index) => sentences[(offset + index) % sentences.length])
+  return Array.from({ length: safeCount }, (_, index) => sentences[(offset + index) % sentences.length])
 }
 
 export function getWordFeedback(answer: string, attempt: string): WordFeedback[] {
