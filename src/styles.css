@@ -21,7 +21,7 @@ legend, label[for='reply'] { font-weight: 800; display: block; margin-bottom: 10
 .option-group label.selected { color: #fff; background: #1d5c82; border-color: #1d5c82; }
 .option-group input { position: absolute; opacity: 0; }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-.button { border: 0; border-radius: 12px; background: #1d5c82; color: #fff; padding: 12px 17px; font-weight: 800; box-shadow: 0 5px 14px rgba(29, 92, 130, .2); }
+.button { border: 0; border-radius: 12px; background: #1d5c82; color: #fff; padding: 12px 17px; min-height: 44px; font-weight: 800; box-shadow: 0 5px 14px rgba(29, 92, 130, .2); }
 .button:hover { background: #164766; }
 .button:focus-visible, .text-button:focus-visible, .wordmark:focus-visible, textarea:focus-visible, .option-group label:has(input:focus-visible) { outline: 3px solid #f4a261; outline-offset: 3px; }
 .button.secondary { background: #e8f0f3; color: #17435e; box-shadow: none; }

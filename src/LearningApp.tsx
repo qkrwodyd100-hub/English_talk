@@ -271,7 +271,14 @@ export default function LearningApp() {
   const mastered = new Set(state.masteredIds)
   const progress = getDayProgress(sentences, state, selectedDay)
   const topicProgress = getTopicProgress(builtInSentences, state)
-  const reviewSentences = daySentences.filter((sentence) => state.reviewQueueIds.includes(sentence.id) || state.favoriteIds.includes(sentence.id))
+  const reviewSentences = daySentences
+    .filter((sentence) => state.reviewQueueIds.includes(sentence.id) || state.favoriteIds.includes(sentence.id))
+    // Keep persisted wrong-answer queue order (favorites outside the queue stay in day order via stable sort).
+    .sort((left, right) => {
+      const leftQueue = state.reviewQueueIds.indexOf(left.id)
+      const rightQueue = state.reviewQueueIds.indexOf(right.id)
+      return (leftQueue === -1 ? Number.MAX_SAFE_INTEGER : leftQueue) - (rightQueue === -1 ? Number.MAX_SAFE_INTEGER : rightQueue)
+    })
   const dailySet = getDailyPracticeSet(sentences, state, selectedDay, dailyCount)
   const visibleFlashcards = hideMastered ? flashcardSentences.filter((sentence) => !mastered.has(sentence.id)) : flashcardSentences
   const selectedDayDialogue = builtInDialogues.find((item) => item.day === selectedDay)
