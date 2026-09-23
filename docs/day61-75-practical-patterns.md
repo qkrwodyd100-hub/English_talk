@@ -1,4 +1,4 @@
-# Day 61–75 실전 패턴 과정 안내 (박재용 학습자용)
+# Day 61–75 실전 패턴 과정 안내
 
 ## 1. 왜 이렇게 바꿨는지
 
@@ -8,23 +8,28 @@ Day 1–60에서 문장을 "알고" 쓸 수 있게 됐다면, Day 61–75의 목
 
 이 과정에는 고급(advanced) 문장이 없다. 하루 10문장 중 6~7문장은 초급 짧은
 덩어리이고, 나머지는 그 덩어리를 조금 늘린 중급 확장이다.
-유창해졌다는 선언 문장도 없다. 대신 막혔을 때 살리는 말, 도움을 청하는 말,
-확인하는 말, 고마움을 전하는 말만 남겼다.
+유창해졌다는 선언 문장도 없다. Day 75는 막혔을 때 살리는 말, 도움을 청하는 말,
+확인하는 말, 고마움을 전하는 말로 묶었다.
 
 쉽게 만든다고 원어민이 안 쓰는 말로 줄이지 않았다. refund, route, expired,
 reload, alterations, reservation, receipt, following, grilled 같은 쓸모 있는
 단어는 살리고, 그 단어가 들어간 자연스러운 덩어리째 외우게 했다.
 
-대체 표현(같은 뜻 다른 말)은 35개만 둔다. 전부 뜻이 완전히 같은 쌍으로
-검증된 것만 남겼고, 헷갈리게 뜻이 어긋나는 쌍은 지웠다. 모든 문장에 대체
+대체 표현(같은 뜻 다른 말)은 35개만 둔다. 같은 상황에서 같은 의도로 쓸 수 있는
+대체 표현을 검토해 남겼고, 헷갈리게 뜻이 어긋나는 쌍은 지웠다. 모든 문장에 대체
 표현이 있을 필요는 없다.
 
 이 문서는 학습 순서나 효과를 보장하지 않으며, 어떤 공인 등급(CEFR 등)과도
 무관하다. 자주 나온다는 말은 교재 설계자의 판단이지, 말뭉치 빈도 조사 결과가 아니다.
+참고로 British Council A1 Checking understanding 자료는 repeat / slow down /
+Do you mean 같은 확인 패턴을 싣고 있다
+(https://learnenglish.britishcouncil.org/free-resources/speaking/a1/checking-understanding).
+이는 Day 75의 일부 패턴이 같은 종류라는 뜻일 뿐, 150문장 전체의 빈도 순위 근거는 아니다.
 
 ## 2. 매일 도는 핵심 틀 10개와 Day 1–60 발판
 
-아래 ID는 실제 Day 1–60 문장이다. Day 61–75 문장은 이 틀에 단어만 바꾼 것이다.
+아래 ID는 실제 Day 1–60 문장이다. Day 61–75 문장은 이 틀을 그대로 살린 것도 있고,
+단어를 갈아끼우거나 짧게 늘린 것도 있다.
 
 1. Can I...? (해도 될까요)
    - 발판: day-10-01 "Can I have a wake-up call at 7 AM?",
@@ -85,12 +90,12 @@ reload, alterations, reservation, receipt, following, grilled 같은 쓸모 있�
 
 - Could you say that again? (day-75-01)
   - 발판 day-01-03 "Could you please say that again?"의 짧은 형태. 뜻은 같고,
-    뒤에 please가 없다는 것만 다르다. 둘 중 하나로 고정해 쓰자.
+    please를 생략한 것만 다르다. 둘 중 하나로 고정해 쓰자.
 - Could you speak more slowly? (day-75-02)
   - 발판 day-01-04 "Please speak slowly."를 정중한 요청형으로 늘린 것.
-- What does this word mean? (day-75-03) — Day 75에서 처음 나오는 고정 틀.
-- Do you mean the next bus? (day-75-04) — Day 75에서 처음 나오는 확인 틀.
-- Is that right? (day-75-05) — Day 75에서 처음 나오는 끝맺음 확인 틀.
+- What does this word mean? (day-75-03) — Day 75 집중복습용 고정 틀.
+- Do you mean the next bus? (day-75-04) — Day 75 집중복습용 확인 틀.
+- Is that right? (day-75-05) — Day 75 집중복습용 끝맺음 확인 틀.
 
 문제 말하기 + 도움 청하기는 매일 짧게 붙는다.
 예: day-61-06 "I might miss my connection. Please help me.",
@@ -145,9 +150,9 @@ day-75-06 "Sorry, I don't understand. Could you explain?"
 
 1. 듣기: 음원을 듣고 뜻을 떠올린다. 텍스트를 보지 않는다.
 2. 따라말: 듣자마자 그대로 따라 말한다. 3번.
-3. 한 단어 바꾸기: 밑줄 친 단어 하나만 바꾼다.
-   예: "Can I try a little first?" → "Can I try this shirt on?"
-   ("this shirt" 자리에 손에 든 것을 넣어 말한다.)
+3. 한 단어 바꾸기: 단어 하나만 바꾼다.
+   예: "Can I try this shirt on?" → "Can I try this jacket on?"
+   (shirt 자리만 jacket으로 바꿔 말한다.)
 4. 텍스트 없이 답하기: 한국말만 보고 영어로 말한다. 막히면 Day 75 틀로 살린다.
    ("Could you say that again?" → 다시 듣기 → 다시 말하기.)
 

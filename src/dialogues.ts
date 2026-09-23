@@ -1312,8 +1312,8 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "traveler",
-        "english": "Will my bag go to the new flight too?",
-        "korean": "제 가방도 새 비행기로 가나요."
+        "english": "Will my bag be on that flight too?",
+        "korean": "제 가방도 그 비행기에 실리나요."
       },
       {
         "role": "staff",

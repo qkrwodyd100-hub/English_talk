@@ -7400,8 +7400,8 @@ export const builtInSentences: BuiltInSentence[] = [
     "priority": 2,
     "alternatives": [
       {
-        "english": "Do you accept credit cards?",
-        "korean": "신용카드 되나요."
+        "english": "Do you take cards?",
+        "korean": "카드 결제가 되나요?"
       }
     ]
   },

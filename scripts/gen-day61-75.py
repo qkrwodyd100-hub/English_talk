@@ -133,7 +133,7 @@ add(67, "We didn't order this.", "저희는 이걸 주문하지 않았어요.", 
 add(67, "This costs more than the price on the menu.", "메뉴 가격보다 비싸게 나왔어요.", "beginner", 1)
 add(67, "Can I pay my bill now?", "지금 계산해도 될까요.", "beginner", 1)
 add(67, "Can I pay by card?", "카드로 낼 수 있나요.", "beginner", 2,
-    "Do you accept credit cards?", "신용카드 되나요.")
+    "Do you take cards?", "카드 결제가 되나요?")
 add(67, "Can I have a receipt, please?", "영수증 주시겠어요.", "beginner", 1,
     "Could I get a receipt, please?", "영수증 주시겠어요.")
 add(67, "What's this service charge for?", "이 서비스 요금은 뭔가요.", "intermediate", 2)
@@ -261,7 +261,7 @@ TOPICS = {61: "airport-transit-advanced", 62: "airport-transit-advanced",
 DIALOGUES = {
  61: ("airport-transit-advanced", [("traveler", "I might miss my connection. Can you help me change my flight?", "연결편을 놓칠 것 같아요. 비행기 변경을 도와주시겠어요."),
     ("staff", "Sure. I'll check the next flight for you.", "그럼요. 다음 비행기를 알아볼게요."),
-    ("traveler", "Will my bag go to the new flight too?", "제 가방도 새 비행기로 가나요."),
+    ("traveler", "Will my bag be on that flight too?", "제 가방도 그 비행기에 실리나요."),
     ("staff", "I'll check that too.", "그것도 확인해 볼게요.")]),
  62: ("airport-transit-advanced", [("traveler", "My suitcase didn't arrive. Where do I report it?", "제 여행 가방이 도착하지 않았어요. 어디에 신고하나요."),
     ("staff", "Please fill out this form. Do you have your baggage claim tag?", "이 서류를 작성해 주세요. 수하물 표 있으세요."),
