@@ -46,10 +46,11 @@ describe('Day 61-75 advanced pack (issue #7)', () => {
     }
   })
 
-  it('mixes beginner, intermediate, and advanced levels with alternatives on every new day group', () => {
+  it('keeps every new day at beginner/intermediate with at least six beginner sentences', () => {
     for (let day = 61; day <= 75; day += 1) {
-      const levels = new Set(builtInSentences.filter((sentence) => sentence.day === day).map((sentence) => sentence.level))
-      expect([...levels].sort()).toEqual(['advanced', 'beginner', 'intermediate'])
+      const items = builtInSentences.filter((sentence) => sentence.day === day)
+      expect(items.every((sentence) => sentence.level === 'beginner' || sentence.level === 'intermediate')).toBe(true)
+      expect(items.filter((sentence) => sentence.level === 'beginner').length).toBeGreaterThanOrEqual(6)
     }
     const withAlternatives = builtInSentences.filter((sentence) => sentence.day >= 61 && (sentence.alternatives?.length ?? 0) > 0)
     expect(withAlternatives.length).toBeGreaterThanOrEqual(20)

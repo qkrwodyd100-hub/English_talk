@@ -6,11 +6,11 @@ const DAY_61_FIRST = {
 }
 const DAY_61_SECOND_KOREAN = '환승하는 데 시간이 얼마나 걸리나요.'
 const DAY_61_LAST = {
-  english: 'Please endorse my ticket so I can fly with another airline.',
-  korean: '다른 항공사 비행기로 갈 수 있게 표를 넘겨 주세요.',
+  english: 'I missed my connection. Can I get a hotel for tonight?',
+  korean: '연결편을 놓쳤어요. 오늘 밤 묵을 호텔을 받을 수 있나요.',
 }
 const DAY_62_FIRST_KOREAN = '제 여행 가방이 도착하지 않았어요.'
-const DAY_75_FIRST_KOREAN = '오늘은 다 꼬였지만 예의를 지켰어요.'
+const DAY_75_FIRST_KOREAN = '다시 한 번 말씀해 주시겠어요.'
 
 async function installRecognitionMock(page: Page) {
   await page.addInitScript(() => {
