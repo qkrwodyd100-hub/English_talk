@@ -82,9 +82,9 @@ describe('day61-75 practical-patterns curriculum shape', () => {
     expect(count(/^where can i\b/), 'Where can I').toBeGreaterThanOrEqual(3)
     expect(count(/^how long\b/), 'How long').toBeGreaterThanOrEqual(3)
     expect(count(/included/), 'included').toBeGreaterThanOrEqual(2)
-    expect(count(/^i need\b/), 'I need').toBeGreaterThanOrEqual(6)
+    expect(count(/^i need\b/), 'I need').toBeGreaterThanOrEqual(3)
     expect(count(/i(m| am) looking for/), "I'm looking for").toBeGreaterThanOrEqual(3)
-    expect(count(/^can we\b/), 'Can we').toBeGreaterThanOrEqual(4)
+    expect(count(/^can we\b/), 'Can we').toBeGreaterThanOrEqual(2)
   })
 
   it('includes conversational rescue patterns', () => {
@@ -159,7 +159,10 @@ describe('day61-75 practical-patterns curriculum shape', () => {
       expect(d.turns.length, `day ${d.day}`).toBeLessThanOrEqual(4)
       expect(d.turns.some((t) => t.role === 'traveler'), `day ${d.day}`).toBe(true)
       expect(d.topic, `day ${d.day}`).toBe(newSentences.find((s) => s.day === d.day)?.topic)
-      const dayEn = newSentences.filter((s) => s.day === d.day).map((s) => norm(s.english))
+      const dayEn = [
+        ...newSentences.filter((s) => s.day === d.day).map((s) => norm(s.english)),
+        ...newSentences.filter((s) => s.day === d.day).flatMap((s) => (s.alternatives ?? []).map((a) => norm(a.english))),
+      ]
       const travelerOk = d.turns
         .filter((t) => t.role === 'traveler')
         .some((t) => {

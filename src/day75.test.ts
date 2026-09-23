@@ -115,7 +115,7 @@ describe('listening-first learning improvements (issue #7)', () => {
 
   it('grades shadowing transcripts with the same judgment as typed answers', () => {
     const sentence = builtInSentences.find((item) => item.id === 'day-61-01')!
-    expect(gradeShadowingAttempt(sentence, 'My connecting flight leaves from a different terminal.')).toMatchObject({ isCorrect: true })
+    expect(gradeShadowingAttempt(sentence, 'Which terminal does my next flight leave from?')).toMatchObject({ isCorrect: true })
     expect(gradeShadowingAttempt(sentence, 'Something completely different.')).toMatchObject({ isCorrect: false })
   })
 

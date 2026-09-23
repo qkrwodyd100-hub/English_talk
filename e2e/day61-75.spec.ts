@@ -1,13 +1,13 @@
 import { expect, test, type Page } from '@playwright/test'
 
 const DAY_61_FIRST = {
-  english: 'My connecting flight leaves from a different terminal.',
-  korean: '연결편이 다른 터미널에서 출발해요.',
+  english: 'Which terminal does my next flight leave from?',
+  korean: '다음 비행기가 어느 터미널에서 출발하나요.',
 }
-const DAY_61_SECOND_KOREAN = '환승하는 데 시간이 얼마나 걸리나요.'
+const DAY_61_SECOND_KOREAN = '환승하는 데 얼마나 걸리나요.'
 const DAY_61_LAST = {
-  english: 'I missed my connection. Can I get a hotel for tonight?',
-  korean: '연결편을 놓쳤어요. 오늘 밤 묵을 호텔을 받을 수 있나요.',
+  english: 'I missed my connection. Can you help me find a hotel?',
+  korean: '연결편을 놓쳤어요. 호텔 찾는 걸 도와주시겠어요.',
 }
 const DAY_62_FIRST_KOREAN = '제 여행 가방이 도착하지 않았어요.'
 const DAY_75_FIRST_KOREAN = '다시 한 번 말씀해 주시겠어요.'

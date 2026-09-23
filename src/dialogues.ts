@@ -1302,23 +1302,23 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "I might miss my connection. Can I get on the next flight?",
-        "korean": "연결편을 놓칠 것 같아요. 다음 비행기로 갈 수 있나요."
+        "english": "I might miss my connection. Can you help me change my flight?",
+        "korean": "연결편을 놓칠 것 같아요. 비행기 변경을 도와주시겠어요."
       },
       {
         "role": "staff",
-        "english": "Yes. I will put you on the next flight out.",
-        "korean": "네. 다음 출발 비행기로 옮겨 드릴게요."
+        "english": "Sure. I'll check the next flight for you.",
+        "korean": "그럼요. 다음 비행기를 알아볼게요."
       },
       {
         "role": "traveler",
-        "english": "Will my bag go to the next flight too?",
-        "korean": "제 가방도 다음 비행기로 가나요."
+        "english": "Will my bag go to the new flight too?",
+        "korean": "제 가방도 새 비행기로 가나요."
       },
       {
         "role": "staff",
-        "english": "Yes. Your bag will follow you.",
-        "korean": "네. 가방도 함께 갈 거예요."
+        "english": "I'll check that too.",
+        "korean": "그것도 확인해 볼게요."
       }
     ]
   },
@@ -1328,23 +1328,23 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "My suitcase did not arrive. Where do I report it?",
+        "english": "My suitcase didn't arrive. Where do I report it?",
         "korean": "제 여행 가방이 도착하지 않았어요. 어디에 신고하나요."
       },
       {
         "role": "staff",
-        "english": "Please fill out this form with your tag number.",
-        "korean": "표 번호와 함께 이 서류를 작성해 주세요."
+        "english": "Please fill out this form. Do you have your baggage claim tag?",
+        "korean": "이 서류를 작성해 주세요. 수하물 표 있으세요."
       },
       {
         "role": "traveler",
-        "english": "How long will it take to find my bag?",
-        "korean": "가방을 찾는 데 얼마나 걸리나요."
+        "english": "Here it is. How long will it take?",
+        "korean": "여기 있어요. 얼마나 걸리나요."
       },
       {
         "role": "staff",
-        "english": "About three days. We will call you.",
-        "korean": "3일쯤 걸려요. 찾으면 전화드릴게요."
+        "english": "We'll call you when we find it.",
+        "korean": "찾으면 전화드릴게요."
       }
     ]
   },
@@ -1354,18 +1354,18 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "The fare is wrong. Can you check it?",
-        "korean": "요금이 잘못됐어요. 확인해 주시겠어요."
+        "english": "This fare looks wrong. Could you check it?",
+        "korean": "요금이 이상해 보여요. 확인해 주시겠어요."
       },
       {
         "role": "staff",
-        "english": "I see the extra charge. I will give it back.",
-        "korean": "추가 요금이 보이네요. 돌려드릴게요."
+        "english": "Sure. I'll check the charge for you.",
+        "korean": "그럼요. 요금을 확인해 볼게요."
       },
       {
         "role": "traveler",
-        "english": "Thank you for the quick refund.",
-        "korean": "빨리 환불해 주셔서 감사해요."
+        "english": "Thank you for checking.",
+        "korean": "확인해 주셔서 감사해요."
       }
     ]
   },
@@ -1385,13 +1385,13 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "traveler",
-        "english": "Where can I charge my card?",
-        "korean": "교통카드는 어디에서 충전하나요."
+        "english": "Where can I add money to this card?",
+        "korean": "이 카드에 어디서 돈을 넣나요."
       },
       {
         "role": "staff",
-        "english": "At any gate machine.",
-        "korean": "어느 개찰구 기기에서나 돼요."
+        "english": "At the ticket machine over there.",
+        "korean": "저기 표 사는 기계에서 돼요."
       }
     ]
   },
@@ -1406,13 +1406,13 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "staff",
-        "english": "I will check with the cook now.",
-        "korean": "요리사님께 바로 확인해 드릴게요."
+        "english": "I'll check the ingredients with the cook.",
+        "korean": "요리사님과 함께 재료를 확인할게요."
       },
       {
         "role": "traveler",
-        "english": "Thank you for checking with care.",
-        "korean": "꼼꼼히 확인해 주셔서 감사해요."
+        "english": "Thank you for checking the ingredients.",
+        "korean": "재료 확인해 주셔서 감사해요."
       }
     ]
   },
@@ -1427,8 +1427,8 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "staff",
-        "english": "Of course. Here is a small taste.",
-        "korean": "물론이죠. 여기 조금 드릴게요."
+        "english": "Sure. A small taste is okay.",
+        "korean": "그럼요. 조금 맛보는 건 괜찮아요."
       },
       {
         "role": "traveler",
@@ -1443,18 +1443,18 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "Could we have the bill? This one is not ours.",
-        "korean": "계산서 주시겠어요. 이건 저희가 주문한 게 아니에요."
+        "english": "We didn't order this. Could you check the bill?",
+        "korean": "저희는 이걸 주문하지 않았어요. 계산서를 확인해 주시겠어요."
       },
       {
         "role": "staff",
-        "english": "You are right. I will fix it now.",
+        "english": "You're right. I'll fix it now.",
         "korean": "맞으시네요. 지금 바로 고쳐 드릴게요."
       },
       {
         "role": "traveler",
-        "english": "Can we split the new bill in half?",
-        "korean": "고친 계산서를 반반으로 나눠 주시겠어요."
+        "english": "Can we split the check in half?",
+        "korean": "계산서를 반반으로 나눠 주시겠어요."
       },
       {
         "role": "staff",
@@ -1469,23 +1469,23 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "I'd like a tee time for Saturday. We are four people.",
+        "english": "I'd like a tee time for Saturday. There are four of us.",
         "korean": "토요일 티타임으로 예약하고 싶어요. 저희는 4명이에요."
       },
       {
         "role": "staff",
-        "english": "Morning is open. What time will you come?",
-        "korean": "오전이 비어 있어요. 몇 시에 오시겠어요."
+        "english": "We have a spot at nine. Does that work?",
+        "korean": "아홉 시가 비어 있어요. 괜찮으세요."
       },
       {
         "role": "traveler",
-        "english": "We will come early. Is the cart included?",
-        "korean": "일찍 갈게요. 카트가 요금에 포함되나요."
+        "english": "Nine works for us. Is the cart included?",
+        "korean": "아홉 시 좋아요. 카트가 요금에 포함되나요."
       },
       {
         "role": "staff",
-        "english": "Yes, it is included. See you Saturday.",
-        "korean": "네, 포함돼요. 토요일에 봐요."
+        "english": "Yes. The fee includes the cart.",
+        "korean": "네. 요금에 카트가 포함돼요."
       }
     ]
   },
@@ -1505,8 +1505,8 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "traveler",
-        "english": "Thank you. I will fix my mark too.",
-        "korean": "감사해요. 볼 마크도 고칠게요."
+        "english": "Okay. I'll keep the cart on the path.",
+        "korean": "알겠어요. 길로만 다닐게요."
       }
     ]
   },
@@ -1516,8 +1516,8 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "Do you sell gloves here? I'm looking for cheap used balls.",
-        "korean": "여기서 장갑을 파나요. 싸게 중고공을 찾고 있어요."
+        "english": "Do you sell gloves here? I'm looking for some used golf balls.",
+        "korean": "여기서 장갑을 파나요. 중고 골프공을 찾고 있어요."
       },
       {
         "role": "staff",
@@ -1526,8 +1526,8 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "traveler",
-        "english": "Thank you. Can I try this shirt on?",
-        "korean": "감사해요. 이 셔츠도 입어 봐도 될까요."
+        "english": "Thanks. May I try this shirt on?",
+        "korean": "감사해요. 이 셔츠를 입어 봐도 될까요."
       },
       {
         "role": "staff",
@@ -1542,8 +1542,8 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "Is this store tax free? I need a tax refund form.",
-        "korean": "이 매장은 면세가 되나요. 환급 서류가 필요해요."
+        "english": "Do you offer tax-free shopping for tourists? I need a tax refund form.",
+        "korean": "관광객 면세 쇼핑이 되나요. 환급 서류가 필요해요."
       },
       {
         "role": "staff",
@@ -1552,12 +1552,12 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "traveler",
-        "english": "Here it is. Where can I get the refund?",
+        "english": "Here it is. Where can I get the refund at the airport?",
         "korean": "여기 있어요. 환급은 공항 어디에서 받나요."
       },
       {
         "role": "staff",
-        "english": "At the airport refund desk.",
+        "english": "You can get it at the airport refund desk.",
         "korean": "공항 환급 창구에서 받으세요."
       }
     ]
@@ -1568,18 +1568,18 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "These pants are too long. Can I change them?",
-        "korean": "이 바지는 너무 길어요. 교환할 수 있나요."
+        "english": "These pants are too long.",
+        "korean": "이 바지는 너무 길어요."
       },
       {
         "role": "staff",
-        "english": "Of course. Do you need a larger size?",
-        "korean": "물론이죠. 더 큰 사이즈가 필요하세요."
+        "english": "We can shorten them for you.",
+        "korean": "줄여 드릴 수 있어요."
       },
       {
         "role": "traveler",
-        "english": "No, the same size. Just shorter, please.",
-        "korean": "아니요, 같은 사이즈요. 기장만 짧게 해 주세요."
+        "english": "Great. How long will it take?",
+        "korean": "좋아요. 얼마나 걸리나요."
       }
     ]
   },
@@ -1589,18 +1589,23 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "I need help. My phone is dead and my time is short.",
-        "korean": "도움이 필요해요. 휴대폰이 꺼졌고 시간도 촉박해요."
+        "english": "My phone died. I can't show my ticket.",
+        "korean": "휴대폰이 꺼져서 표를 보여드릴 수 없어요."
       },
       {
         "role": "staff",
-        "english": "Stay here. I will show you the fast lane.",
-        "korean": "여기 계세요. 빠른 통로로 안내해 드릴게요."
+        "english": "That's okay. Can you tell me your booking number?",
+        "korean": "괜찮아요. 예약 번호를 알려 주시겠어요."
       },
       {
         "role": "traveler",
-        "english": "Thank you. One thing at a time.",
-        "korean": "감사해요. 하나씩 해결해요."
+        "english": "Yes. Here it is.",
+        "korean": "네. 여기 있어요."
+      },
+      {
+        "role": "staff",
+        "english": "Found it. Here's your gate information.",
+        "korean": "찾았어요. 탑승구 안내예요."
       }
     ]
   },
@@ -1610,18 +1615,18 @@ export const builtInDialogues: MiniDialogue[] = [
     "turns": [
       {
         "role": "traveler",
-        "english": "The bus left early and my card did not work.",
-        "korean": "버스가 일찍 떠났어요. 카드도 안 됐어요."
+        "english": "There's lightning. Let's stop playing and go inside.",
+        "korean": "번개가 쳐요. 그만 치고 안으로 들어가요."
       },
       {
         "role": "local",
-        "english": "Use my phone. I will stay with you.",
-        "korean": "제 휴대폰을 쓰세요. 함께 있어 드릴게요."
+        "english": "Good idea. Let's head to the clubhouse.",
+        "korean": "좋은 생각이에요. 클럽하우스로 가요."
       },
       {
         "role": "traveler",
-        "english": "Thank you for staying with me.",
-        "korean": "함께 있어 주셔서 감사해요."
+        "english": "Okay. Let's go.",
+        "korean": "좋아요. 가요."
       }
     ]
   },
@@ -1636,8 +1641,8 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "local",
-        "english": "Of course. I will speak more slowly.",
-        "korean": "물론이죠. 더 천천히 말할게요."
+        "english": "Of course. The next bus leaves at ten.",
+        "korean": "물론이죠. 다음 버스는 10시에 출발해요."
       },
       {
         "role": "traveler",
@@ -1646,7 +1651,7 @@ export const builtInDialogues: MiniDialogue[] = [
       },
       {
         "role": "local",
-        "english": "Yes, that's right.",
+        "english": "Yes. That's right.",
         "korean": "네, 맞아요."
       }
     ]
