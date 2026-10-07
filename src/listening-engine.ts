@@ -4,6 +4,7 @@ import { MAX_COURSE_DAY } from './learning'
 export type ListeningPreferences = {
   selectedDays: number[]
   includeCustom: boolean
+  excludeMastered: boolean
   koreanRate: number
   englishRate: number
   pauseMs: number
@@ -18,7 +19,7 @@ export type ListeningPlayback = { index: number; stage: ListeningStage; message?
 type SynthLike = { speak: (utterance: any) => void; cancel: () => void; pause: () => void; resume: () => void }
 
 export const LISTENING_STORAGE_KEY = 'english-talk.listening.v1'
-export const defaultListeningPreferences: ListeningPreferences = { selectedDays: [], includeCustom: false, koreanRate: 0.85, englishRate: 0.92, pauseMs: 600, repeatAll: false, drivingMode: false, position: 0 }
+export const defaultListeningPreferences: ListeningPreferences = { selectedDays: [], includeCustom: false, excludeMastered: true, koreanRate: 0.85, englishRate: 0.92, pauseMs: 600, repeatAll: false, drivingMode: false, position: 0 }
 export const LISTENING_RATE_MIN = 0.5
 export const LISTENING_RATE_MAX = 2.5
 
@@ -26,7 +27,7 @@ export function parseListeningPreferences(raw: string | null): ListeningPreferen
   try {
     const value = JSON.parse(raw ?? '') as Partial<ListeningPreferences>
     const selectedDays = Array.isArray(value.selectedDays) ? [...new Set(value.selectedDays.filter((day) => Number.isInteger(day) && day >= 1 && day <= MAX_COURSE_DAY))].sort((a, b) => a - b) : []
-    return { ...defaultListeningPreferences, ...value, selectedDays, position: Number.isInteger(value.position) && (value.position ?? -1) >= 0 ? value.position! : 0,
+    return { ...defaultListeningPreferences, ...value, selectedDays, excludeMastered: value.excludeMastered !== false, position: Number.isInteger(value.position) && (value.position ?? -1) >= 0 ? value.position! : 0,
       koreanRate: validRate(value.koreanRate, defaultListeningPreferences.koreanRate), englishRate: validRate(value.englishRate, defaultListeningPreferences.englishRate), pauseMs: validPause(value.pauseMs) }
   } catch { return { ...defaultListeningPreferences } }
 }
@@ -37,9 +38,10 @@ function validRate(rate: unknown, fallback: number) {
 }
 function validPause(pause: unknown) { return typeof pause === 'number' && pause >= 0 && pause <= 3000 ? pause : defaultListeningPreferences.pauseMs }
 
-export function createListeningPlaylist(sentences: Sentence[], selectedDays: number[], includeCustom: boolean) {
+export function createListeningPlaylist(sentences: Sentence[], selectedDays: number[], includeCustom: boolean, excludedIds?: string[] | Set<string>) {
   const days = new Set(selectedDays)
-  return sentences.filter((sentence) => days.has(sentence.day) && (includeCustom || sentence.source === 'builtIn'))
+  const excluded = excludedIds instanceof Set ? excludedIds : new Set(excludedIds ?? [])
+  return sentences.filter((sentence) => days.has(sentence.day) && (includeCustom || sentence.source === 'builtIn') && !excluded.has(sentence.id))
     .sort((left, right) => left.day - right.day || sentences.indexOf(left) - sentences.indexOf(right))
 }
 

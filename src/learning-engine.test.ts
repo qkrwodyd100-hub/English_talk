@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   advanceDayPosition,
   createSequentialLearningState,
+  getDailyPracticeSet,
   getDayProgress,
   getResumeTarget,
+  getReviewChallenge,
   getReviewQueue,
   getSequentialDayChallenge,
   getTopicProgress,
@@ -120,5 +122,14 @@ describe('sequential learning engine', () => {
     expect(getReviewQueue(sentences, learning).map((sentence) => sentence.id)).toEqual(['day-02-01', 'day-01-02'])
     expect(learning.favoriteIds).toEqual(['day-01-02'])
     expect(toggleFavorite(learning, 'day-01-02').favoriteIds).toEqual([])
+  })
+
+  it('excludes mastered sentences from typing practice, daily sets, resume targets and review re-presentation', () => {
+    const mastered = ['day-01-01']
+
+    expect(getSequentialDayChallenge(sentences, state({ selectedDay: 1 }), 1, mastered).map((sentence) => sentence.id)).toEqual(['day-01-02'])
+    expect(getDailyPracticeSet(sentences, state({ selectedDay: 1 }), 1, 10, mastered).map((sentence) => sentence.id)).not.toContain('day-01-01')
+    expect(getResumeTarget(sentences, state({ selectedDay: 1 }), mastered)).toEqual({ day: 1, position: 0, isCourseComplete: false })
+    expect(getReviewChallenge(sentences, state({ reviewQueueIds: ['day-01-01', 'day-01-02'] }), 10, mastered).map((sentence) => sentence.id)).toEqual(['day-01-02'])
   })
 })

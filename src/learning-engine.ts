@@ -41,21 +41,29 @@ export function createSequentialLearningState(): SequentialLearningState {
   }
 }
 
-export function getSequentialDayChallenge(sentences: Sentence[], state: SequentialLearningState, day = state.selectedDay): Sentence[] {
+function toExcludedSet(excludedIds?: string[] | Set<string>): Set<string> {
+  return excludedIds instanceof Set ? excludedIds : new Set(excludedIds ?? [])
+}
+
+export function getSequentialDayChallenge(sentences: Sentence[], state: SequentialLearningState, day = state.selectedDay, excludedIds?: string[] | Set<string>): Sentence[] {
   if (!day || day < 1 || day > MAX_COURSE_DAY) return []
-  const daySentences = sentences.filter((sentence) => sentence.day === day)
+  const excluded = toExcludedSet(excludedIds)
+  const daySentences = sentences.filter((sentence) => sentence.day === day && !excluded.has(sentence.id))
   if (daySentences.length === 0) return []
   const start = state.dayPositions[day] ?? 0
   return Array.from({ length: daySentences.length }, (_, index) => daySentences[(start + index) % daySentences.length])
 }
 
-/** Chooses the first unfinished sentence of the current day, or the next unfinished day. */
-export function getResumeTarget(sentences: Sentence[], state: SequentialLearningState): ResumeTarget {
-  const days = [...new Set(sentences.map((sentence) => sentence.day))].sort((left, right) => left - right)
+/** Chooses the first unfinished sentence of the current day, or the next unfinished day.
+ * Mastered (excluded) sentences never become a resume target. */
+export function getResumeTarget(sentences: Sentence[], state: SequentialLearningState, excludedIds?: string[] | Set<string>): ResumeTarget {
+  const excluded = toExcludedSet(excludedIds)
+  const active = sentences.filter((sentence) => !excluded.has(sentence.id))
+  const days = [...new Set(active.map((sentence) => sentence.day))].sort((left, right) => left - right)
   const selectedDay = state.selectedDay ?? days[0] ?? 1
   const completed = new Set(state.completedSentenceIds)
   const targetForDay = (day: number) => {
-    const daySentences = sentences.filter((sentence) => sentence.day === day)
+    const daySentences = active.filter((sentence) => sentence.day === day)
     const savedPosition = state.dayPositions[day] ?? 0
     const currentPosition = savedPosition % daySentences.length
     if (daySentences[currentPosition] && !completed.has(daySentences[currentPosition].id)) return currentPosition
@@ -150,19 +158,22 @@ function addUnique(values: string[], value: string): string[] {
 /** Builds one daily practice set of `count` sentences: the current Day from its
  * saved position first, then the review queue, then the following Days in order.
  * Unfinished positions on other Days are never reset, so unsolved sentences
- * carry over instead of being lost. */
+ * carry over instead of being lost. Mastered (excluded) sentences are skipped. */
 export function getDailyPracticeSet(
   sentences: Sentence[],
   state: SequentialLearningState,
   day: number,
   count: number,
+  excludedIds?: string[] | Set<string>,
 ): Sentence[] {
-  const safeCount = Math.min(Math.max(1, Math.floor(count) || 10), sentences.length)
-  if (!day || day < 1 || day > MAX_COURSE_DAY || sentences.length === 0) return []
-  const ordered = getSequentialDayChallenge(sentences, state, day)
-  const review = getReviewQueue(sentences, state)
-  const days = [...new Set(sentences.map((sentence) => sentence.day))].sort((left, right) => left - right)
-  const following = days.filter((value) => value > day).flatMap((nextDay) => getSequentialDayChallenge(sentences, state, nextDay))
+  const excluded = toExcludedSet(excludedIds)
+  const active = sentences.filter((sentence) => !excluded.has(sentence.id))
+  const safeCount = Math.min(Math.max(1, Math.floor(count) || 10), active.length || 1)
+  if (!day || day < 1 || day > MAX_COURSE_DAY || active.length === 0) return []
+  const ordered = getSequentialDayChallenge(active, state, day)
+  const review = getReviewQueue(active, state)
+  const days = [...new Set(active.map((sentence) => sentence.day))].sort((left, right) => left - right)
+  const following = days.filter((value) => value > day).flatMap((nextDay) => getSequentialDayChallenge(active, state, nextDay))
   const picked: Sentence[] = []
   const seen = new Set<string>()
   for (const sentence of [...ordered, ...review, ...following]) {
@@ -176,9 +187,10 @@ export function getDailyPracticeSet(
 
 /** Returns up to `count` review-queue sentences in persisted queue order for
  * automatic re-presentation of incorrect attempts (spaced repetition). */
-export function getReviewChallenge(sentences: Sentence[], state: SequentialLearningState, count: number): Sentence[] {
+export function getReviewChallenge(sentences: Sentence[], state: SequentialLearningState, count: number, excludedIds?: string[] | Set<string>): Sentence[] {
+  const excluded = toExcludedSet(excludedIds)
   const safeCount = Math.min(Math.max(1, Math.floor(count) || 10), sentences.length)
-  return getReviewQueue(sentences, state).slice(0, safeCount)
+  return getReviewQueue(sentences, state).filter((sentence) => !excluded.has(sentence.id)).slice(0, safeCount)
 }
 
 /** Grades one shadowing attempt: listen to TTS, repeat by voice, and score the

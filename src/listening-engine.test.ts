@@ -14,6 +14,17 @@ describe('listening playlist', () => {
     expect(createListeningPlaylist(sentences, [2, 1], false).map((item) => item.id)).toEqual(['day-01-02', 'day-01-01', 'day-02-01'])
   })
 
+  it('excludes mastered sentences when an exclusion set is provided', () => {
+    expect(createListeningPlaylist(sentences, [1], false, ['day-01-01']).map((item) => item.id)).toEqual(['day-01-02'])
+    expect(createListeningPlaylist(sentences, [1], false, new Set(['day-01-01', 'day-01-02']))).toEqual([])
+  })
+
+  it('excludes mastered sentences from listening preferences by default and preserves an explicit opt-in', () => {
+    expect(parseListeningPreferences(null)).toMatchObject({ excludeMastered: true })
+    expect(parseListeningPreferences(JSON.stringify({ selectedDays: [1] }))).toMatchObject({ excludeMastered: true })
+    expect(parseListeningPreferences(JSON.stringify({ selectedDays: [1], excludeMastered: false }))).toMatchObject({ excludeMastered: false })
+  })
+
   it('does not convert corrupt stored preferences into an all-Day queue', () => {
     expect(parseListeningPreferences('{bad json}')).toMatchObject({ selectedDays: [], includeCustom: false })
   })
