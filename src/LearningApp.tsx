@@ -41,7 +41,7 @@ import { builtInDialogues } from './dialogues'
 import { builtInSentences } from './sentences'
 import { useLearningCloud } from './use-learning-cloud'
 import { validateNewPassword } from './auth'
-import ListeningPanel from './ListeningPanel'
+import ListeningPanel, { type ListeningControls } from './ListeningPanel'
 
 type Tab = 'practice' | 'cards' | 'review' | 'manage' | 'history' | 'notes' | 'listening'
 type SpeechRecognitionLike = {
@@ -174,7 +174,7 @@ export default function LearningApp() {
   const [korean, setKorean] = useState('')
   const [dialogueOpen, setDialogueOpen] = useState(false)
   const [topicsExpanded, setTopicsExpanded] = useState(false)
-  const [listeningStopSignal, setListeningStopSignal] = useState(0)
+  const [listeningStatus, setListeningStatus] = useState<{ item: Sentence | null; index: number; total: number; stage: string } | null>(null)
   const [dailyCount, setDailyCount] = useState<number>(() => {
     try { return clampDailyCount(JSON.parse(window.localStorage.getItem('english-talk.daily-count') ?? 'null')) }
     catch { return DEFAULT_DAILY_COUNT }
@@ -189,6 +189,11 @@ export default function LearningApp() {
   const backupInput = useRef<HTMLInputElement | null>(null)
   const isComposingAnswer = useRef(false)
   const answerInput = useRef<HTMLInputElement | null>(null)
+  const listeningControls = useRef<ListeningControls | null>(null)
+  const listeningPausedForPractice = useRef(false)
+  const handleListeningStatus = useCallback((status: { item: Sentence | null; index: number; total: number; stage: string }) => {
+    setListeningStatus(status)
+  }, [])
   const hasExplicitDaySelection = useRef(false)
   const hasAppliedResumeTarget = useRef(false)
   const activeNoteSentenceId = useRef<string | undefined>(undefined)
@@ -203,11 +208,28 @@ export default function LearningApp() {
     activeRecognition.onend = null
     try { activeRecognition.abort?.() ?? activeRecognition.stop() } catch { /* The browser already stopped the recognition session. */ }
     setIsListening(false)
+    resumeListeningIfAutoPaused()
   }
 
-  function stopListeningPlayback() {
-    try { window.speechSynthesis?.cancel() } catch { /* The browser may already have interrupted speech. */ }
-    setListeningStopSignal((value) => value + 1)
+  // Background listening coordination: practice-side audio (TTS, shadowing,
+  // voice input) shares the single speechSynthesis channel, so an actively
+  // playing listening session is paused first and resumed from the current
+  // sentence afterwards. A manual pause/stop by the user never auto-resumes.
+  function pauseListeningForPractice() {
+    const controls = listeningControls.current
+    if (controls?.isPlaying()) {
+      controls.pause()
+      listeningPausedForPractice.current = true
+      return true
+    }
+    return false
+  }
+
+  function resumeListeningIfAutoPaused() {
+    if (!listeningPausedForPractice.current) return
+    const controls = listeningControls.current
+    listeningPausedForPractice.current = false
+    if (controls?.getStage() === 'paused') controls.repeat()
   }
 
   useEffect(() => {
@@ -245,10 +267,6 @@ export default function LearningApp() {
   useEffect(() => {
     try { window.localStorage.setItem('english-talk.exclude-mastered-practice', excludeMasteredPractice ? '1' : '0') } catch { /* practice filter remains usable for this visit */ }
   }, [excludeMasteredPractice])
-
-  useEffect(() => {
-    if (tab !== 'listening') stopListeningPlayback()
-  }, [tab])
 
   useEffect(() => {
     practiceHistory.current = []
@@ -363,7 +381,6 @@ export default function LearningApp() {
   }
 
   function resetPracticeContext() {
-    stopListeningPlayback()
     cancelListening()
     setAttempt('')
     setCheckedAnswer(null)
@@ -398,7 +415,6 @@ export default function LearningApp() {
     const snapshot = practiceHistory.current.pop()
     if (!snapshot) return
     setHasPracticeHistory(practiceHistory.current.length > 0)
-    stopListeningPlayback()
     cancelListening()
     updateState({ ...state, selectedDay: snapshot.selectedDay, dayPositions: { ...state.dayPositions, [snapshot.selectedDay]: snapshot.position } })
     setSelectedTopic(snapshot.selectedTopic)
@@ -417,7 +433,6 @@ export default function LearningApp() {
     clearPracticeHistory()
     updateState({ ...state, selectedDay: day, selectedDayIsManual: true, dayPositions: { ...state.dayPositions, [day]: 0 } })
     setRevealed(null)
-    try { window.speechSynthesis?.cancel() } catch { /* Audio was already unavailable or stopped. */ }
     setSelectedTopic('all')
     resetPracticeContext()
   }
@@ -547,23 +562,25 @@ export default function LearningApp() {
     return next.completedChallengeDates.includes(today) ? next : { ...next, completedChallengeDates: [...next.completedChallengeDates, today] }
   }
 
-  function speakEnglish(text: string, successMessage: string) {
-    stopListeningPlayback()
-    if (!('speechSynthesis' in window)) { setSpeechNotice('이 브라우저에서는 음성 재생을 지원하지 않습니다. 텍스트 정답으로 계속 학습할 수 있습니다.'); return }
+  function speakEnglish(text: string, successMessage: string, resumeListening: 'auto' | 'manual' = 'auto') {
+    pauseListeningForPractice()
+    if (!('speechSynthesis' in window)) { setSpeechNotice('이 브라우저에서는 음성 재생을 지원하지 않습니다. 텍스트 정답으로 계속 학습할 수 있습니다.'); resumeListeningIfAutoPaused(); return }
     const synth = window.speechSynthesis
     const utterance = new SpeechSynthesisUtterance(text)
     const voice = pickPreferredEnglishVoice(availableVoices.length ? availableVoices : synth.getVoices())
     utterance.voice = voice ?? null
     utterance.lang = voice?.lang ?? 'en-US'
     utterance.rate = 0.92
-    try { synth.cancel(); synth.speak(utterance); setSpeechNotice(successMessage) } catch { setSpeechNotice('음성 재생을 시작할 수 없습니다. 텍스트 학습은 계속할 수 있습니다.') }
+    utterance.onend = () => { if (resumeListening === 'auto') resumeListeningIfAutoPaused() }
+    utterance.onerror = () => { if (resumeListening === 'auto') resumeListeningIfAutoPaused() }
+    try { synth.cancel(); synth.speak(utterance); setSpeechNotice(successMessage) } catch { setSpeechNotice('음성 재생을 시작할 수 없습니다. 텍스트 학습은 계속할 수 있습니다.'); if (resumeListening === 'auto') resumeListeningIfAutoPaused() }
   }
 
   function startShadowing() {
     if (!current || checkedAnswer) return
     shadowing.current = true
     autoVoiceFor.current = current.id
-    speakEnglish(current.english, '쉐도잉 문장을 재생했습니다. 듣고 따라 말하세요.')
+    speakEnglish(current.english, '쉐도잉 문장을 재생했습니다. 듣고 따라 말하세요.', 'manual')
     toggleListening()
   }
 
@@ -576,7 +593,7 @@ export default function LearningApp() {
       setSpeechNotice('음성 입력을 중지했습니다. 텍스트를 수정한 뒤 정답을 제출하세요.')
       return
     }
-    stopListeningPlayback()
+    const pausedBackground = pauseListeningForPractice()
     const instance = new Recognition()
     instance.lang = 'en-US'; instance.interimResults = false; instance.continuous = false
     let receivedFinalTranscript = false
@@ -598,6 +615,7 @@ export default function LearningApp() {
       if (recognition.current !== instance) return
       recognition.current = null
       setIsListening(false)
+      resumeListeningIfAutoPaused()
       setSpeechNotice(event.error === 'not-allowed' || event.error === 'service-not-allowed'
         ? '마이크 권한이 거부되었습니다. 텍스트 입력으로 계속 학습할 수 있습니다.'
         : event.error === 'no-speech'
@@ -608,14 +626,16 @@ export default function LearningApp() {
       if (recognition.current !== instance) return
       recognition.current = null
       setIsListening(false)
+      resumeListeningIfAutoPaused()
     }
     recognition.current = instance
     try {
       instance.start()
       setIsListening(true)
-      setSpeechNotice('듣는 중입니다. 음성은 브라우저 또는 기기 공급자의 음성 인식 서비스에서 처리될 수 있으며 자동 저장·제출하지 않습니다.')
+      setSpeechNotice(`듣는 중입니다. 음성은 브라우저 또는 기기 공급자의 음성 인식 서비스에서 처리될 수 있으며 자동 저장·제출하지 않습니다.${pausedBackground ? ' 백그라운드 듣기는 일시정지했어요.' : ''}`)
     } catch {
       recognition.current = null
+      resumeListeningIfAutoPaused()
       setSpeechNotice('음성 입력을 시작할 수 없습니다. 텍스트 입력으로 계속 학습할 수 있습니다.')
     }
   }
@@ -676,7 +696,11 @@ export default function LearningApp() {
     <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'listening' ? 'page' : undefined} className={tab === 'listening' ? 'active' : ''} onClick={() => { setTab('listening'); window.requestAnimationFrame(() => document.getElementById('listening-heading')?.scrollIntoView({ block: 'start' })) }}>듣기 학습</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'history' ? 'page' : undefined} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>학습 기록</button><button aria-current={tab === 'notes' ? 'page' : undefined} className={tab === 'notes' ? 'active' : ''} onClick={() => setTab('notes')}>학습 노트</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>
     {speechNotice && <p className="hint" role="status">{speechNotice}</p>}
 
-    {tab === 'listening' && <ListeningPanel sentences={sentences} currentDay={selectedDay} stopSignal={listeningStopSignal} masteredIds={state.masteredIds} cancelDictation={cancelListening} onPlaybackChange={() => undefined} />}
+    {(tab !== 'listening' && listeningStatus?.item && (listeningStatus.stage === 'korean' || listeningStatus.stage === 'english' || listeningStatus.stage === 'paused')) && <section className="listening-mini" aria-label="백그라운드 듣기"><div><strong>{listeningStatus.stage === 'paused' ? '듣기 일시정지됨' : '듣기 재생 중'}</strong><span>Day {listeningStatus.item.day} · {listeningStatus.index + 1} / {listeningStatus.total} · {listeningStatus.item.korean}</span></div><div className="actions">{(listeningStatus.stage === 'korean' || listeningStatus.stage === 'english') ? <button type="button" className="button secondary" onClick={() => listeningControls.current?.pause()}>일시정지</button> : <button type="button" className="button secondary" onClick={() => listeningControls.current?.repeat()}>이어듣기</button>}<button type="button" className="button secondary" onClick={() => { listeningPausedForPractice.current = false; listeningControls.current?.stop() }}>중지</button><button type="button" className="text-button" onClick={() => setTab('listening')}>듣기로 이동</button></div></section>}
+
+    <div style={tab === 'listening' ? undefined : { display: 'none' }}>
+      <ListeningPanel sentences={sentences} currentDay={selectedDay} masteredIds={state.masteredIds} cancelDictation={cancelListening} onPlaybackChange={() => undefined} controlRef={listeningControls} onStatusChange={handleListeningStatus} />
+    </div>
 
     {tab === 'practice' && <section className="study-panel" aria-labelledby="practice-heading">
       <div className="learning-controls"><label htmlFor="practice-day-select">학습 Day 선택<select id="practice-day-select" value={selectedDay} onChange={(event) => selectDay(Number(event.target.value))}>{Array.from({ length: MAX_COURSE_DAY }, (_, index) => <option key={index + 1} value={index + 1}>Day {index + 1}</option>)}</select></label><label>주제 필터<select value={selectedTopic} onChange={(event) => chooseTopic(event.target.value)}><option value="all">전체 주제</option>{topics.map((topic) => <option key={topic} value={topic}>{topicName(topic)}</option>)}</select></label><label>오늘 분량<select aria-label="오늘 분량" value={dailyCount} onChange={(event) => setDailyCount(clampDailyCount(Number(event.target.value)))}>{DAILY_COUNT_OPTIONS.map((count) => <option key={count} value={count}>{count}문장</option>)}</select></label><label className="filter"><input type="checkbox" checked={voiceFirst} onChange={(event) => setVoiceFirst(event.target.checked)} /> 말하기 우선</label><label className="filter"><input type="checkbox" checked={excludeMasteredPractice} onChange={(event) => setExcludeMasteredPractice(event.target.checked)} /> 마스터 제외</label></div>

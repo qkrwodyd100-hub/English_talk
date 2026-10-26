@@ -1,15 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { MAX_COURSE_DAY, type Sentence } from './learning'
-import { createListeningController, createListeningPlaylist, LISTENING_RATE_MAX, LISTENING_RATE_MIN, LISTENING_STORAGE_KEY, parseListeningPreferences, type ListeningPlayback, type ListeningPreferences } from './listening-engine'
+import { createListeningController, createListeningPlaylist, LISTENING_RATE_MAX, LISTENING_RATE_MIN, LISTENING_STORAGE_KEY, parseListeningPreferences, type ListeningPlayback, type ListeningPreferences, type ListeningStage } from './listening-engine'
 
-type Props = { sentences: Sentence[]; currentDay: number; stopSignal: number; masteredIds: string[]; onPlaybackChange: (playing: boolean) => void; cancelDictation: () => void }
+export type ListeningControls = {
+  pause: () => void
+  resume: () => void
+  repeat: () => void
+  stop: () => void
+  next: () => void
+  previous: () => void
+  isPlaying: () => boolean
+  getStage: () => ListeningStage
+}
+
+type ListeningStatus = { item: Sentence | null; index: number; total: number; stage: ListeningStage }
+
+type Props = { sentences: Sentence[]; currentDay: number; masteredIds: string[]; onPlaybackChange: (playing: boolean) => void; cancelDictation: () => void; controlRef: { current: ListeningControls | null }; onStatusChange: (status: ListeningStatus) => void }
 
 function preferredVoice(voices: SpeechSynthesisVoice[], lang: 'ko-KR' | 'en-US') {
   const prefix = lang.slice(0, 2).toLowerCase()
   return voices.find((voice) => voice.lang.toLowerCase() === lang.toLowerCase()) ?? voices.find((voice) => voice.lang.toLowerCase().startsWith(prefix))
 }
 
-export default function ListeningPanel({ sentences, currentDay, stopSignal, masteredIds, onPlaybackChange, cancelDictation }: Props) {
+export default function ListeningPanel({ sentences, currentDay, masteredIds, onPlaybackChange, cancelDictation, controlRef, onStatusChange }: Props) {
   const [preferences, setPreferences] = useState<ListeningPreferences>(() => {
     const stored = window.localStorage.getItem(LISTENING_STORAGE_KEY)
     const parsed = parseListeningPreferences(stored)
@@ -41,6 +54,27 @@ export default function ListeningPanel({ sentences, currentDay, stopSignal, mast
   }, [sentences, preferences.selectedDays, preferences.includeCustom, preferences.excludeMastered, masteredIds])
   const item = playlist[playback.index]
   const isPlaying = playback.stage === 'korean' || playback.stage === 'english'
+  const playbackRef = useRef(playback)
+  playbackRef.current = playback
+
+  useEffect(() => {
+    if (!controller) { controlRef.current = null; return }
+    controlRef.current = {
+      pause: () => controller.pause(),
+      resume: () => controller.resume(),
+      repeat: () => controller.repeat(),
+      stop: () => controller.stop(),
+      next: () => controller.next(),
+      previous: () => controller.previous(),
+      isPlaying: () => playbackRef.current.stage === 'korean' || playbackRef.current.stage === 'english',
+      getStage: () => playbackRef.current.stage,
+    }
+    return () => { controlRef.current = null }
+  }, [controller, controlRef])
+
+  useEffect(() => {
+    onStatusChange({ item: item ?? null, index: playback.index, total: playlist.length, stage: playback.stage })
+  }, [item, playback.index, playback.stage, playlist.length, onStatusChange])
 
   useEffect(() => { onPlaybackChange(isPlaying); return () => onPlaybackChange(false) }, [isPlaying, onPlaybackChange])
   useEffect(() => { try { window.localStorage.setItem(LISTENING_STORAGE_KEY, JSON.stringify(preferences)) } catch { /* preferences remain usable for this visit */ } }, [preferences])
@@ -52,7 +86,6 @@ export default function ListeningPanel({ sentences, currentDay, stopSignal, mast
     return () => synth.removeEventListener?.('voiceschanged', refresh)
   }, [])
   useEffect(() => () => { controller?.stop(); void wakeLock.current?.release(); wakeLock.current = null }, [controller])
-  useEffect(() => { controller?.stop() }, [controller, stopSignal])
   useEffect(() => {
     const stop = () => controller?.stop()
     const onVisibility = () => { if (document.visibilityState !== 'visible') stop() }
