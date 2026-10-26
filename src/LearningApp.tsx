@@ -415,7 +415,7 @@ export default function LearningApp() {
   function selectDay(day: number) {
     hasExplicitDaySelection.current = true
     clearPracticeHistory()
-    updateState({ ...state, selectedDay: day, selectedDayIsManual: true })
+    updateState({ ...state, selectedDay: day, selectedDayIsManual: true, dayPositions: { ...state.dayPositions, [day]: 0 } })
     setRevealed(null)
     try { window.speechSynthesis?.cancel() } catch { /* Audio was already unavailable or stopped. */ }
     setSelectedTopic('all')
