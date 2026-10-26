@@ -48,6 +48,24 @@ describe('sequential learning engine', () => {
     expect(advanceDayPosition(learning, 1, 2).dayPositions).toEqual({ 1: 0 })
   })
 
+  it('walks a day 1-to-N with exclusions without skipping or repeating shown sentences', () => {
+    const four: Sentence[] = [1, 2, 3, 4].map((n) => ({
+      id: `day-05-0${n}`, english: `Sentence ${n}.`, korean: `문장 ${n}.`, day: 5,
+      source: 'builtIn', topic: 'travel', level: 'beginner', priority: 1,
+    }))
+    const excluded = ['day-05-02']
+    let learning = state({ selectedDay: 5, dayPositions: { 5: 0 } })
+    const shown: string[] = []
+    for (let step = 0; step < 3; step += 1) {
+      const challenge = getSequentialDayChallenge(four, learning, 5, excluded)
+      const current = challenge[0]
+      shown.push(current.id)
+      const position = four.findIndex((sentence) => sentence.id === current.id)
+      learning = recordAttempt(learning, { sentence: current, position, judgment: { kind: 'exact', isCorrect: true } })
+    }
+    expect(shown).toEqual(['day-05-01', 'day-05-03', 'day-05-04'])
+  })
+
   it('calculates completion for each day and topic from completed sentence ids', () => {
     const learning = state({ completedSentenceIds: ['day-01-01', 'day-02-01'] })
 
@@ -129,7 +147,7 @@ describe('sequential learning engine', () => {
 
     expect(getSequentialDayChallenge(sentences, state({ selectedDay: 1 }), 1, mastered).map((sentence) => sentence.id)).toEqual(['day-01-02'])
     expect(getDailyPracticeSet(sentences, state({ selectedDay: 1 }), 1, 10, mastered).map((sentence) => sentence.id)).not.toContain('day-01-01')
-    expect(getResumeTarget(sentences, state({ selectedDay: 1 }), mastered)).toEqual({ day: 1, position: 0, isCourseComplete: false })
+    expect(getResumeTarget(sentences, state({ selectedDay: 1 }), mastered)).toEqual({ day: 1, position: 1, isCourseComplete: false })
     expect(getReviewChallenge(sentences, state({ reviewQueueIds: ['day-01-01', 'day-01-02'] }), 10, mastered).map((sentence) => sentence.id)).toEqual(['day-01-02'])
   })
 })

@@ -48,10 +48,15 @@ function toExcludedSet(excludedIds?: string[] | Set<string>): Set<string> {
 export function getSequentialDayChallenge(sentences: Sentence[], state: SequentialLearningState, day = state.selectedDay, excludedIds?: string[] | Set<string>): Sentence[] {
   if (!day || day < 1 || day > MAX_COURSE_DAY) return []
   const excluded = toExcludedSet(excludedIds)
-  const daySentences = sentences.filter((sentence) => sentence.day === day && !excluded.has(sentence.id))
+  const daySentences = sentences.filter((sentence) => sentence.day === day)
   if (daySentences.length === 0) return []
+  // Positions are full day-list indexes (recordAttempt/nextPractice store the
+  // index in the unfiltered day list), so rotate first and exclude after.
+  // Rotating an already-filtered list by a full-list position skips sentences
+  // and repeats a subset once mastered/topic filtering removes items.
   const start = state.dayPositions[day] ?? 0
   return Array.from({ length: daySentences.length }, (_, index) => daySentences[(start + index) % daySentences.length])
+    .filter((sentence) => !excluded.has(sentence.id))
 }
 
 /** Chooses the first unfinished sentence of the current day, or the next unfinished day.
@@ -63,11 +68,12 @@ export function getResumeTarget(sentences: Sentence[], state: SequentialLearning
   const selectedDay = state.selectedDay ?? days[0] ?? 1
   const completed = new Set(state.completedSentenceIds)
   const targetForDay = (day: number) => {
-    const daySentences = active.filter((sentence) => sentence.day === day)
+    const daySentences = sentences.filter((sentence) => sentence.day === day)
     const savedPosition = state.dayPositions[day] ?? 0
     const currentPosition = savedPosition % daySentences.length
-    if (daySentences[currentPosition] && !completed.has(daySentences[currentPosition].id)) return currentPosition
-    return daySentences.findIndex((sentence) => !completed.has(sentence.id))
+    const current = daySentences[currentPosition]
+    if (current && !excluded.has(current.id) && !completed.has(current.id)) return currentPosition
+    return daySentences.findIndex((sentence) => !excluded.has(sentence.id) && !completed.has(sentence.id))
   }
 
   const selectedPosition = targetForDay(selectedDay)
@@ -170,10 +176,10 @@ export function getDailyPracticeSet(
   const active = sentences.filter((sentence) => !excluded.has(sentence.id))
   const safeCount = Math.min(Math.max(1, Math.floor(count) || 10), active.length || 1)
   if (!day || day < 1 || day > MAX_COURSE_DAY || active.length === 0) return []
-  const ordered = getSequentialDayChallenge(active, state, day)
+  const ordered = getSequentialDayChallenge(sentences, state, day, excluded)
   const review = getReviewQueue(active, state)
   const days = [...new Set(active.map((sentence) => sentence.day))].sort((left, right) => left - right)
-  const following = days.filter((value) => value > day).flatMap((nextDay) => getSequentialDayChallenge(active, state, nextDay))
+  const following = days.filter((value) => value > day).flatMap((nextDay) => getSequentialDayChallenge(sentences, state, nextDay, excluded))
   const picked: Sentence[] = []
   const seen = new Set<string>()
   for (const sentence of [...ordered, ...review, ...following]) {
