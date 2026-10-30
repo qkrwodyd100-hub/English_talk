@@ -7,6 +7,7 @@ import {
   mergeOwnedRecord,
   mergeOwnedStringSet,
   parseCloudLearningState,
+  preserveExplicitDaySelection,
   reconcileLearningProfiles,
   rebaseLearningState,
   shouldReplaceCloudProfile,
@@ -132,5 +133,24 @@ describe('learning cloud reconciliation', () => {
     const cloud = state({ selectedDay: 5 })
 
     expect(rebaseLearningState(base, local, cloud)).toMatchObject({ selectedDay: 1, selectedDayIsManual: true })
+  })
+
+  it('pins an explicitly chosen Day when a background sync lands mid-practice', () => {
+    const prev = state({ selectedDay: 59, selectedDayIsManual: true, dayPositions: { 59: 3 } })
+    const next = state({ selectedDay: 61, dayPositions: { 59: 0, 61: 0 }, completedSentenceIds: ['day-61-01'] })
+
+    expect(preserveExplicitDaySelection(prev, next)).toMatchObject({
+      selectedDay: 59,
+      selectedDayIsManual: true,
+      dayPositions: { 59: 3, 61: 0 },
+      completedSentenceIds: ['day-61-01'],
+    })
+  })
+
+  it('leaves the Day pointer alone without an explicit local selection', () => {
+    const prev = state({ selectedDay: null })
+    const next = state({ selectedDay: 7, selectedDayIsManual: true, dayPositions: { 7: 3 } })
+
+    expect(preserveExplicitDaySelection(prev, next)).toMatchObject({ selectedDay: 7, selectedDayIsManual: true })
   })
 })

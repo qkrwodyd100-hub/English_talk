@@ -32,6 +32,20 @@ export type LearningGroupProfileRow = {
   updated_at: string
 }
 
+/** Keeps an explicitly chosen practice Day (and its position) when a background
+ * cloud sync lands mid-practice. Progress unions still come from `next`; only
+ * the Day pointer is pinned so typing 59 can't jump to 61 mid-session. */
+export function preserveExplicitDaySelection(prev: LearningState, next: LearningState): LearningState {
+  if (prev.selectedDay == null) return next
+  const day = prev.selectedDay
+  return {
+    ...next,
+    selectedDay: day,
+    selectedDayIsManual: prev.selectedDayIsManual === true ? true : next.selectedDayIsManual,
+    dayPositions: { ...next.dayPositions, [day]: prev.dayPositions[day] ?? next.dayPositions[day] ?? 0 },
+  }
+}
+
 export function hasMeaningfulLearningState(state: LearningState) {
   return state.masteredIds.length > 0
     || state.customSentences.length > 0
