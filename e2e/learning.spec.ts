@@ -70,7 +70,9 @@ test('flashcards render only the selected day without inheriting the typing topi
   await page.getByRole('button', { name: '플래시카드' }).click()
   await expect(page.locator('.flashcard')).toHaveCount(10)
   await expect(page.getByText('한 명 자리 부탁해요.')).toBeVisible()
-  await expect(page.getByText('실례합니다, 영어 하세요?')).toHaveCount(0)
+  // The listening panel stays mounted (hidden) for background playback, so
+  // scope the absence check to the visible card grid.
+  await expect(page.locator('.card-grid').getByText('실례합니다, 영어 하세요?')).toHaveCount(0)
 
   await page.getByRole('button', { name: '타이핑 연습' }).click()
   await page.getByLabel('주제 필터').selectOption('restaurant-basics')

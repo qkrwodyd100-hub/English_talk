@@ -303,7 +303,10 @@ export default function LearningApp() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentId, voiceFirst, checkedAnswer])
   const mastered = new Set(state.masteredIds)
-  const currentPosition = current ? dayChallenge.findIndex((sentence) => sentence.id === current.id) + 1 : 0
+  // Absolute 1-based position in the full Day list (restores pre-2b7828d
+  // semantics): the heading counts 1..10 in Day order, and the next-Day
+  // advance below fires only on the true last sentence.
+  const currentPosition = current ? daySentences.findIndex((sentence) => sentence.id === current.id) + 1 : 0
   // Typing navigation follows the same full Day order (topic filter only).
   const navigationSentences = selectedTopic === 'all' ? daySentences : daySentences.filter((sentence) => sentence.source === 'builtIn' && sentence.topic === selectedTopic)
   const navigationPosition = current ? navigationSentences.findIndex((sentence) => sentence.id === current.id) : -1
@@ -441,6 +444,13 @@ export default function LearningApp() {
   function selectDay(day: number) {
     hasExplicitDaySelection.current = true
     clearPracticeHistory()
+    // Stop card/practice voice output on Day change, but never interrupt an
+    // actively playing (or paused) background listening session on the shared
+    // speech channel.
+    const listening = listeningControls.current
+    if (!listening?.isPlaying() && listening?.getStage() !== 'paused') {
+      try { window.speechSynthesis?.cancel() } catch { /* Audio was already unavailable or stopped. */ }
+    }
     updateState({ ...state, selectedDay: day, selectedDayIsManual: true, dayPositions: { ...state.dayPositions, [day]: 0 } })
     setRevealed(null)
     setSelectedTopic('all')

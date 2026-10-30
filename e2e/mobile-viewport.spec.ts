@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { builtInSentences } from '../src/sentences'
 
 // The app boots into LearningApp (see src/main.tsx): there is no marketing
 // home screen. These assertions cover the real mobile practice experience on
@@ -54,7 +55,7 @@ test('LearningApp practice stays usable on an iPhone viewport', async ({ page })
 
   // Day 75 content renders on mobile too.
   await daySelect.selectOption('75')
-  await expect(page.getByText('오늘은 다 꼬였지만 예의를 지켰어요.')).toBeVisible()
+  await expect(page.getByText(builtInSentences.find(({ day }) => day === 75)!.korean)).toBeVisible()
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390)
 
   await page.screenshot({ path: 'test-results/qa-artifacts/mobile-learning.png', fullPage: true })

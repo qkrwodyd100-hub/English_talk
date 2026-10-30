@@ -28,7 +28,9 @@ test('flashcards use their own shared Day selector without inheriting the typing
   for (const sentence of builtInSentences.filter(({ day }) => day === 2)) {
     await expect(page.getByText(sentence.korean, { exact: true })).toBeVisible()
   }
-  await expect(page.getByText(builtInSentences.find(({ day }) => day === 1)!.korean, { exact: true })).toHaveCount(0)
+  // The listening panel stays mounted (hidden) for background playback, so
+  // scope the absence check to the visible card grid.
+  await expect(page.locator('.card-grid').getByText(builtInSentences.find(({ day }) => day === 1)!.korean, { exact: true })).toHaveCount(0)
 })
 
 test('flashcard Day changes reset revealed cards and audio, and hide-mastered has the exact empty state', async ({ page }) => {
@@ -71,8 +73,11 @@ test('review scopes the queue and favorites to the selected Day without deleting
   const selector = page.getByLabel('오답 복습 학습 Day 선택')
   await expect(selector).toHaveAttribute('id', 'review-day-select')
   await expect(page.locator('.review-list > li')).toHaveCount(2)
-  await expect(page.getByText(builtInSentences.find(({ id }) => id === 'day-02-01')!.english, { exact: true })).toBeVisible()
-  await expect(page.getByText(builtInSentences.find(({ id }) => id === 'day-01-01')!.english, { exact: true })).toHaveCount(0)
+  // Scope to the review section: the listening panel stays mounted (hidden)
+  // for background playback and can show the same sentence text.
+  const reviewSection = page.getByLabel('오답과 즐겨찾기 복습')
+  await expect(reviewSection.getByText(builtInSentences.find(({ id }) => id === 'day-02-01')!.english, { exact: true })).toBeVisible()
+  await expect(reviewSection.getByText(builtInSentences.find(({ id }) => id === 'day-01-01')!.english, { exact: true })).toHaveCount(0)
 
   await page.getByRole('button', { name: '복습 완료' }).first().click()
   await page.getByRole('button', { name: '즐겨찾기 해제' }).click()

@@ -61,7 +61,9 @@ test('migrates v1 data and persists sequential progress, review, and favorites a
   await page.goto('/')
 
   await expect(page.getByText('751', { exact: true })).toBeVisible()
-  await expect(page.getByRole('heading', { name: /1 \/ 11/ })).toBeVisible()
+  // Resume skips the mastered day-01-01 (engine contract), so Day 1 practice
+  // starts at its second sentence while still counting all 11 items.
+  await expect(page.getByRole('heading', { name: /2 \/ 11/ })).toBeVisible()
   await page.getByLabel('학습 Day 선택').selectOption('2')
   await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
   await page.getByRole('button', { name: '정답 확인' }).click()
@@ -136,8 +138,9 @@ test('shows date-unknown legacy completions and exports a JSON backup', async ({
   await page.getByRole('button', { name: '학습 기록' }).click()
 
   await expect(page.getByText('이전 학습 기록 (날짜 미상)')).toBeVisible()
-  await expect(page.getByText('Day 1')).toBeVisible()
-  await expect(page.getByText('10/10 완료 문장')).toBeVisible()
+  const timeline = page.getByLabel('학습 기록')
+  await expect(timeline.getByText('Day 1', { exact: true })).toBeVisible()
+  await expect(timeline.getByText('10/10 완료 문장')).toBeVisible()
   const download = page.waitForEvent('download')
   await page.getByRole('button', { name: 'JSON 백업 내보내기' }).click()
   expect((await download).suggestedFilename()).toBe('english-talk-learning-backup.json')
@@ -360,7 +363,7 @@ test('supports keyboard day selection and exposes answer feedback through a poli
 
   await page.getByRole('textbox', { name: '영어 답변' }).fill('wrong words')
   await page.getByRole('button', { name: '정답 확인' }).click()
-  await expect(page.locator('[aria-live="polite"]')).toContainText('수정 필요')
+  await expect(page.locator('.answer-feedback')).toContainText('수정 필요')
   await page.screenshot({ path: 'test-results/qa-artifacts/learning-keyboard-desktop-1280.png', fullPage: true })
 })
 
@@ -641,7 +644,7 @@ test('persists a corrected final Day answer when ArrowRight announces the termin
   const answer = page.getByRole('textbox', { name: '영어 답변' })
   await answer.fill('wrong words')
   await answer.press('Enter')
-  await answer.fill('I finished seventy five days and I speak with courage!')
+  await answer.fill('Thanks for checking that for me.')
   await answer.press('ArrowRight')
 
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('75')
