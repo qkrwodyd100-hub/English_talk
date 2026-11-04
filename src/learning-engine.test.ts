@@ -150,4 +150,14 @@ describe('sequential learning engine', () => {
     expect(getResumeTarget(sentences, state({ selectedDay: 1 }), mastered)).toEqual({ day: 1, position: 1, isCourseComplete: false })
     expect(getReviewChallenge(sentences, state({ reviewQueueIds: ['day-01-01', 'day-01-02'] }), 10, mastered).map((sentence) => sentence.id)).toEqual(['day-01-02'])
   })
+
+  it('flows a mid-day daily set into the next Day without repeating same-Day sentences', () => {
+    const midDay = state({ selectedDay: 1, dayPositions: { 1: 1 } })
+    expect(getDailyPracticeSet(sentences, midDay, 1, 10).map((sentence) => sentence.id)).toEqual(['day-01-02', 'day-02-01'])
+  })
+
+  it('skips fully completed following Days in daily sets', () => {
+    const nextDone = state({ selectedDay: 1, completedSentenceIds: ['day-02-01'] })
+    expect(getDailyPracticeSet(sentences, nextDone, 1, 10).map((sentence) => sentence.id)).toEqual(['day-01-01', 'day-01-02'])
+  })
 })

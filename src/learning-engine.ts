@@ -161,10 +161,13 @@ function addUnique(values: string[], value: string): string[] {
   return values.includes(value) ? values : [...values, value]
 }
 
-/** Builds one daily practice set of `count` sentences: the current Day from its
- * saved position first, then the review queue, then the following Days in order.
- * Unfinished positions on other Days are never reset, so unsolved sentences
- * carry over instead of being lost. Mastered (excluded) sentences are skipped. */
+/** Builds one daily practice set of `count` sentences: the current Day's
+ * remaining sentences from its saved position (no wrap-around refill), then
+ * the review queue, then the following Days in order. Following Days that are
+ * already fully completed are skipped so the set never re-lists finished
+ * Days as upcoming work. Unfinished positions on other Days are never reset,
+ * so unsolved sentences carry over instead of being lost. Mastered (excluded)
+ * sentences are skipped. */
 export function getDailyPracticeSet(
   sentences: Sentence[],
   state: SequentialLearningState,
@@ -176,10 +179,19 @@ export function getDailyPracticeSet(
   const active = sentences.filter((sentence) => !excluded.has(sentence.id))
   const safeCount = Math.min(Math.max(1, Math.floor(count) || 10), active.length || 1)
   if (!day || day < 1 || day > MAX_COURSE_DAY || active.length === 0) return []
-  const ordered = getSequentialDayChallenge(sentences, state, day, excluded)
+  const dayItems = sentences.filter((sentence) => sentence.day === day && !excluded.has(sentence.id))
+  const dayStart = Math.min(Math.max(0, state.dayPositions[day] ?? 0), dayItems.length)
+  const ordered = dayItems.slice(dayStart)
   const review = getReviewQueue(active, state)
+  const completed = new Set(state.completedSentenceIds)
   const days = [...new Set(active.map((sentence) => sentence.day))].sort((left, right) => left - right)
-  const following = days.filter((value) => value > day).flatMap((nextDay) => getSequentialDayChallenge(sentences, state, nextDay, excluded))
+  const following = days
+    .filter((value) => value > day)
+    .filter((nextDay) => {
+      const items = sentences.filter((sentence) => sentence.day === nextDay && !excluded.has(sentence.id))
+      return items.length > 0 && !items.every((sentence) => completed.has(sentence.id))
+    })
+    .flatMap((nextDay) => getSequentialDayChallenge(sentences, state, nextDay, excluded))
   const picked: Sentence[] = []
   const seen = new Set<string>()
   for (const sentence of [...ordered, ...review, ...following]) {
