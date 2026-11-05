@@ -223,13 +223,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "restaurant-basics",
     "level": "beginner",
-    "priority": 3,
-    "alternatives": [
-      {
-        "english": "Thank you for the meal.",
-        "korean": "잘 먹었습니다."
-      }
-    ]
+    "priority": 3
   },
   {
     "id": "day-03-01",
@@ -447,13 +441,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "taxis-and-rides",
     "level": "beginner",
-    "priority": 1,
-    "alternatives": [
-      {
-        "english": "Can I book a Lyft here?",
-        "korean": "여기서 리프트를 예약할 수 있나요?"
-      }
-    ]
+    "priority": 1
   },
   {
     "id": "day-05-02",
@@ -985,13 +973,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "hotel-services",
     "level": "beginner",
-    "priority": 1,
-    "alternatives": [
-      {
-        "english": "Where is the swimming pool?",
-        "korean": "수영장은 어디에 있나요?"
-      }
-    ]
+    "priority": 1
   },
   {
     "id": "day-10-03",
@@ -1593,13 +1575,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "sizes-and-store-policies",
     "level": "beginner",
-    "priority": 1,
-    "alternatives": [
-      {
-        "english": "This is too loose.",
-        "korean": "이게 너무 헐렁해요."
-      }
-    ]
+    "priority": 1
   },
   {
     "id": "day-16-02",
@@ -2157,13 +2133,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "flight-booking",
     "level": "intermediate",
-    "priority": 1,
-    "alternatives": [
-      {
-        "english": "Could I have an aisle seat?",
-        "korean": "통로 쪽 좌석으로 해 주실 수 있나요?"
-      }
-    ]
+    "priority": 1
   },
   {
     "id": "day-21-04",
@@ -2303,13 +2273,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "emergencies-and-police",
     "level": "intermediate",
-    "priority": 2,
-    "alternatives": [
-      {
-        "english": "I lost my passport.",
-        "korean": "여권을 잃어버렸어요."
-      }
-    ]
+    "priority": 2
   },
   {
     "id": "day-22-08",
@@ -2761,13 +2725,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "weather-and-climate",
     "level": "intermediate",
-    "priority": 1,
-    "alternatives": [
-      {
-        "english": "It's too cold today.",
-        "korean": "오늘 너무 추워요."
-      }
-    ]
+    "priority": 1
   },
   {
     "id": "day-27-02",
@@ -2928,12 +2886,6 @@ export const builtInSentences: BuiltInSentence[] = [
     "topic": "local-culture-and-language",
     "level": "intermediate",
     "priority": 2,
-    "alternatives": [
-      {
-        "english": "I'd like to learn a few words in French.",
-        "korean": "프랑스어로 몇 마디 배우고 싶어요."
-      }
-    ],
     "slots": [
       {
         "key": "local-language",
@@ -2960,12 +2912,6 @@ export const builtInSentences: BuiltInSentence[] = [
     "topic": "local-culture-and-language",
     "level": "intermediate",
     "priority": 2,
-    "alternatives": [
-      {
-        "english": "Could you teach me how to say hello?",
-        "korean": "안녕하세요를 어떻게 말하는지 가르쳐 주시겠어요?"
-      }
-    ],
     "slots": [
       {
         "key": "word-or-phrase",
@@ -3506,12 +3452,6 @@ export const builtInSentences: BuiltInSentence[] = [
     "topic": "scheduling-and-appointments",
     "level": "intermediate",
     "priority": 2,
-    "alternatives": [
-      {
-        "english": "Would Tuesday work for you?",
-        "korean": "화요일은 괜찮으세요?"
-      }
-    ],
     "slots": [
       {
         "key": "date",
@@ -4709,17 +4649,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "hobbies-and-interests",
     "level": "advanced",
-    "priority": 1,
-    "alternatives": [
-      {
-        "english": "I enjoy reading.",
-        "korean": "저는 독서를 즐겨요."
-      },
-      {
-        "english": "I enjoy listening to music.",
-        "korean": "저는 음악 듣는 것을 즐겨요."
-      }
-    ]
+    "priority": 1
   },
   {
     "id": "day-44-04",
@@ -4922,7 +4852,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-45-10",
     "english": "I'd love to visit your country someday.",
-    "korean": "언젠가 고향 나라에도 꼭 가 보고 싶어요.",
+    "korean": "언젠가 당신의 나라에 꼭 가 보고 싶어요.",
     "day": 45,
     "source": "builtIn",
     "topic": "sharing-travel-experiences",
@@ -5449,13 +5379,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "travel-essentials",
     "level": "advanced",
-    "priority": 1,
-    "alternatives": [
-      {
-        "english": "Could you call me a taxi, please?",
-        "korean": "택시 한 대 불러 주시겠어요?"
-      }
-    ]
+    "priority": 1
   },
   {
     "id": "day-50-05",
@@ -5621,13 +5545,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "hotel-and-dining",
     "level": "advanced",
-    "priority": 3,
-    "alternatives": [
-      {
-        "english": "Is there a tip jar?",
-        "korean": "팁 통이 있나요?"
-      }
-    ]
+    "priority": 3
   },
   {
     "id": "day-51-10",
@@ -6041,13 +5959,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "sightseeing-and-transport",
     "level": "advanced",
-    "priority": 2,
-    "alternatives": [
-      {
-        "english": "When does the next bus arrive?",
-        "korean": "다음 버스는 언제 오나요?"
-      }
-    ]
+    "priority": 2
   },
   {
     "id": "day-55-09",
@@ -6567,17 +6479,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "travel-review-essentials",
     "level": "advanced",
-    "priority": 2,
-    "alternatives": [
-      {
-        "english": "Please call 911.",
-        "korean": "911에 전화해 주세요."
-      },
-      {
-        "english": "Please call 119.",
-        "korean": "119에 전화해 주세요."
-      }
-    ]
+    "priority": 2
   },
   {
     "id": "day-60-07",
@@ -6613,13 +6515,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "source": "builtIn",
     "topic": "travel-review-essentials",
     "level": "advanced",
-    "priority": 3,
-    "alternatives": [
-      {
-        "english": "How much will I get for one hundred dollars?",
-        "korean": "100달러를 환전하면 얼마를 받나요?"
-      }
-    ]
+    "priority": 3
   },
   {
     "id": "day-60-10",
@@ -6848,10 +6744,6 @@ export const builtInSentences: BuiltInSentence[] = [
     "priority": 2,
     "acceptedAlternatives": [
       {
-        "english": "I need clean clothes because I don't have a bag.",
-        "korean": "가방이 없어서 갈아입을 옷이 필요해요."
-      },
-      {
         "english": "I need clean clothes because my bag is missing.",
         "korean": "가방이 없어서 갈아입을 옷이 필요해요."
       }
@@ -6931,7 +6823,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-63-05",
-    "english": "The pickup location is wrong.",
+    "english": "The pickup location on the map is wrong.",
     "korean": "지도상 탑승 위치가 잘못됐어요.",
     "day": 63,
     "source": "builtIn",
@@ -7489,7 +7381,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-68-03",
-    "english": "What time should we come?",
+    "english": "By what time should we be there?",
     "korean": "몇 시까지 와야 하나요.",
     "day": 68,
     "source": "builtIn",

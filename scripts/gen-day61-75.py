@@ -21,7 +21,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 # Independently captured baseline digests of the first60 slices (pre-edit).
-EXPECTED_SENTENCES_FIRST60_SHA = "800af9e2a74477a9ed8874525c12e74c1ba532bf9175f93504a3f6287dd512f9"
+# EXPECTED_SENTENCES_FIRST60_SHA updated 2026-11-05: authorized content fixes
+# (wrong-prompt alternatives removed days 2/5/10/16/21/22/27/28/33/44/50/51/55/60,
+# day-45-10 Korean gloss corrected). Previous value 800af9e2a74477a9ed8874525c12e74c1ba532bf9175f93504a3f6287dd512f9.
+EXPECTED_SENTENCES_FIRST60_SHA = "23020e2bd06f7695ded10b5692abb2d90f7bff75533817c8b14810bdfd2de6b1"
 EXPECTED_DIALOGUES_FIRST60_SHA = "3e9bf0f96f058b3ae915ea884bed0322277bb9639d1c2a0e4c8741167f42348c"
 
 BANNED = [
@@ -32,9 +35,9 @@ BANNED = [
     "written statement", "inbound flight", "back nine",
 ]
 
-S = []  # (day, english, korean, level, priority, alt_en, alt_ko)
-def add(day, en, ko, lv, pr, aen=None, ako=None):
-    S.append((day, en, ko, lv, pr, aen, ako))
+S = []  # (day, english, korean, level, priority, alt_en, alt_ko, accepted_alts)
+def add(day, en, ko, lv, pr, aen=None, ako=None, acc=None):
+    S.append((day, en, ko, lv, pr, aen, ako, acc))
 
 # Day 61 airport transit (connecting flights)
 add(61, "Which terminal does my next flight leave from?", "다음 비행기가 어느 터미널에서 출발하나요.", "beginner", 1)
@@ -62,7 +65,8 @@ add(62, "Could you help me fill out this form?", "이 서류 작성을 도와주
     "Can you help me complete this form?", "이 서류 작성을 도와주시겠어요.")
 add(62, "Here's my baggage claim tag.", "여기 제 수하물 표가 있어요.", "beginner", 1)
 add(62, "How long will it take to find my bag?", "가방을 찾는 데 얼마나 걸리나요.", "beginner", 1)
-add(62, "I need clean clothes because my bag is missing.", "가방이 없어서 갈아입을 옷이 필요해요.", "intermediate", 2)
+add(62, "I need clean clothes because I don't have my bag.", "가방이 없어서 갈아입을 옷이 필요해요.", "intermediate", 2,
+    acc=[("I need clean clothes because my bag is missing.", "가방이 없어서 갈아입을 옷이 필요해요.")])
 add(62, "I have something to declare. Where do I go?", "신고할 물건이 있어요. 어디로 가나요.", "intermediate", 2)
 add(62, "Do I need to declare this?", "이걸 신고해야 하나요.", "intermediate", 3)
 
@@ -73,7 +77,7 @@ add(63, "The fare is wrong. Can you check it?", "요금이 잘못됐어요. 확�
     "This fare looks wrong. Could you check it?", "요금이 이상해 보여요. 확인해 주시겠어요.")
 add(63, "Can I get a refund for this extra charge?", "이 추가 요금을 환불받을 수 있나요.", "beginner", 1,
     "Could you refund this extra charge?", "이 추가 요금을 환불해 주시겠어요.")
-add(63, "The pickup location is wrong.", "지도상 탑승 위치가 잘못됐어요.", "beginner", 2)
+add(63, "The pickup location on the map is wrong.", "지도상 탑승 위치가 잘못됐어요.", "beginner", 2)
 add(63, "My train is 40 minutes late.", "제 기차가 40분 늦었어요.", "beginner", 1)
 add(63, "Could you help me contact the driver?", "기사님께 연락하는 걸 도와주시겠어요.", "beginner", 1)
 add(63, "The driver took a longer route.", "기사님이 돌아서 가셨어요.", "intermediate", 2)
@@ -144,7 +148,7 @@ add(67, "I'll get the next round.", "다음 음료는 제가 살게요.", "inter
 add(68, "I'd like a tee time for Saturday.", "토요일 티타임을 예약하고 싶어요.", "beginner", 1)
 add(68, "There are four of us.", "저희는 4명이에요.", "beginner", 1,
     "We're a group of four.", "저희는 4명 일행이에요.")
-add(68, "What time should we come?", "몇 시까지 와야 하나요.", "beginner", 2)
+add(68, "By what time should we be there?", "몇 시까지 와야 하나요.", "beginner", 2)
 add(68, "The reservation is under Kim.", "예약은 김 이름으로 되어 있어요.", "beginner", 1,
     "We have a reservation under Kim.", "김 이름으로 예약했어요.")
 add(68, "Do you have clubs and shoes to rent?", "빌릴 수 있는 클럽과 신발이 있나요.", "beginner", 2)
@@ -315,7 +319,7 @@ DIALOGUES = {
     ("local", "Yes. That's right.", "네, 맞아요.")]),
 }
 
-def ts_entry(day, n, en, ko, lv, pr, aen, ako):
+def ts_entry(day, n, en, ko, lv, pr, aen, ako, acc):
     lines = []
     lines.append("  {")
     lines.append(f'    "id": "day-{day:02d}-{n:02d}",')
@@ -325,14 +329,21 @@ def ts_entry(day, n, en, ko, lv, pr, aen, ako):
     lines.append('    "source": "builtIn",')
     lines.append(f'    "topic": "{TOPICS[day]}",')
     lines.append(f'    "level": "{lv}",')
-    lines.append(f'    "priority": {pr}')
+    lines.append(f'    "priority": {pr}' + (',' if (aen or acc) else ''))
     if aen:
-        lines[-1] = f'    "priority": {pr},'
         lines.append('    "alternatives": [')
         lines.append('      {')
         lines.append(f'        "english": {json.dumps(aen, ensure_ascii=False)},')
         lines.append(f'        "korean": {json.dumps(ako, ensure_ascii=False)}')
         lines.append('      }')
+        lines.append('    ]' + (',' if acc else ''))
+    if acc:
+        lines.append('    "acceptedAlternatives": [')
+        for i, (xa, xk) in enumerate(acc):
+            lines.append('      {')
+            lines.append(f'        "english": {json.dumps(xa, ensure_ascii=False)},')
+            lines.append(f'        "korean": {json.dumps(xk, ensure_ascii=False)}')
+            lines.append('      }' + (',' if i < len(acc) - 1 else ''))
         lines.append('    ]')
     lines.append("  }")
     return "\n".join(lines)
@@ -340,30 +351,31 @@ def ts_entry(day, n, en, ko, lv, pr, aen, ako):
 def main():
     assert len(S) == 150, f"need 150, got {len(S)}"
     by_day = {}
-    for (day, en, ko, lv, pr, aen, ako) in S:
-        by_day.setdefault(day, []).append((en, ko, lv, pr, aen, ako))
+    for (day, en, ko, lv, pr, aen, ako, acc) in S:
+        by_day.setdefault(day, []).append((en, ko, lv, pr, aen, ako, acc))
     for day in range(61, 76):
         assert len(by_day.get(day, [])) == 10, f"day {day}: {len(by_day.get(day, []))}"
-        lvls = [lv for (en, ko, lv, pr, aen, ako) in by_day[day]]
+        lvls = [lv for (en, ko, lv, pr, aen, ako, acc) in by_day[day]]
         assert set(lvls) <= {"beginner", "intermediate"}, f"day {day}: {set(lvls)}"
         assert sum(1 for lv in lvls if lv == "beginner") >= 6, f"day {day} beginners"
-    with_alt = sum(1 for (day, en, ko, lv, pr, aen, ako) in S if aen)
+    with_alt = sum(1 for (day, en, ko, lv, pr, aen, ako, acc) in S if aen)
     assert with_alt >= 20, f"alternatives: {with_alt}"
     bad = []
-    for (day, en, ko, lv, pr, aen, ako) in S:
-        for t in [en, aen]:
+    for (day, en, ko, lv, pr, aen, ako, acc) in S:
+        acc = acc or []
+        for t in [en, aen] + [a[0] for a in acc]:
             if not t:
                 continue
             if re.search(r"[가-힣]", t):
                 bad.append(("KO-in-EN", t))
             if re.search(r"[\[\]()/]", t):
                 bad.append(("BRK-in-EN", t))
-        for t in [ko, ako]:
+        for t in [ko, ako] + [a[1] for a in acc]:
             if not t:
                 continue
             if re.search(r"[\[\]()/]", t):
                 bad.append(("BRK-in-KO", t))
-        for t in [en.lower(), ko, (aen or "").lower(), (ako or "")]:
+        for t in [en.lower(), ko, (aen or "").lower(), (ako or "")] + [a[0].lower() for a in acc] + [a[1] for a in acc]:
             for w in BANNED:
                 if w in t:
                     bad.append(("BANNED", w, en))
@@ -372,6 +384,9 @@ def main():
             bad.append(("TOO-LONG", en))
         if aen and len(aen.split()) > 14:
             bad.append(("ALT-LONG", aen))
+        for xa, _ in acc:
+            if len(xa.split()) > 18:
+                bad.append(("ACC-LONG", xa))
     if bad:
         for b in bad:
             print("BAD:", b)
@@ -384,7 +399,7 @@ def main():
     assert hashlib.sha256(first60.encode("utf-8")).hexdigest() == EXPECTED_SENTENCES_FIRST60_SHA, "first60 sentences slice changed!"
     existing_en = set(re.findall(r'"english": "(.*?)"', first60))
     dups = []
-    for (day, en, ko, lv, pr, aen, ako) in S:
+    for (day, en, ko, lv, pr, aen, ako, acc) in S:
         if en in existing_en:
             dups.append(en)
     if dups:
@@ -393,8 +408,8 @@ def main():
             print(f"  DUP-EN: {d}")
     parts = []
     for day in range(61, 76):
-        for n, (en, ko, lv, pr, aen, ako) in enumerate(by_day[day], 1):
-            parts.append(ts_entry(day, n, en, ko, lv, pr, aen, ako))
+        for n, (en, ko, lv, pr, aen, ako, acc) in enumerate(by_day[day], 1):
+            parts.append(ts_entry(day, n, en, ko, lv, pr, aen, ako, acc))
     new_sp = first60 + ",\n".join(parts) + "\n]\n"
     # dialogues: keep first60 byte-exact, rebuild day>=61
     dp = io.open(ROOT / "src" / "dialogues.ts", encoding="utf-8").read()

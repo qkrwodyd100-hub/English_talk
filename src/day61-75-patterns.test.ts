@@ -15,7 +15,10 @@ function sha256Hex(text: string): Promise<string> {
 }
 
 // Independently captured baseline digests (first60 slices, taken before any edit).
-const BASELINE_SENTENCES_FIRST60_SHA = '800af9e2a74477a9ed8874525c12e74c1ba532bf9175f93504a3f6287dd512f9'
+// Updated 2026-11-05 with the authorized Han/Eng mismatch fixes (wrong-prompt
+// alternatives removed, day-45-10 gloss corrected). Previous baseline:
+// 800af9e2a74477a9ed8874525c12e74c1ba532bf9175f93504a3f6287dd512f9.
+const BASELINE_SENTENCES_FIRST60_SHA = '23020e2bd06f7695ded10b5692abb2d90f7bff75533817c8b14810bdfd2de6b1'
 const BASELINE_DIALOGUES_FIRST60_SHA = '3e9bf0f96f058b3ae915ea884bed0322277bb9639d1c2a0e4c8741167f42348c'
 
 function sliceBefore(marker: string, raw: string): string {
