@@ -6839,13 +6839,23 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-62-08",
-    "english": "I need clean clothes because my bag is missing.",
+    "english": "I need clean clothes because I don't have my bag.",
     "korean": "가방이 없어서 갈아입을 옷이 필요해요.",
     "day": 62,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
     "level": "intermediate",
-    "priority": 2
+    "priority": 2,
+    "acceptedAlternatives": [
+      {
+        "english": "I need clean clothes because I don't have a bag.",
+        "korean": "가방이 없어서 갈아입을 옷이 필요해요."
+      },
+      {
+        "english": "I need clean clothes because my bag is missing.",
+        "korean": "가방이 없어서 갈아입을 옷이 필요해요."
+      }
+    ]
   },
   {
     "id": "day-62-09",

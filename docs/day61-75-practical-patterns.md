@@ -74,7 +74,7 @@ Do you mean 같은 확인 패턴을 싣고 있다
 
 8. I need... (필요해요)
    - 발판: day-04-07 "I need a taxi to the city center."
-   - 예: day-62-08 "I need clean clothes because my bag is missing." →
+   - 예: day-62-08 "I need clean clothes because I don't have my bag." →
      day-75-08 "I need help with this form."
 
 9. I'm looking for... (찾고 있어요)
