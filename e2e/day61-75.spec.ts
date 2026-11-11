@@ -202,7 +202,7 @@ test('daily volume 12 and 15 build extended sets and persist', async ({ page }) 
   await expect(page.locator('.daily-set li')).toHaveCount(15)
 })
 
-test('ArrowRight on the last Day 61 sentence carries progress over to Day 62', async ({ page }) => {
+test('Enter on the last Day 61 sentence carries progress over to Day 62', async ({ page }) => {
   await page.goto('/')
   await page.locator('#practice-day-select').selectOption('61')
 
@@ -217,7 +217,7 @@ test('ArrowRight on the last Day 61 sentence carries progress over to Day 62', a
 
   const answer = page.getByRole('textbox', { name: '영어 답변' })
   await answer.focus()
-  await page.keyboard.press('ArrowRight')
+  await page.keyboard.press('Enter')
 
   await expect(page.locator('#practice-day-select')).toHaveValue('62')
   await expect(page.getByRole('heading', { name: /1 \/ 10/ })).toBeVisible()

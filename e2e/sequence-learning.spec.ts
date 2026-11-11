@@ -418,7 +418,7 @@ test('submits typed answers once with Enter while preserving blank and IME safeg
   await expect(page.getByText('수정 필요')).toBeVisible()
 })
 
-test('uses ArrowRight only after checking an answer to advance practice and refocus typing', async ({ page }) => {
+test('uses Enter only after checking an answer to advance practice and refocus typing', async ({ page }) => {
   await page.goto('/')
   await page.getByLabel('학습 Day 선택').selectOption('2')
 
@@ -434,7 +434,7 @@ test('uses ArrowRight only after checking an answer to advance practice and refo
 
   await answer.press('Enter')
   await expect(page.getByRole('button', { name: '다음 문장' })).toBeVisible()
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
   await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
   await expect(answer).toHaveValue('')
   await expect(answer).toBeFocused()
@@ -463,7 +463,7 @@ test('restores a checked practice from in-memory history with ArrowLeft without 
   })
   const beforeAdvance = await learningRecord()
 
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
   await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
   await expect(answer).toHaveValue('')
   await answer.press('ArrowLeft')
@@ -474,7 +474,7 @@ test('restores a checked practice from in-memory history with ArrowLeft without 
   await expect(answer).toBeFocused()
   expect(await learningRecord()).toEqual(beforeAdvance)
 
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
   await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
   expect(await learningRecord()).toEqual(beforeAdvance)
 })
@@ -485,7 +485,7 @@ test('clears practice back history when the learner changes tabs', async ({ page
   const answer = page.getByRole('textbox', { name: '영어 답변' })
   await answer.fill('A table for one, please.')
   await answer.press('Enter')
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
   await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
 
   await page.getByRole('button', { name: '플래시카드' }).click()
@@ -506,7 +506,7 @@ test('returns from the next Day to a checked final sentence without repeating st
   const answer = page.getByRole('textbox', { name: '영어 답변' })
   await answer.fill('It was delicious.')
   await answer.press('Enter')
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('3')
   const activityCount = await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)
 
@@ -514,7 +514,7 @@ test('returns from the next Day to a checked final sentence without repeating st
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
   await expect(page.locator('.practice-prompt').getByText('맛있었어요.')).toBeVisible()
   await expect(page.getByText('정답 · 정확해요!')).toBeVisible()
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('3')
   expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities.length)).toBe(activityCount)
 })
@@ -526,10 +526,10 @@ test('keeps ArrowLeft native for typed and composing answers while preserving mu
 
   await answer.fill('A table for one, please.')
   await answer.press('Enter')
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
   await answer.fill('Can I see the menu?')
   await answer.press('Enter')
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
   await expect(page.locator('.practice-prompt').getByText('뭘 추천하시나요?')).toBeVisible()
 
   await answer.fill('draft')
@@ -551,7 +551,7 @@ test('keeps ArrowLeft native for typed and composing answers while preserving mu
   await expect(page.locator('.practice-prompt').getByText('한 명 자리 부탁해요.')).toBeVisible()
 })
 
-test('does not advance an answered practice with composing or modified ArrowRight keys and keeps the button fallback', async ({ page }) => {
+test('does not advance an answered practice with composing or modified arrow keys and keeps the button fallback', async ({ page }) => {
   await page.goto('/')
   await page.getByLabel('학습 Day 선택').selectOption('2')
 
@@ -587,13 +587,13 @@ test('moves a checked last answer to the next Day first sentence with no extra s
 
   const answer = page.getByRole('textbox', { name: '영어 답변' })
   await expect(page.locator('.practice-prompt').getByText('맛있었어요.')).toBeVisible()
-  await expect(answer).toHaveAccessibleDescription('정답 확인 후 오른쪽 화살표 키로 다음 문장으로 이동할 수 있습니다.')
+  await expect(answer).toHaveAccessibleDescription('정답 확인 후 Enter 키로 다음 문장으로 이동할 수 있습니다.')
   await answer.press('ArrowRight')
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('2')
   expect(await page.evaluate(() => JSON.parse(window.localStorage.getItem('english-talk.learning') ?? '{}').state.studyActivities)).toEqual([])
   await answer.fill('It was delicious.')
   await answer.press('Enter')
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
 
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('3')
   await expect(page.getByLabel('주제 필터')).toHaveValue('all')
@@ -610,7 +610,7 @@ test('moves a checked last answer to the next Day first sentence with no extra s
   await expect(page.getByRole('heading', { name: /1 \/ 10/ })).toBeVisible()
 })
 
-test('keeps a checked final Day answer in place when ArrowRight has no later Day', async ({ page }) => {
+test('keeps a checked final Day answer in place when Enter has no later Day', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
       masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 75, dayPositions: { 75: 9 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: [], favoriteIds: [], studyActivities: [],
@@ -622,7 +622,7 @@ test('keeps a checked final Day answer in place when ArrowRight has no later Day
   await expect(page.getByRole('heading', { name: /10 \/ 10/ })).toBeVisible()
   await answer.fill('wrong words')
   await answer.press('Enter')
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
 
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('75')
   await expect(page.getByRole('heading', { name: /10 \/ 10/ })).toBeVisible()
@@ -633,7 +633,7 @@ test('keeps a checked final Day answer in place when ArrowRight has no later Day
   expect(persisted.studyActivities).toHaveLength(1)
 })
 
-test('persists a corrected final Day answer when ArrowRight announces the terminal state', async ({ page }) => {
+test('persists a corrected final Day answer when Enter announces the terminal state', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem('english-talk.learning', JSON.stringify({ version: 3, state: {
       masteredIds: [], customSentences: [], completedChallengeDates: [], selectedDay: 75, dayPositions: { 75: 9 }, completedSentenceIds: [], attemptCounts: {}, reviewQueueIds: ['day-75-10'], favoriteIds: [], studyActivities: [],
@@ -645,7 +645,7 @@ test('persists a corrected final Day answer when ArrowRight announces the termin
   await answer.fill('wrong words')
   await answer.press('Enter')
   await answer.fill('Thanks for checking that for me.')
-  await answer.press('ArrowRight')
+  await answer.press('Enter')
 
   await expect(page.getByLabel('학습 Day 선택')).toHaveValue('75')
   await expect(page.getByText('마지막 Day입니다. 다음 문장이 없습니다.')).toBeVisible()
@@ -656,7 +656,7 @@ test('persists a corrected final Day answer when ArrowRight announces the termin
   expect(persisted.studyActivities).toContainEqual(expect.objectContaining({ day: 75, sentenceId: 'day-75-10', action: 'review-completed', correct: true }))
 })
 
-test('keeps the ArrowRight practice flow usable without horizontal overflow at target widths', async ({ page }) => {
+test('keeps the Enter practice flow usable without horizontal overflow at target widths', async ({ page }) => {
   for (const viewport of [{ width: 320, height: 700 }, { width: 390, height: 844 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport)
     await page.goto('/')
@@ -666,7 +666,7 @@ test('keeps the ArrowRight practice flow usable without horizontal overflow at t
     const answer = page.getByRole('textbox', { name: '영어 답변' })
     await answer.fill('A table for one, please.')
     await answer.press('Enter')
-    await answer.press('ArrowRight')
+    await answer.press('Enter')
     await expect(page.locator('.practice-prompt').getByText('메뉴판 좀 볼 수 있을까요?')).toBeVisible()
     await expect(answer).toBeFocused()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
