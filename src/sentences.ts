@@ -8242,5 +8242,1601 @@ export const builtInSentences: BuiltInSentence[] = [
     "topic": "daily-life-integration",
     "level": "intermediate",
     "priority": 3
+  },
+  {
+    "id": "day-76-01",
+    "english": "Hi, how have you been?",
+    "korean": "안녕하세요, 잘 지내셨어요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-76-02",
+    "english": "Pretty good, thanks. How about you?",
+    "korean": "꽤 잘 지내요, 고마워요. 당신은요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-76-03",
+    "english": "What have you been up to lately?",
+    "korean": "요즘 어떻게 지내셨어요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-76-04",
+    "english": "Not much, just work and rest.",
+    "korean": "별일 없어요, 일하고 쉬었어요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-76-05",
+    "english": "How was your weekend?",
+    "korean": "주말은 어떠셨어요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-76-06",
+    "english": "It was nice and quiet.",
+    "korean": "좋았고 조용했어요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-76-07",
+    "english": "Are you from around here?",
+    "korean": "이 근처에서 사세요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "beginner",
+    "priority": 3
+  },
+  {
+    "id": "day-76-08",
+    "english": "I just moved here last month.",
+    "korean": "지난달에 여기로 이사 왔어요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-76-09",
+    "english": "How are you settling in so far?",
+    "korean": "지금까지 정착은 잘 되고 있어요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-76-10",
+    "english": "I like it here so far.",
+    "korean": "지금까지는 여기가 마음에 들어요.",
+    "day": 76,
+    "source": "builtIn",
+    "topic": "everyday-small-talk",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "I like it so far.",
+        "korean": "지금까지는 마음에 들어요."
+      }
+    ]
+  },
+  {
+    "id": "day-77-01",
+    "english": "Sounds good.",
+    "korean": "좋아요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-77-02",
+    "english": "No worries.",
+    "korean": "괜찮아요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-77-03",
+    "english": "I'm good, thanks.",
+    "korean": "괜찮아요, 고마워요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-77-04",
+    "english": "That works for me.",
+    "korean": "저는 그게 괜찮아요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-77-05",
+    "english": "Sure, no problem.",
+    "korean": "물론이죠, 문제없어요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-77-06",
+    "english": "Oh, I see.",
+    "korean": "아, 알겠어요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-77-07",
+    "english": "Really? That's nice.",
+    "korean": "정말요. 좋네요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "beginner",
+    "priority": 3
+  },
+  {
+    "id": "day-77-08",
+    "english": "That sounds perfect, thanks.",
+    "korean": "완벽해요, 고마워요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-77-09",
+    "english": "No worries at all, take your time.",
+    "korean": "전혀 괜찮아요, 천천히 하세요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-77-10",
+    "english": "I'm good for now, thanks.",
+    "korean": "지금은 괜찮아요, 고마워요.",
+    "day": 77,
+    "source": "builtIn",
+    "topic": "native-reactions",
+    "level": "intermediate",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "I'm fine for now, thanks.",
+        "korean": "지금은 괜찮아요, 고마워요."
+      }
+    ]
+  },
+  {
+    "id": "day-78-01",
+    "english": "Could I make an appointment for tomorrow?",
+    "korean": "내일로 예약할 수 있을까요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-78-02",
+    "english": "Can I speak to the front desk, please?",
+    "korean": "프런트 데스크와 통화할 수 있을까요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-78-03",
+    "english": "Could you call me back later?",
+    "korean": "나중에 다시 전화해 주시겠어요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Can you call me back later?",
+        "korean": "나중에 다시 전화해 주시겠어요."
+      }
+    ]
+  },
+  {
+    "id": "day-78-04",
+    "english": "Sorry, I missed your call.",
+    "korean": "죄송해요, 전화를 못 받았어요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-78-05",
+    "english": "What time works for you?",
+    "korean": "몇 시가 괜찮으세요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-78-06",
+    "english": "How long will it take?",
+    "korean": "얼마나 걸릴까요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-78-07",
+    "english": "Can I leave a message?",
+    "korean": "메시지를 남길 수 있을까요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-78-08",
+    "english": "Could we move it to Friday morning?",
+    "korean": "금요일 오전으로 옮길 수 있을까요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-78-09",
+    "english": "Sorry, the line cut off just now.",
+    "korean": "죄송해요, 방금 전화가 끊겼어요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-78-10",
+    "english": "I'll call back in ten minutes.",
+    "korean": "십 분 뒤에 다시 전화할게요.",
+    "day": 78,
+    "source": "builtIn",
+    "topic": "phone-appointments",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-79-01",
+    "english": "I'm running ten minutes late.",
+    "korean": "십 분 정도 늦고 있어요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-79-02",
+    "english": "Sorry, I'm stuck in traffic.",
+    "korean": "죄송해요, 차가 막혀요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-79-03",
+    "english": "Can we meet a little later?",
+    "korean": "조금 더 늦게 만날 수 있을까요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Could we meet a little later?",
+        "korean": "조금 더 늦게 만날 수 있을까요."
+      }
+    ]
+  },
+  {
+    "id": "day-79-04",
+    "english": "Could we change it to tomorrow?",
+    "korean": "내일로 바꿀 수 있을까요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-79-05",
+    "english": "Are you almost there?",
+    "korean": "거의 다 오셨어요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-79-06",
+    "english": "I'm almost there.",
+    "korean": "거의 다 왔어요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-79-07",
+    "english": "No worries, take your time.",
+    "korean": "괜찮아요, 천천히 오세요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-79-08",
+    "english": "Something came up, can we reschedule?",
+    "korean": "급한 일이 생겼어요, 다시 잡을 수 있을까요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-79-09",
+    "english": "What time works better for you?",
+    "korean": "몇 시가 더 괜찮으세요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-79-10",
+    "english": "Thanks for letting me know.",
+    "korean": "알려줘서 고마워요.",
+    "day": 79,
+    "source": "builtIn",
+    "topic": "messages-rescheduling",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-80-01",
+    "english": "How much is it?",
+    "korean": "얼마예요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-80-02",
+    "english": "Can I pay by card?",
+    "korean": "카드로 낼 수 있을까요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Could I pay by card?",
+        "korean": "카드로 낼 수 있을까요."
+      }
+    ]
+  },
+  {
+    "id": "day-80-03",
+    "english": "Sorry, my card was declined.",
+    "korean": "죄송해요, 제 카드가 거절됐어요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-80-04",
+    "english": "Could I try another card?",
+    "korean": "다른 카드로 해볼 수 있을까요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-80-05",
+    "english": "Could I have a receipt, please?",
+    "korean": "영수증을 받을 수 있을까요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-80-06",
+    "english": "Can we split the bill?",
+    "korean": "더치페이할 수 있을까요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-80-07",
+    "english": "To go, please.",
+    "korean": "포장으로 주세요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "beginner",
+    "priority": 3
+  },
+  {
+    "id": "day-80-08",
+    "english": "I'd like to pay in cash this time.",
+    "korean": "이번에는 현금으로 내고 싶어요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-80-09",
+    "english": "Could you check the total again?",
+    "korean": "합계를 다시 확인해 주시겠어요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-80-10",
+    "english": "Where can I pay for this?",
+    "korean": "이건 어디에서 내면 돼요.",
+    "day": 80,
+    "source": "builtIn",
+    "topic": "money-payments-trouble",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-81-01",
+    "english": "Where is the nearest ATM?",
+    "korean": "가장 가까운 현금인출기가 어디에 있나요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-81-02",
+    "english": "Is there an ATM nearby?",
+    "korean": "근처에 현금인출기가 있나요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Is there an ATM around here?",
+        "korean": "근처에 현금인출기가 있나요."
+      }
+    ]
+  },
+  {
+    "id": "day-81-03",
+    "english": "Can I withdraw cash here?",
+    "korean": "여기에서 현금을 인출할 수 있나요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-81-04",
+    "english": "Could you exchange this money, please?",
+    "korean": "이 돈을 환전해 주시겠어요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-81-05",
+    "english": "I'd like to exchange dollars.",
+    "korean": "달러를 환전하고 싶어요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "I'd like to change dollars.",
+        "korean": "달러를 환전하고 싶어요."
+      }
+    ]
+  },
+  {
+    "id": "day-81-06",
+    "english": "How much is the fee?",
+    "korean": "수수료가 얼마인가요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-81-07",
+    "english": "Do you have a currency exchange counter?",
+    "korean": "환전 창구가 있나요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "beginner",
+    "priority": 3
+  },
+  {
+    "id": "day-81-08",
+    "english": "Could you tell me the exchange rate today?",
+    "korean": "오늘 환율이 어떻게 되는지 알려 주시겠어요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-81-09",
+    "english": "Can I use my card at this ATM?",
+    "korean": "이 현금인출기에서 제 카드를 사용할 수 있나요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-81-10",
+    "english": "How long does the transfer take?",
+    "korean": "송금하는 데 얼마나 걸리나요.",
+    "day": 81,
+    "source": "builtIn",
+    "topic": "bank-atm-help",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-82-01",
+    "english": "I'd like to change my appointment.",
+    "korean": "예약을 변경하고 싶어요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "I'd like to move my appointment.",
+        "korean": "예약을 변경하고 싶어요."
+      }
+    ]
+  },
+  {
+    "id": "day-82-02",
+    "english": "Can I move my visit to Friday?",
+    "korean": "진료를 금요일로 옮길 수 있나요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-82-03",
+    "english": "Is there a morning slot open?",
+    "korean": "오전에 빈 시간이 있나요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-82-04",
+    "english": "Could you see me again next week?",
+    "korean": "다음 주에 다시 진료해 주시겠어요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-82-05",
+    "english": "My cough is getting better.",
+    "korean": "기침이 점점 나아지고 있어요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-82-06",
+    "english": "I still have a slight fever.",
+    "korean": "아직 미열이 있어요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "I still have a mild fever.",
+        "korean": "아직 미열이 있어요."
+      }
+    ]
+  },
+  {
+    "id": "day-82-07",
+    "english": "How long should I rest?",
+    "korean": "얼마나 쉬어야 하나요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "beginner",
+    "priority": 3
+  },
+  {
+    "id": "day-82-08",
+    "english": "My symptoms started three days ago.",
+    "korean": "증상이 3일 전에 시작됐어요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-82-09",
+    "english": "The pain comes and goes.",
+    "korean": "통증이 왔다 갔다 해요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-82-10",
+    "english": "Could you check my progress, please?",
+    "korean": "경과를 확인해 주시겠어요.",
+    "day": 82,
+    "source": "builtIn",
+    "topic": "health-followup",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-83-01",
+    "english": "How many times a day should I take this?",
+    "korean": "이 약을 하루에 몇 번 먹어야 하나요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-83-02",
+    "english": "Should I take it before or after meals?",
+    "korean": "식전에 먹어야 하나요, 식후에 먹어야 하나요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Do I take it before or after meals?",
+        "korean": "식전에 먹어야 하나요, 식후에 먹어야 하나요."
+      }
+    ]
+  },
+  {
+    "id": "day-83-03",
+    "english": "Could you explain the dosage, please?",
+    "korean": "복용량을 설명해 주시겠어요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-83-04",
+    "english": "Do you have anything for a headache?",
+    "korean": "두통에 먹는 약이 있나요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-83-05",
+    "english": "Can I take this with water?",
+    "korean": "이 약을 물과 함께 먹어도 되나요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-83-06",
+    "english": "I'd like to ask about side effects.",
+    "korean": "부작용에 대해 여쭤보고 싶어요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "I want to ask about side effects.",
+        "korean": "부작용에 대해 여쭤보고 싶어요."
+      }
+    ]
+  },
+  {
+    "id": "day-83-07",
+    "english": "How long should I take this medicine?",
+    "korean": "이 약을 얼마나 오래 먹어야 하나요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "beginner",
+    "priority": 3
+  },
+  {
+    "id": "day-83-08",
+    "english": "Is it okay to take this on an empty stomach?",
+    "korean": "빈속에 먹어도 괜찮나요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-83-09",
+    "english": "What should I do if I miss a dose?",
+    "korean": "복용을 한 번 빼먹으면 어떻게 해야 하나요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-83-10",
+    "english": "Could you write down the instructions, please?",
+    "korean": "복용 방법을 적어 주시겠어요.",
+    "day": 83,
+    "source": "builtIn",
+    "topic": "pharmacy-dosage",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-84-01",
+    "english": "Would you like to join us for dinner?",
+    "korean": "저희와 함께 저녁 식사하시겠어요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-84-02",
+    "english": "Are you free on Saturday?",
+    "korean": "토요일에 시간 되세요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Are you free this Saturday?",
+        "korean": "토요일에 시간 되세요."
+      }
+    ]
+  },
+  {
+    "id": "day-84-03",
+    "english": "Can I join you this weekend?",
+    "korean": "이번 주말에 합류해도 될까요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-84-04",
+    "english": "I'd like to invite you to my party.",
+    "korean": "제 파티에 초대하고 싶어요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-84-05",
+    "english": "How about grabbing coffee together?",
+    "korean": "같이 커피 한잔하는 게 어때요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "beginner",
+    "priority": 2,
+    "alternatives": [
+      {
+        "english": "How about getting coffee together?",
+        "korean": "같이 커피 한잔하는 게 어때요."
+      }
+    ]
+  },
+  {
+    "id": "day-84-06",
+    "english": "Do you have any plans this Sunday?",
+    "korean": "이번 일요일에 무슨 계획 있으세요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-84-07",
+    "english": "Is there a plan for tomorrow evening?",
+    "korean": "내일 저녁에 무슨 계획이 있나요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "beginner",
+    "priority": 3
+  },
+  {
+    "id": "day-84-08",
+    "english": "We're having a small get-together on Friday.",
+    "korean": "금요일에 작은 모임을 해요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-84-09",
+    "english": "Feel free to bring a friend.",
+    "korean": "친구를 데려오셔도 돼요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-84-10",
+    "english": "Let me know if you can make it.",
+    "korean": "올 수 있으면 알려 주세요.",
+    "day": 84,
+    "source": "builtIn",
+    "topic": "invitations-plans",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-85-01",
+    "english": "I'm sorry, I can't make it today.",
+    "korean": "죄송해요, 오늘은 갈 수 없어요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-85-02",
+    "english": "Thanks for inviting me, but I have plans.",
+    "korean": "초대해 주셔서 감사하지만, 약속이 있어요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Thanks for the invite, but I have plans.",
+        "korean": "초대해 주셔서 감사하지만, 약속이 있어요."
+      }
+    ]
+  },
+  {
+    "id": "day-85-03",
+    "english": "Maybe next time.",
+    "korean": "다음 기회에요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-85-04",
+    "english": "I'd love to, but I'm busy this week.",
+    "korean": "가고 싶지만, 이번 주에는 바빠요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-85-05",
+    "english": "Could we do it another day?",
+    "korean": "다른 날에 할 수 있을까요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-85-06",
+    "english": "I have to pass this time.",
+    "korean": "이번에는 빠질게요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-85-07",
+    "english": "Thanks for thinking of me.",
+    "korean": "생각해 줘서 고마워요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "beginner",
+    "priority": 3
+  },
+  {
+    "id": "day-85-08",
+    "english": "I won't be able to join you tonight.",
+    "korean": "오늘 밤에는 합류하지 못할 것 같아요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-85-09",
+    "english": "Let's catch up soon instead.",
+    "korean": "대신 곧 만나요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-85-10",
+    "english": "I need to take a rain check.",
+    "korean": "다음으로 미뤄야겠어요.",
+    "day": 85,
+    "source": "builtIn",
+    "topic": "polite-declining",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-86-01",
+    "english": "In my opinion, this one is better.",
+    "korean": "제 생각에는 이게 더 좋아요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-86-02",
+    "english": "I recommend this place.",
+    "korean": "이곳을 추천해요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-86-03",
+    "english": "How about this one?",
+    "korean": "이건 어때요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "What about this one?",
+        "korean": "이건 어때요."
+      }
+    ]
+  },
+  {
+    "id": "day-86-04",
+    "english": "I think that's a good idea.",
+    "korean": "그거 좋은 생각인 것 같아요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-86-05",
+    "english": "What do you think?",
+    "korean": "어떻게 생각하세요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-86-06",
+    "english": "I like this one better.",
+    "korean": "이게 더 마음에 들어요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-86-07",
+    "english": "That sounds good to me.",
+    "korean": "저는 좋네요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-86-08",
+    "english": "If you ask me, this is the best choice.",
+    "korean": "내게 묻는다면, 이게 최고의 선택이에요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-86-09",
+    "english": "I highly recommend the lunch menu here.",
+    "korean": "여기의 점심 메뉴를 강력히 추천해요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-86-10",
+    "english": "How about trying the new place nearby?",
+    "korean": "근처에 새로 생긴 곳에 가보는 건 어때요.",
+    "day": 86,
+    "source": "builtIn",
+    "topic": "opinions-recommendations",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-87-01",
+    "english": "I'm afraid there's a problem with this.",
+    "korean": "죄송하지만 이거에 문제가 있는 것 같아요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-87-02",
+    "english": "There seems to be a mistake here.",
+    "korean": "여기에 오류가 있는 것 같아요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-87-03",
+    "english": "Could you check this for me?",
+    "korean": "이거 확인해 주시겠어요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-87-04",
+    "english": "Excuse me, this isn't what I ordered.",
+    "korean": "저기요, 이건 제가 주문한 게 아니에요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-87-05",
+    "english": "Sorry, could you help me with this?",
+    "korean": "죄송한데, 이거 좀 도와주시겠어요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-87-06",
+    "english": "I'm afraid it's a little too cold here.",
+    "korean": "죄송하지만 여기가 조금 춥네요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-87-07",
+    "english": "The food seems a little cold.",
+    "korean": "음식이 조금 식은 것 같아요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-87-08",
+    "english": "I'm afraid the bill doesn't look right.",
+    "korean": "죄송하지만 계산서가 맞는 것 같지 않아요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-87-09",
+    "english": "There seems to be a stain on this shirt.",
+    "korean": "이 셔츠에 얼룩이 있는 것 같아요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-87-10",
+    "english": "Could you please look into this when you can?",
+    "korean": "시간 되실 때 이거 좀 확인해 주시겠어요.",
+    "day": 87,
+    "source": "builtIn",
+    "topic": "polite-complaints",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-88-01",
+    "english": "Where is the check-in counter?",
+    "korean": "체크인 카운터가 어디에 있어요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-88-02",
+    "english": "I'd like a window seat, please.",
+    "korean": "창가 좌석으로 부탁해요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-88-03",
+    "english": "How long does it take to the airport?",
+    "korean": "공항까지 얼마나 걸려요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-88-04",
+    "english": "Could you call a taxi for me?",
+    "korean": "택시 좀 불러주시겠어요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-88-05",
+    "english": "I have a reservation under Kim.",
+    "korean": "김 씨 이름으로 예약했어요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-88-06",
+    "english": "What time is check-out?",
+    "korean": "체크아웃이 몇 시예요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-88-07",
+    "english": "Could I have an extra towel, please?",
+    "korean": "수건 하나 더 받을 수 있을까요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-88-08",
+    "english": "My flight was delayed, so I'm running late.",
+    "korean": "비행기가 늦어져서 늦을 것 같아요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-88-09",
+    "english": "That works for me. See you at the hotel lobby.",
+    "korean": "괜찮아요. 호텔 로비에서 만나요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-88-10",
+    "english": "Sounds good. Thank you for your help.",
+    "korean": "좋아요. 도와주셔서 감사해요.",
+    "day": 88,
+    "source": "builtIn",
+    "topic": "real-life-mission-travel",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-89-01",
+    "english": "How much is this?",
+    "korean": "이거 얼마예요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-89-02",
+    "english": "Do you take credit cards?",
+    "korean": "신용카드 받으세요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-89-03",
+    "english": "Can I pay by card?",
+    "korean": "카드로 결제할 수 있을까요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-89-04",
+    "english": "Sorry, I'm in a meeting. Can I call you back?",
+    "korean": "미안해요, 회의 중이에요. 다시 전화해도 될까요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-89-05",
+    "english": "Could you speak slowly, please?",
+    "korean": "천천히 말씀해 주시겠어요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-89-06",
+    "english": "I'll take this one, please.",
+    "korean": "이걸로 할게요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-89-07",
+    "english": "Do you have a smaller size?",
+    "korean": "더 작은 사이즈 있으세요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-89-08",
+    "english": "The total seems wrong. Could you check it?",
+    "korean": "합계가 틀린 것 같아요. 확인해 주시겠어요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-89-09",
+    "english": "The line is busy. I'll try again later.",
+    "korean": "통화 중이네요. 나중에 다시 걸게요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "intermediate",
+    "priority": 3
+  },
+  {
+    "id": "day-89-10",
+    "english": "Sounds good. I'll stop by tomorrow.",
+    "korean": "좋아요. 내일 들를게요.",
+    "day": 89,
+    "source": "builtIn",
+    "topic": "real-life-mission-daily",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-90-01",
+    "english": "How have you been lately?",
+    "korean": "요즘 어떻게 지냈어요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-90-02",
+    "english": "It's so nice to see you again.",
+    "korean": "다시 만나서 정말 반가워요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-90-03",
+    "english": "Let's meet again soon.",
+    "korean": "곧 다시 만나요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "beginner",
+    "priority": 1,
+    "alternatives": [
+      {
+        "english": "Let's get together again soon.",
+        "korean": "곧 다시 만나요."
+      }
+    ]
+  },
+  {
+    "id": "day-90-04",
+    "english": "Would you like to grab coffee next week?",
+    "korean": "다음 주에 커피 한잔 하실래요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-90-05",
+    "english": "That works for me. How about Saturday?",
+    "korean": "괜찮아요. 토요일은 어때요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "beginner",
+    "priority": 1
+  },
+  {
+    "id": "day-90-06",
+    "english": "I'm looking forward to it.",
+    "korean": "기대하고 있을게요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-90-07",
+    "english": "Take care and have a great day.",
+    "korean": "잘 지내요, 좋은 하루 보내세요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "beginner",
+    "priority": 2
+  },
+  {
+    "id": "day-90-08",
+    "english": "Thank you for everything. I had a great time.",
+    "korean": "모든 것에 감사해요. 정말 즐거웠어요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-90-09",
+    "english": "Let's keep in touch. Here's my number.",
+    "korean": "연락하고 지내요. 제 번호예요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "intermediate",
+    "priority": 2
+  },
+  {
+    "id": "day-90-10",
+    "english": "Have a safe trip home. See you soon.",
+    "korean": "조심히 들어가세요. 곧 봐요.",
+    "day": 90,
+    "source": "builtIn",
+    "topic": "real-life-mission-farewell",
+    "level": "intermediate",
+    "priority": 1
   }
 ]

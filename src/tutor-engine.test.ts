@@ -27,14 +27,14 @@ describe('tutor keyword branching (phase 2 scripted tutor)', () => {
   it('advances through a full cafe order on matching input', () => {
     let session = createTutorSession(cafe)
     expect(session.turns).toHaveLength(1)
-    const inputs = ['Hi!', 'An iced americano please', 'A medium please', 'To go please', 'That is all, thank you']
+    const inputs = ['Hi!', 'An iced americano please', 'A medium please', 'To go please', 'Yes, a cookie please', 'Yes, all to go please', 'That is all, thank you']
     for (const input of inputs) {
       const result = advanceTutorSession(cafe, session, input)
       expect(result.matched).toBe(true)
       session = result.session
     }
     expect(session.done).toBe(true)
-    expect(session.turns.filter((turn) => turn.speaker === 'learner')).toHaveLength(5)
+    expect(session.turns.filter((turn) => turn.speaker === 'learner')).toHaveLength(7)
   })
 
   it('repairs once, then reveals the model answer and moves on', () => {

@@ -25,7 +25,7 @@ function state(overrides: Partial<SequentialLearningState> = {}): SequentialLear
 
 describe('Day 61-75 advanced pack (issue #7)', () => {
   it('extends the course to 75 days with ten new sentences per day', () => {
-    expect(MAX_COURSE_DAY).toBe(75)
+    expect(MAX_COURSE_DAY).toBe(90)
     for (let day = 61; day <= 75; day += 1) {
       expect(builtInSentences.filter((sentence) => sentence.day === day)).toHaveLength(10)
     }
@@ -66,22 +66,81 @@ describe('Day 61-75 advanced pack (issue #7)', () => {
   })
 })
 
-describe('75-day engine guards (issue #7)', () => {
-  it('keeps Day 75 in persisted learning state and drops Day 76', () => {
-    expect(parseLearningState(JSON.stringify({ version: 4, state: { selectedDay: 75, dayPositions: { 75: 3 } } }))).toMatchObject({ selectedDay: 75, dayPositions: { 75: 3 } })
-    expect(parseLearningState(JSON.stringify({ version: 4, state: { selectedDay: 76, dayPositions: { 76: 3 } } }))).toMatchObject({ selectedDay: null, dayPositions: {} })
+describe('Day 76-90 real-life review pack', () => {
+  const topicsByDay: Record<number, string> = {
+    76: 'everyday-small-talk',
+    77: 'native-reactions',
+    78: 'phone-appointments',
+    79: 'messages-rescheduling',
+    80: 'money-payments-trouble',
+    81: 'bank-atm-help',
+    82: 'health-followup',
+    83: 'pharmacy-dosage',
+    84: 'invitations-plans',
+    85: 'polite-declining',
+    86: 'opinions-recommendations',
+    87: 'polite-complaints',
+    88: 'real-life-mission-travel',
+    89: 'real-life-mission-daily',
+    90: 'real-life-mission-farewell',
+  }
+
+  it('extends the course to 90 days with ten new sentences per day', () => {
+    for (let day = 76; day <= 90; day += 1) {
+      const items = builtInSentences.filter((sentence) => sentence.day === day)
+      expect(items).toHaveLength(10)
+      expect(items.map((sentence) => sentence.id)).toEqual(
+        Array.from({ length: 10 }, (_, index) => `day-${day}-${String(index + 1).padStart(2, '0')}`),
+      )
+    }
+    expect(new Set(builtInSentences.map((sentence) => sentence.id)).size).toBe(builtInSentences.length)
   })
 
-  it('keeps Day 75 in listening preferences and drops Day 76', () => {
-    expect(parseListeningPreferences(JSON.stringify({ selectedDays: [74, 75, 76] }))).toMatchObject({ selectedDays: [74, 75] })
-    expect(createListeningPlaylist(builtInSentences, [75], false)).toHaveLength(10)
+  it('uses one fresh topic per day without overlapping days 1-75', () => {
+    const legacyTopics = new Set(builtInSentences.filter((sentence) => sentence.day <= 75).map((sentence) => sentence.topic))
+    for (let day = 76; day <= 90; day += 1) {
+      const topics = [...new Set(builtInSentences.filter((sentence) => sentence.day === day).map((sentence) => sentence.topic))]
+      expect(topics).toEqual([topicsByDay[day]])
+      expect(legacyTopics.has(topicsByDay[day])).toBe(false)
+    }
   })
 
-  it('serves the Day 75 challenge and rejects Day 76', () => {
-    expect(getSequentialDayChallenge(builtInSentences, state(), 75).map((sentence) => sentence.id)).toEqual(
-      Array.from({ length: 10 }, (_, index) => `day-75-${String(index + 1).padStart(2, '0')}`),
+  it('keeps every new day at beginner/intermediate with at least six beginner sentences', () => {
+    for (let day = 76; day <= 90; day += 1) {
+      const items = builtInSentences.filter((sentence) => sentence.day === day)
+      expect(items.every((sentence) => sentence.level === 'beginner' || sentence.level === 'intermediate')).toBe(true)
+      expect(items.filter((sentence) => sentence.level === 'beginner').length).toBeGreaterThanOrEqual(6)
+    }
+  })
+
+  it('adds one mini dialogue per new day whose topic matches the day', () => {
+    for (let day = 76; day <= 90; day += 1) {
+      const dialogue = builtInDialogues.find((item) => item.day === day)
+      expect(dialogue).toBeDefined()
+      expect(dialogue!.topic).toBe(topicsByDay[day])
+      expect(dialogue!.turns.length).toBeGreaterThanOrEqual(2)
+      expect(dialogue!.turns.length).toBeLessThanOrEqual(4)
+      expect(dialogue!.turns.some((turn) => turn.role === 'traveler')).toBe(true)
+    }
+  })
+})
+
+describe('90-day engine guards (issue #7)', () => {
+  it('keeps Day 90 in persisted learning state and drops Day 91', () => {
+    expect(parseLearningState(JSON.stringify({ version: 4, state: { selectedDay: 90, dayPositions: { 90: 3 } } }))).toMatchObject({ selectedDay: 90, dayPositions: { 90: 3 } })
+    expect(parseLearningState(JSON.stringify({ version: 4, state: { selectedDay: 91, dayPositions: { 91: 3 } } }))).toMatchObject({ selectedDay: null, dayPositions: {} })
+  })
+
+  it('keeps Day 90 in listening preferences and drops Day 91', () => {
+    expect(parseListeningPreferences(JSON.stringify({ selectedDays: [89, 90, 91] }))).toMatchObject({ selectedDays: [89, 90] })
+    expect(createListeningPlaylist(builtInSentences, [90], false)).toHaveLength(10)
+  })
+
+  it('serves the Day 90 challenge and rejects Day 91', () => {
+    expect(getSequentialDayChallenge(builtInSentences, state(), 90).map((sentence) => sentence.id)).toEqual(
+      Array.from({ length: 10 }, (_, index) => `day-90-${String(index + 1).padStart(2, '0')}`),
     )
-    expect(getSequentialDayChallenge(builtInSentences, state(), 76)).toEqual([])
+    expect(getSequentialDayChallenge(builtInSentences, state(), 91)).toEqual([])
   })
 })
 

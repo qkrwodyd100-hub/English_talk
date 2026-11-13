@@ -1655,5 +1655,395 @@ export const builtInDialogues: MiniDialogue[] = [
         "korean": "네, 맞아요."
       }
     ]
+  },
+  {
+    "day": 76,
+    "topic": "everyday-small-talk",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Hi, how have you been?",
+        "korean": "안녕하세요, 잘 지내셨어요."
+      },
+      {
+        "role": "local",
+        "english": "Pretty good, thanks. How was your weekend?",
+        "korean": "꽤 잘 지내요, 고마워요. 주말은 어떠셨어요."
+      },
+      {
+        "role": "traveler",
+        "english": "It was nice and quiet.",
+        "korean": "좋았고 조용했어요."
+      },
+      {
+        "role": "local",
+        "english": "That's nice.",
+        "korean": "좋네요."
+      }
+    ]
+  },
+  {
+    "day": 77,
+    "topic": "native-reactions",
+    "turns": [
+      {
+        "role": "staff",
+        "english": "We can meet at three. Does that work?",
+        "korean": "세 시에 만날 수 있어요. 괜찮으세요."
+      },
+      {
+        "role": "traveler",
+        "english": "That works for me.",
+        "korean": "저는 그게 괜찮아요."
+      },
+      {
+        "role": "staff",
+        "english": "Great, see you then.",
+        "korean": "좋아요, 그때 봐요."
+      },
+      {
+        "role": "traveler",
+        "english": "Sounds good.",
+        "korean": "좋아요."
+      }
+    ]
+  },
+  {
+    "day": 78,
+    "topic": "phone-appointments",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Could I make an appointment for tomorrow?",
+        "korean": "내일로 예약할 수 있을까요."
+      },
+      {
+        "role": "staff",
+        "english": "Sure. What time works for you?",
+        "korean": "물론이죠. 몇 시가 괜찮으세요."
+      },
+      {
+        "role": "traveler",
+        "english": "How long will it take?",
+        "korean": "얼마나 걸릴까요."
+      },
+      {
+        "role": "staff",
+        "english": "About thirty minutes. See you tomorrow.",
+        "korean": "삼십 분 정도예요. 내일 봐요."
+      }
+    ]
+  },
+  {
+    "day": 79,
+    "topic": "messages-rescheduling",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Hi, I'm running ten minutes late.",
+        "korean": "안녕하세요, 십 분 정도 늦고 있어요."
+      },
+      {
+        "role": "local",
+        "english": "No worries, take your time.",
+        "korean": "괜찮아요, 천천히 오세요."
+      },
+      {
+        "role": "traveler",
+        "english": "Could we meet a little later instead?",
+        "korean": "대신 조금 더 늦게 만날 수 있을까요."
+      },
+      {
+        "role": "local",
+        "english": "Sure, no problem.",
+        "korean": "물론이죠, 문제없어요."
+      }
+    ]
+  },
+  {
+    "day": 80,
+    "topic": "money-payments-trouble",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "How much is it? Can I pay by card?",
+        "korean": "얼마예요. 카드로 낼 수 있을까요."
+      },
+      {
+        "role": "staff",
+        "english": "Yes. Please tap your card.",
+        "korean": "네. 카드를 대주세요."
+      },
+      {
+        "role": "traveler",
+        "english": "Sorry, my card was declined. Could I try another card?",
+        "korean": "죄송해요, 제 카드가 거절됐어요. 다른 카드로 해볼 수 있을까요."
+      },
+      {
+        "role": "staff",
+        "english": "Sure, no problem.",
+        "korean": "물론이죠, 문제없어요."
+      }
+    ]
+  },
+  {
+    "day": 81,
+    "topic": "bank-atm-help",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Excuse me, is there an ATM nearby?",
+        "korean": "실례합니다, 근처에 현금인출기가 있나요."
+      },
+      {
+        "role": "staff",
+        "english": "Yes, there is one next to the entrance.",
+        "korean": "네, 입구 옆에 있어요."
+      },
+      {
+        "role": "traveler",
+        "english": "Can I use my card at this ATM?",
+        "korean": "이 현금인출기에서 제 카드를 사용할 수 있나요."
+      },
+      {
+        "role": "staff",
+        "english": "Yes. And the fee is shown on the screen.",
+        "korean": "네. 수수료는 화면에 표시돼요."
+      }
+    ]
+  },
+  {
+    "day": 82,
+    "topic": "health-followup",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Hi, I'd like to change my appointment.",
+        "korean": "안녕하세요, 예약을 변경하고 싶어요."
+      },
+      {
+        "role": "staff",
+        "english": "Sure. When would you like to come?",
+        "korean": "네. 언제 오시겠어요."
+      },
+      {
+        "role": "traveler",
+        "english": "Can I move my visit to Friday? My cough is getting better.",
+        "korean": "금요일로 옮길 수 있나요. 기침은 점점 나아지고 있어요."
+      },
+      {
+        "role": "staff",
+        "english": "Friday morning is open. See you then.",
+        "korean": "금요일 오전이 비어 있어요. 그때 봬요."
+      }
+    ]
+  },
+  {
+    "day": 83,
+    "topic": "pharmacy-dosage",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Could you explain the dosage, please?",
+        "korean": "복용량을 설명해 주시겠어요."
+      },
+      {
+        "role": "staff",
+        "english": "Take it twice a day, after meals.",
+        "korean": "하루 두 번, 식후에 드세요."
+      },
+      {
+        "role": "traveler",
+        "english": "What should I do if I miss a dose?",
+        "korean": "복용을 한 번 빼먹으면 어떻게 해야 하나요."
+      },
+      {
+        "role": "staff",
+        "english": "Take it when you remember, but skip it if it is almost time for the next one.",
+        "korean": "생각났을 때 드시되, 다음 복용 시간이 가까우면 건너뛰세요."
+      }
+    ]
+  },
+  {
+    "day": 84,
+    "topic": "invitations-plans",
+    "turns": [
+      {
+        "role": "local",
+        "english": "Are you free on Saturday?",
+        "korean": "토요일에 시간 되세요."
+      },
+      {
+        "role": "traveler",
+        "english": "How about grabbing coffee together?",
+        "korean": "같이 커피 한잔하는 게 어때요."
+      },
+      {
+        "role": "local",
+        "english": "We're having a small get-together on Friday. Would you like to join us for dinner?",
+        "korean": "금요일에 작은 모임을 해요. 저희와 함께 저녁 식사하시겠어요."
+      },
+      {
+        "role": "traveler",
+        "english": "Can I join you this weekend?",
+        "korean": "이번 주말에 합류해도 될까요."
+      }
+    ]
+  },
+  {
+    "day": 85,
+    "topic": "polite-declining",
+    "turns": [
+      {
+        "role": "local",
+        "english": "Would you like to join us for dinner tonight?",
+        "korean": "오늘 밤 함께 저녁 식사하시겠어요."
+      },
+      {
+        "role": "traveler",
+        "english": "I'd love to, but I'm busy this week.",
+        "korean": "가고 싶지만, 이번 주에는 바빠요."
+      },
+      {
+        "role": "local",
+        "english": "No problem. Could we do it another day?",
+        "korean": "괜찮아요. 다른 날에 할 수 있을까요."
+      },
+      {
+        "role": "traveler",
+        "english": "Yes. Let's catch up soon instead.",
+        "korean": "네. 대신 곧 만나요."
+      }
+    ]
+  },
+  {
+    "day": 86,
+    "topic": "opinions-recommendations",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "What do you think? Which restaurant should we try?",
+        "korean": "어떻게 생각하세요. 어느 식당에 가볼까요."
+      },
+      {
+        "role": "local",
+        "english": "In my opinion, the new place nearby is better.",
+        "korean": "제 생각에는 근처의 새로 생긴 곳이 더 좋아요."
+      },
+      {
+        "role": "traveler",
+        "english": "How about trying the lunch menu there?",
+        "korean": "그곳의 점심 메뉴를 먹어보는 건 어때요."
+      },
+      {
+        "role": "local",
+        "english": "That sounds good to me. I recommend going early.",
+        "korean": "저는 좋네요. 일찍 가는 걸 추천해요."
+      }
+    ]
+  },
+  {
+    "day": 87,
+    "topic": "polite-complaints",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Excuse me, this isn't what I ordered.",
+        "korean": "저기요, 이건 제가 주문한 게 아니에요."
+      },
+      {
+        "role": "staff",
+        "english": "I'm sorry. Let me check it for you.",
+        "korean": "죄송해요. 확인해 드릴게요."
+      },
+      {
+        "role": "traveler",
+        "english": "There seems to be a mistake here, too.",
+        "korean": "여기에도 오류가 있는 것 같아요."
+      },
+      {
+        "role": "staff",
+        "english": "You are right. I'll fix it right away.",
+        "korean": "맞으세요. 바로 고쳐드릴게요."
+      }
+    ]
+  },
+  {
+    "day": 88,
+    "topic": "real-life-mission-travel",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "Where is the check-in counter, please?",
+        "korean": "체크인 카운터가 어디에 있어요."
+      },
+      {
+        "role": "staff",
+        "english": "It's over there. Do you have a reservation?",
+        "korean": "저쪽이에요. 예약하셨어요."
+      },
+      {
+        "role": "traveler",
+        "english": "Yes. I have a reservation under Kim. I'd like a window seat, please.",
+        "korean": "네. 김 씨 이름으로 예약했어요. 창가 좌석으로 부탁해요."
+      },
+      {
+        "role": "staff",
+        "english": "Sounds good. Here is your boarding pass.",
+        "korean": "좋아요. 탑승권 여기 있어요."
+      }
+    ]
+  },
+  {
+    "day": 89,
+    "topic": "real-life-mission-daily",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "How much is this? Do you take credit cards?",
+        "korean": "이거 얼마예요. 신용카드 받으세요."
+      },
+      {
+        "role": "staff",
+        "english": "Yes, we do. Of course.",
+        "korean": "네, 받아요. 물론이죠."
+      },
+      {
+        "role": "traveler",
+        "english": "The total seems wrong. Could you check it?",
+        "korean": "합계가 틀린 것 같아요. 확인해 주시겠어요."
+      },
+      {
+        "role": "staff",
+        "english": "You are right. Sorry about that.",
+        "korean": "맞으세요. 죄송해요."
+      }
+    ]
+  },
+  {
+    "day": 90,
+    "topic": "real-life-mission-farewell",
+    "turns": [
+      {
+        "role": "traveler",
+        "english": "How have you been lately? It's so nice to see you again.",
+        "korean": "요즘 어떻게 지냈어요. 다시 만나서 정말 반가워요."
+      },
+      {
+        "role": "local",
+        "english": "I've been well. Would you like to grab coffee next week?",
+        "korean": "잘 지냈어요. 다음 주에 커피 한잔 하실래요."
+      },
+      {
+        "role": "traveler",
+        "english": "That works for me. How about Saturday?",
+        "korean": "괜찮아요. 토요일은 어때요."
+      },
+      {
+        "role": "local",
+        "english": "Thank you for everything. Have a safe trip home. See you soon.",
+        "korean": "모든 것에 감사해요. 조심히 들어가세요. 곧 봐요."
+      }
+    ]
   }
 ]

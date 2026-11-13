@@ -85,6 +85,21 @@ const extraTopicNames: Record<string, string> = {
   'golf-course-basics': '골프장',
   'department-store-advanced': '백화점·쇼핑 심화',
   'daily-life-integration': '의식주 통합 실전',
+  'everyday-small-talk': '일상 스몰토크',
+  'native-reactions': '원어민 리액션',
+  'phone-appointments': '전화 예약',
+  'messages-rescheduling': '약속 변경 문자',
+  'money-payments-trouble': '결제 트러블',
+  'bank-atm-help': '은행·ATM',
+  'health-followup': '병원 후속 진료',
+  'pharmacy-dosage': '약 복용법',
+  'invitations-plans': '초대·약속 잡기',
+  'polite-declining': '정중한 거절',
+  'opinions-recommendations': '의견·추천',
+  'polite-complaints': '정중한 불만',
+  'real-life-mission-travel': '실전 미션·여행',
+  'real-life-mission-daily': '실전 미션·일상',
+  'real-life-mission-farewell': '실전 미션·작별',
 }
 
 function topicName(topic: string) { return topicNames[topic] ?? extraTopicNames[topic] ?? topic }

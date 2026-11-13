@@ -112,7 +112,7 @@ export const LEARNING_STORAGE_KEY = 'english-talk.learning'
 export const LEARNING_STORAGE_VERSION = 4
 export const MAX_SENTENCE_NOTE_LENGTH = 2000
 export const MAX_ANSWER_HISTORY = 5
-export const MAX_COURSE_DAY = 75
+export const MAX_COURSE_DAY = 90
 export const DAILY_COUNT_OPTIONS = [10, 12, 15] as const
 export const DEFAULT_DAILY_COUNT = 10
 

@@ -27,7 +27,7 @@ function sliceBefore(marker: string, raw: string): string {
   return raw.slice(0, idx + 1) // keep trailing newline: byte-identical to head -n slice
 }
 
-const newSentences = builtInSentences.filter((s) => s.day >= 61)
+const newSentences = builtInSentences.filter((s) => s.day >= 61 && s.day <= 75)
 const norm = (t: string) => t.toLowerCase().replace(/[?!.,']/g, '')
 
 describe('day61-75 practical-patterns curriculum shape', () => {
@@ -155,7 +155,7 @@ describe('day61-75 practical-patterns curriculum shape', () => {
   })
 
   it('keeps 15 coherent dialogues aligned to the day sentence patterns', () => {
-    const dialogues = builtInDialogues.filter((d) => d.day >= 61)
+    const dialogues = builtInDialogues.filter((d) => d.day >= 61 && d.day <= 75)
     expect(dialogues.map((d) => d.day)).toEqual(Array.from({ length: 15 }, (_, i) => i + 61))
     for (const d of dialogues) {
       expect(d.turns.length, `day ${d.day}`).toBeGreaterThanOrEqual(2)
