@@ -6,6 +6,7 @@ import {
   getDayProgress,
   getCourseDayBreakdown,
   getMasteredSentences,
+  getOrphanMasteredIds,
   getResumeTarget,
   getReviewChallenge,
   getReviewQueue,
@@ -177,5 +178,11 @@ describe('sequential learning engine', () => {
     ])
     const partial = getCourseDayBreakdown(sentences, ['day-01-01'])
     expect(partial.find((row) => row.day === 1)).toMatchObject({ completed: 1, total: 2, percentage: 50, status: 'partial' })
+  })
+
+  it('reports mastered IDs with no matching sentence as orphans', () => {
+    expect(getOrphanMasteredIds(sentences, ['day-01-01', 'gone-1', 'gone-1', 'gone-2'])).toEqual(['gone-1', 'gone-2'])
+    expect(getOrphanMasteredIds(sentences, ['day-01-01'])).toEqual([])
+    expect(getOrphanMasteredIds(sentences, [])).toEqual([])
   })
 })

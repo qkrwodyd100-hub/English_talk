@@ -324,3 +324,44 @@ test('keeps the learning notes tab usable on a mobile viewport', async ({ page }
   await expect(page.getByLabel('Day 필터')).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 })
+
+test('dashboard stat buttons reveal orphan mastered records and resume at the first unlearned sentence', async ({ page }) => {
+  const dayOneIds = builtInSentences.filter((sentence) => sentence.day === 1).slice(0, 2).map((sentence) => sentence.id)
+  await page.addInitScript(({ completedIds }) => {
+    window.localStorage.setItem('english-talk.learning', JSON.stringify({
+      version: 4,
+      state: {
+        masteredIds: ['day-02-01', 'ghost-sentence-1'],
+        customSentences: [],
+        completedChallengeDates: [],
+        selectedDay: 1,
+        dayPositions: {},
+        completedSentenceIds: completedIds,
+        attemptCounts: {},
+        reviewQueueIds: [],
+        favoriteIds: [],
+        studyActivities: [],
+        sentenceNotes: {},
+        answerHistory: {},
+      },
+    }))
+  }, { completedIds: dayOneIds })
+  await page.goto('/')
+
+  const dashboard = page.getByLabel('학습 현황')
+  await dashboard.getByRole('button', { name: /목록 보기/ }).click()
+  const masterPanel = page.getByLabel('마스터 문장 목록')
+  await expect(masterPanel.getByText('마스터 2개')).toBeVisible()
+  await expect(masterPanel.getByText('찾을 수 없는 기록 1개')).toBeVisible()
+  await expect(masterPanel.getByText('ghost-sentence-1')).toBeVisible()
+  await masterPanel.getByRole('button', { name: '기록 삭제' }).click()
+  await expect(masterPanel.getByText('마스터 1개')).toBeVisible()
+  await expect(masterPanel.getByText('찾을 수 없는 기록')).toHaveCount(0)
+  await masterPanel.getByRole('button', { name: '닫기' }).click()
+
+  await dashboard.getByRole('button', { name: /Day별 보기/ }).click()
+  const progressPanel = page.getByLabel('Day별 학습 현황')
+  await expect(progressPanel.getByText('Day 1', { exact: true })).toBeVisible()
+  await progressPanel.getByRole('button', { name: '이 Day 학습' }).first().click()
+  await expect(page.getByRole('heading', { name: /3 \/ 10/ })).toBeVisible()
+})

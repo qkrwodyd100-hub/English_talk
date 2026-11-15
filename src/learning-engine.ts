@@ -117,6 +117,22 @@ export function getMasteredSentences(sentences: Sentence[], masteredIds: string[
   return sentences.filter((sentence) => mastered.has(sentence.id))
 }
 
+/** Mastered IDs with no matching sentence (e.g. a custom sentence that was
+ * deleted on another device while its mastered record survived a cloud merge).
+ * Order-preserving and de-duplicated. */
+export function getOrphanMasteredIds(sentences: Sentence[], masteredIds: string[] | Set<string>): string[] {
+  const byId = new Set(sentences.map((sentence) => sentence.id))
+  const seen = new Set<string>()
+  const orphans: string[] = []
+  for (const id of masteredIds) {
+    if (!byId.has(id) && !seen.has(id)) {
+      seen.add(id)
+      orphans.push(id)
+    }
+  }
+  return orphans
+}
+
 /** Per-Day completion breakdown for the whole course, in Day order.
  * Days without sentences are omitted. */
 export function getCourseDayBreakdown(sentences: Sentence[], completedSentenceIds: string[] | Set<string>): DayCourseProgress[] {
