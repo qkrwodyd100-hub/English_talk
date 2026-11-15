@@ -4,6 +4,8 @@ import {
   createSequentialLearningState,
   getDailyPracticeSet,
   getDayProgress,
+  getCourseDayBreakdown,
+  getMasteredSentences,
   getResumeTarget,
   getReviewChallenge,
   getReviewQueue,
@@ -159,5 +161,21 @@ describe('sequential learning engine', () => {
   it('skips fully completed following Days in daily sets', () => {
     const nextDone = state({ selectedDay: 1, completedSentenceIds: ['day-02-01'] })
     expect(getDailyPracticeSet(sentences, nextDone, 1, 10).map((sentence) => sentence.id)).toEqual(['day-01-01', 'day-01-02'])
+  })
+
+  it('lists mastered sentences in course order and ignores unknown IDs', () => {
+    expect(getMasteredSentences(sentences, ['day-02-01', 'day-01-02', 'missing-id']).map((sentence) => sentence.id)).toEqual(['day-01-02', 'day-02-01'])
+    expect(getMasteredSentences(sentences, new Set(['day-01-01']))).toHaveLength(1)
+    expect(getMasteredSentences(sentences, [])).toEqual([])
+  })
+
+  it('breaks course completion down by Day with learned/not-started status', () => {
+    const breakdown = getCourseDayBreakdown(sentences, ['day-01-01', 'day-01-02'])
+    expect(breakdown).toEqual([
+      { day: 1, completed: 2, total: 2, percentage: 100, status: 'complete' },
+      { day: 2, completed: 0, total: 1, percentage: 0, status: 'not-started' },
+    ])
+    const partial = getCourseDayBreakdown(sentences, ['day-01-01'])
+    expect(partial.find((row) => row.day === 1)).toMatchObject({ completed: 1, total: 2, percentage: 50, status: 'partial' })
   })
 })

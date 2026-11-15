@@ -5,6 +5,8 @@ import {
   getDailyPracticeSet,
   getSequentialDayChallenge,
   getTopicProgress,
+  getCourseDayBreakdown,
+  getMasteredSentences,
   judgeAnswer,
   recordAttempt,
   toggleFavorite,
@@ -197,6 +199,9 @@ export default function LearningApp() {
   const [korean, setKorean] = useState('')
   const [dialogueOpen, setDialogueOpen] = useState(false)
   const [topicsExpanded, setTopicsExpanded] = useState(false)
+  const [dashboardDetail, setDashboardDetail] = useState<null | 'mastered' | 'progress'>(null)
+  const [masterDayFilter, setMasterDayFilter] = useState('all')
+  const [reselectableMastered, setReselectableMastered] = useState<Sentence[]>([])
   const [listeningStatus, setListeningStatus] = useState<{ item: Sentence | null; index: number; total: number; stage: string } | null>(null)
   const [dailyCount, setDailyCount] = useState<number>(() => {
     try { return clampDailyCount(JSON.parse(window.localStorage.getItem('english-talk.daily-count') ?? 'null')) }
@@ -345,7 +350,13 @@ export default function LearningApp() {
   const wordFeedback = current ? getWordFeedback(current.english, attempt) : []
   const missingWords = wordFeedback.filter((item) => item.status === 'missing').map((item) => item.word)
   const completedIds = new Set(state.completedSentenceIds)
-  const overallProgress = sentences.length ? Math.round((sentences.filter(({ id }) => completedIds.has(id)).length / sentences.length) * 100) : 0
+  const completedCount = sentences.filter(({ id }) => completedIds.has(id)).length
+  const overallProgress = sentences.length ? Math.round((completedCount / sentences.length) * 100) : 0
+  const masteredSentences = useMemo(() => getMasteredSentences(sentences, state.masteredIds), [sentences, state.masteredIds])
+  const dayBreakdown = useMemo(() => getCourseDayBreakdown(sentences, state.completedSentenceIds), [sentences, state.completedSentenceIds])
+  const completedDayCount = dayBreakdown.filter((row) => row.status === 'complete').length
+  const visibleMasteredSentences = masterDayFilter === 'all' ? masteredSentences : masteredSentences.filter((sentence) => sentence.day === Number(masterDayFilter))
+  const reselectableSentences = reselectableMastered.filter((sentence) => !mastered.has(sentence.id))
   const masteryProgress = sentences.length ? Math.round((state.masteredIds.length / sentences.length) * 100) : 0
   const completedToday = state.completedChallengeDates.includes(getTodayKey())
   const studySummary = getStudySummary(state)
@@ -482,6 +493,30 @@ export default function LearningApp() {
     setSelectedTopic('all')
     resetPracticeContext()
     window.requestAnimationFrame(() => answerInput.current?.focus())
+  }
+
+  function studyDay(day: number) {
+    selectDay(day)
+    setTab('practice')
+    setDashboardDetail(null)
+    window.requestAnimationFrame(() => document.getElementById('practice-heading')?.scrollIntoView({ block: 'start' }))
+  }
+
+  function resumeCourse() {
+    goToResume()
+    setTab('practice')
+    setDashboardDetail(null)
+    window.requestAnimationFrame(() => document.getElementById('practice-heading')?.scrollIntoView({ block: 'start' }))
+  }
+
+  function unmasterFromList(sentence: Sentence) {
+    setReselectableMastered((previous) => previous.some((item) => item.id === sentence.id) ? previous : [...previous, sentence])
+    toggleMastered(sentence)
+  }
+
+  function reselectMastered(sentence: Sentence) {
+    setReselectableMastered((previous) => previous.filter((item) => item.id !== sentence.id))
+    if (!mastered.has(sentence.id)) toggleMastered(sentence)
   }
 
   function resolveReview(sentence: Sentence) {
@@ -750,7 +785,9 @@ export default function LearningApp() {
   return <main className="learning-shell">
     <header className="learning-header"><div><p className="eyebrow">English Talk · 75-day study</p><h1>더 넓은 세상으로의 시작</h1></div><p className="fixture-note">75일 동안 매일 10문장씩 학습해요. 마지막으로 학습한 Day와 문장부터 이어집니다.</p></header>
     <CloudAccountPanel cloud={cloud} />
-    <section className="dashboard" aria-label="학습 현황"><div><strong>{sentences.length}</strong><span>전체 문장</span></div><div><strong>{state.masteredIds.length}</strong><span>마스터</span></div><div><strong>{overallProgress}%</strong><span>학습 진행률</span></div><div><strong>{completedToday ? '완료' : `Day ${selectedDay}`}</strong><span>현재 학습</span></div><div className="progress-track" role="progressbar" aria-label="마스터 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteryProgress}><span style={{ width: `${masteryProgress}%` }} /></div></section>
+    <section className="dashboard" aria-label="학습 현황"><div><strong>{sentences.length}</strong><span>전체 문장</span></div><button type="button" className="stat-button" aria-expanded={dashboardDetail === 'mastered'} onClick={() => setDashboardDetail(dashboardDetail === 'mastered' ? null : 'mastered')}><strong>{state.masteredIds.length}</strong><span>마스터 · 목록 보기</span></button><button type="button" className="stat-button" aria-expanded={dashboardDetail === 'progress'} onClick={() => setDashboardDetail(dashboardDetail === 'progress' ? null : 'progress')}><strong>{overallProgress}%</strong><span>학습 진행률 · Day별 보기</span></button><div><strong>{completedToday ? '완료' : `Day ${selectedDay}`}</strong><span>현재 학습</span></div><div className="progress-track" role="progressbar" aria-label="마스터 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteryProgress}><span style={{ width: `${masteryProgress}%` }} /></div></section>
+    {dashboardDetail === 'mastered' && <section className="dashboard-detail" aria-label="마스터 문장 목록"><div className="panel-heading"><div><p className="eyebrow">Mastered sentences</p><h2>마스터 {masteredSentences.length}개</h2></div><button className="text-button" type="button" onClick={() => setDashboardDetail(null)}>닫기</button></div><p className="resume-copy">외웠다고 표시한 문장이에요. 하나씩 다시 확인해 보고, 잊은 문장은 [마스터 해제]로 제외하세요. 제외한 문장은 아래 목록에서 [다시 마스터로 선택]으로 되돌릴 수 있어요.</p><div className="learning-controls single-control"><label htmlFor="master-day-filter">Day 필터<select id="master-day-filter" value={masterDayFilter} onChange={(event) => setMasterDayFilter(event.target.value)}><option value="all">전체 Day</option>{dayBreakdown.map((row) => <option key={row.day} value={String(row.day)}>Day {row.day}</option>)}</select></label></div>{visibleMasteredSentences.length === 0 ? <p className="empty-state">{masteredSentences.length === 0 ? '아직 마스터로 표시한 문장이 없어요. 플래시카드에서 [마스터로 표시]를 눌러 보세요.' : '선택한 Day에 마스터 문장이 없어요.'}</p> : <ul className="review-list">{visibleMasteredSentences.map((sentence) => <li key={sentence.id}><div><strong>Day {sentence.day} · {sentence.korean}</strong><span>{sentence.english}</span></div><div className="row-actions"><button className="text-button" type="button" onClick={() => practiceAgain(sentence)}>연습</button><button className="text-button" type="button" onClick={() => unmasterFromList(sentence)}>마스터 해제</button></div></li>)}</ul>}{reselectableSentences.length > 0 && <><h3>제외한 문장 · 다시 선택</h3><ul className="review-list">{reselectableSentences.map((sentence) => <li key={sentence.id}><div><strong>Day {sentence.day} · {sentence.korean}</strong><span>{sentence.english}</span></div><div className="row-actions"><button className="text-button" type="button" onClick={() => reselectMastered(sentence)}>다시 마스터로 선택</button></div></li>)}</ul></>}</section>}
+    {dashboardDetail === 'progress' && <section className="dashboard-detail" aria-label="Day별 학습 현황"><div className="panel-heading"><div><p className="eyebrow">Progress by Day</p><h2>학습 진행률 {overallProgress}%</h2></div><button className="text-button" type="button" onClick={() => setDashboardDetail(null)}>닫기</button></div><p className="resume-copy">타이핑 연습에서 정답을 맞힌 문장 기준이에요. 플래시카드 마스터 표시·듣기·회화만으로는 진행률이 오르지 않아요. 완료한 Day {completedDayCount}/{dayBreakdown.length}개 · 남은 문장 {sentences.length - completedCount}개</p>{resumeTarget.isCourseComplete ? <p className="notice" role="status">전 과정을 모두 완료했어요. 수고했어요!</p> : <div><button className="button" type="button" onClick={resumeCourse}>이어서 학습: Day {resumeTarget.day} {resumeTarget.position + 1}번부터</button></div>}<ul className="day-progress-list">{dayBreakdown.map((row) => <li key={row.day}><div><strong>Day {row.day}</strong><span>{row.completed}/{row.total} 완료 · {row.percentage}%</span></div><div className="row-actions"><span className={`day-status ${row.status}`}>{row.status === 'complete' ? '완료' : row.status === 'partial' ? '진행 중' : '시작 전'}</span>{row.status !== 'complete' && <button className="text-button" type="button" onClick={() => studyDay(row.day)}>이 Day 학습</button>}</div></li>)}</ul></section>}
     <section className="recent-study" aria-label="최근 학습"><div><strong>최근 학습</strong><span>{studySummary.lastActivity ? `Day ${studySummary.lastDay} · ${formatStudyTimestamp(studySummary.lastActivity.timestamp)}` : '아직 실제 학습 기록이 없습니다.'}</span></div><div><strong>{studySummary.todaySentenceCount}</strong><span>오늘 학습한 문장</span></div><div><strong>{studySummary.streakDays}일</strong><span>현재 연속 학습</span></div><p>{cloud.user ? '로그인한 계정의 기록은 이 기기와 클라우드에 함께 저장됩니다.' : '로그인 전 기록은 이 브라우저에 즉시 저장됩니다.'}</p></section>
     {storageNotice && <p className="notice" role="status">{storageNotice}</p>}
     <nav className="study-tabs" aria-label="학습 메뉴"><button aria-current={tab === 'practice' ? 'page' : undefined} className={tab === 'practice' ? 'active' : ''} onClick={() => setTab('practice')}>타이핑 연습</button><button aria-current={tab === 'cards' ? 'page' : undefined} className={tab === 'cards' ? 'active' : ''} onClick={() => setTab('cards')}>플래시카드</button><button aria-current={tab === 'listening' ? 'page' : undefined} className={tab === 'listening' ? 'active' : ''} onClick={() => { setTab('listening'); window.requestAnimationFrame(() => document.getElementById('listening-heading')?.scrollIntoView({ block: 'start' })) }}>듣기 학습</button><button aria-current={tab === 'review' ? 'page' : undefined} className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')}>오답 복습 ({state.reviewQueueIds.length})</button><button aria-current={tab === 'tutor' ? 'page' : undefined} className={tab === 'tutor' ? 'active' : ''} onClick={() => setTab('tutor')}>회화 연습</button><button aria-current={tab === 'history' ? 'page' : undefined} className={tab === 'history' ? 'active' : ''} onClick={() => setTab('history')}>학습 기록</button><button aria-current={tab === 'notes' ? 'page' : undefined} className={tab === 'notes' ? 'active' : ''} onClick={() => setTab('notes')}>학습 노트</button><button aria-current={tab === 'manage' ? 'page' : undefined} className={tab === 'manage' ? 'active' : ''} onClick={() => setTab('manage')}>내 문장</button></nav>

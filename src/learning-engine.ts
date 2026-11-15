@@ -105,6 +105,41 @@ export function getTopicProgress(sentences: Sentence[], state: SequentialLearnin
   return [...byTopic.entries()].map(([topic, topicSentences]) => ({ topic, ...calculateProgress(topicSentences, state.completedSentenceIds) }))
 }
 
+export type DayCourseProgress = Progress & {
+  day: number
+  status: 'complete' | 'partial' | 'not-started'
+}
+
+/** Lists mastered sentences in course order (Day, then original order).
+ * Unknown IDs (e.g. deleted custom sentences) are ignored. */
+export function getMasteredSentences(sentences: Sentence[], masteredIds: string[] | Set<string>): Sentence[] {
+  const mastered = masteredIds instanceof Set ? masteredIds : new Set(masteredIds)
+  return sentences.filter((sentence) => mastered.has(sentence.id))
+}
+
+/** Per-Day completion breakdown for the whole course, in Day order.
+ * Days without sentences are omitted. */
+export function getCourseDayBreakdown(sentences: Sentence[], completedSentenceIds: string[] | Set<string>): DayCourseProgress[] {
+  const completed = completedSentenceIds instanceof Set ? completedSentenceIds : new Set(completedSentenceIds)
+  const byDay = new Map<number, Sentence[]>()
+  for (const sentence of sentences) {
+    byDay.set(sentence.day, [...(byDay.get(sentence.day) ?? []), sentence])
+  }
+  return [...byDay.entries()]
+    .sort(([left], [right]) => left - right)
+    .map(([day, daySentences]) => {
+      const done = daySentences.filter((sentence) => completed.has(sentence.id)).length
+      const total = daySentences.length
+      return {
+        day,
+        completed: done,
+        total,
+        percentage: total ? Math.round((done / total) * 100) : 0,
+        status: done >= total ? 'complete' : done > 0 ? 'partial' : 'not-started',
+      }
+    })
+}
+
 export function judgeAnswer(sentence: Sentence, attempt: string): AnswerJudgment {
   const normalizedAttempt = normalizeAnswer(attempt)
   if (getContractionEquivalentForms(sentence.english).has(normalizedAttempt)) return { kind: 'exact', isCorrect: true }
