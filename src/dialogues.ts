@@ -291,7 +291,7 @@ export const builtInDialogues: MiniDialogue[] = [
       {
         "role": "traveler",
         "english": "Can I have a small iced latte, please?",
-        "korean": "작은 아이스 라테 한 잔 주세요."
+        "korean": "작은 아이스 라테 한 잔 주세요?"
       },
       {
         "role": "staff",
@@ -1235,7 +1235,7 @@ export const builtInDialogues: MiniDialogue[] = [
       {
         "role": "traveler",
         "english": "I was wondering if you might be able to assist me.",
-        "korean": "혹시 저를 도와주실 수 있을까요?"
+        "korean": "혹시 저를 도와주실 수 있는지 여쭤봅니다."
       },
       {
         "role": "staff",

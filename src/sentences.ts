@@ -958,7 +958,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-10-01",
     "english": "Can I have a wake-up call at 7 AM?",
-    "korean": "아침 7시에 모닝콜을 부탁드려요.",
+    "korean": "아침 7시에 모닝콜을 부탁드려요?",
     "day": 10,
     "source": "builtIn",
     "topic": "hotel-services",
@@ -1364,7 +1364,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-14-01",
     "english": "Can I have a small latte, please?",
-    "korean": "작은 라떼 한 잔 주세요.",
+    "korean": "작은 라떼 한 잔 주세요?",
     "day": 14,
     "source": "builtIn",
     "topic": "cafe-orders",
@@ -1440,7 +1440,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-14-08",
     "english": "Can I have less sugar?",
-    "korean": "설탕을 적게 넣어 주세요.",
+    "korean": "설탕을 적게 넣어 주세요?",
     "day": 14,
     "source": "builtIn",
     "topic": "cafe-orders",
@@ -4340,7 +4340,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-41-07",
     "english": "Please write it down for me.",
-    "korean": "적어 주시겠어요?",
+    "korean": "적어 주세요.",
     "day": 41,
     "source": "builtIn",
     "topic": "checking-understanding",
@@ -4942,7 +4942,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-46-09",
     "english": "You're kidding!",
-    "korean": "농담이시죠?",
+    "korean": "농담이세요!",
     "day": 46,
     "source": "builtIn",
     "topic": "conversation-reactions",
@@ -4998,7 +4998,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-47-04",
     "english": "Let's exchange numbers.",
-    "korean": "전화번호를 교환할까요?",
+    "korean": "전화번호를 교환해요.",
     "day": 47,
     "source": "builtIn",
     "topic": "ending-a-conversation",
@@ -6215,7 +6215,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could we have the check, please?",
-        "korean": "계산서 부탁드립니다."
+        "korean": "계산서 부탁드립니다?"
       }
     ]
   },

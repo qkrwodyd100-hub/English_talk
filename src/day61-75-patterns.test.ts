@@ -18,8 +18,13 @@ function sha256Hex(text: string): Promise<string> {
 // Updated 2026-11-05 with the authorized Han/Eng mismatch fixes (wrong-prompt
 // alternatives removed, day-45-10 gloss corrected). Previous baseline:
 // 800af9e2a74477a9ed8874525c12e74c1ba532bf9175f93504a3f6287dd512f9.
-const BASELINE_SENTENCES_FIRST60_SHA = '23020e2bd06f7695ded10b5692abb2d90f7bff75533817c8b14810bdfd2de6b1'
-const BASELINE_DIALOGUES_FIRST60_SHA = '3e9bf0f96f058b3ae915ea884bed0322277bb9639d1c2a0e4c8741167f42348c'
+// Updated 2026-11-18 with Jaeyong-authorized first60 ?/. mismatch fixes
+// (day-10-01, day-14-01/08, day-41-07, day-46-09, day-47-04, day-58-02 alt,
+// dialogue day-14 latte + day-58 assist-me). Previous baselines:
+// sentences 23020e2bd06f7695ded10b5692abb2d90f7bff75533817c8b14810bdfd2de6b1,
+// dialogues 3e9bf0f96f058b3ae915ea884bed0322277bb9639d1c2a0e4c8741167f42348c.
+const BASELINE_SENTENCES_FIRST60_SHA = '25b81c26153015df41947d49470a1563ff517d6e5e44f1db4e81ea3a958556fd'
+const BASELINE_DIALOGUES_FIRST60_SHA = '46684b3258f65b37ef60470fd28e6d66d47c2cddbb81737004f9f545adbfb2f1'
 
 function sliceBefore(marker: string, raw: string): string {
   const idx = raw.indexOf(marker)
