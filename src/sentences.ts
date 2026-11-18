@@ -6530,7 +6530,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-61-01",
     "english": "Which terminal does my next flight leave from?",
-    "korean": "다음 비행기가 어느 터미널에서 출발하나요.",
+    "korean": "다음 비행기가 어느 터미널에서 출발하나요?",
     "day": 61,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6540,7 +6540,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-61-02",
     "english": "How long does the transfer take?",
-    "korean": "환승하는 데 얼마나 걸리나요.",
+    "korean": "환승하는 데 얼마나 걸리나요?",
     "day": 61,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6550,7 +6550,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-61-03",
     "english": "Where is the transfer counter?",
-    "korean": "환승 카운터가 어디에 있나요.",
+    "korean": "환승 카운터가 어디에 있나요?",
     "day": 61,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6560,7 +6560,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-61-04",
     "english": "Can I walk to the next terminal?",
-    "korean": "다음 터미널까지 걸어갈 수 있나요.",
+    "korean": "다음 터미널까지 걸어갈 수 있나요?",
     "day": 61,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6569,14 +6569,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Can I get to the next terminal on foot?",
-        "korean": "걸어서 다음 터미널에 갈 수 있나요."
+        "korean": "걸어서 다음 터미널에 갈 수 있나요?"
       }
     ]
   },
   {
     "id": "day-61-05",
     "english": "Could you show me the way to my gate?",
-    "korean": "제 탑승구로 가는 길을 알려 주시겠어요.",
+    "korean": "제 탑승구로 가는 길을 알려 주시겠어요?",
     "day": 61,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6585,7 +6585,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could you tell me how to get to my gate?",
-        "korean": "탑승구로 가는 방법을 알려 주시겠어요."
+        "korean": "탑승구로 가는 방법을 알려 주시겠어요?"
       }
     ]
   },
@@ -6602,7 +6602,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-61-07",
     "english": "Can I get on the next flight?",
-    "korean": "다음 비행기로 갈 수 있나요.",
+    "korean": "다음 비행기로 갈 수 있나요?",
     "day": 61,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6622,7 +6622,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-61-09",
     "english": "Could you help me change my flight?",
-    "korean": "비행기 변경을 도와주시겠어요.",
+    "korean": "비행기 변경을 도와주시겠어요?",
     "day": 61,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6631,14 +6631,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could you help me switch to a different flight?",
-        "korean": "다른 비행기로 바꾸는 걸 도와주시겠어요."
+        "korean": "다른 비행기로 바꾸는 걸 도와주시겠어요?"
       }
     ]
   },
   {
     "id": "day-61-10",
     "english": "I missed my connection. Can you help me find a hotel?",
-    "korean": "연결편을 놓쳤어요. 호텔 찾는 걸 도와주시겠어요.",
+    "korean": "연결편을 놓쳤어요. 호텔 찾는 걸 도와주시겠어요?",
     "day": 61,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6664,7 +6664,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-62-02",
     "english": "Where is the lost baggage office?",
-    "korean": "수하물 분실물 센터가 어디에 있나요.",
+    "korean": "수하물 분실물 센터가 어디에 있나요?",
     "day": 62,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6700,7 +6700,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-62-05",
     "english": "Could you help me fill out this form?",
-    "korean": "이 서류 작성을 도와주시겠어요.",
+    "korean": "이 서류 작성을 도와주시겠어요?",
     "day": 62,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6709,7 +6709,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Can you help me complete this form?",
-        "korean": "이 서류 작성을 도와주시겠어요."
+        "korean": "이 서류 작성을 도와주시겠어요?"
       }
     ]
   },
@@ -6726,7 +6726,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-62-07",
     "english": "How long will it take to find my bag?",
-    "korean": "가방을 찾는 데 얼마나 걸리나요.",
+    "korean": "가방을 찾는 데 얼마나 걸리나요?",
     "day": 62,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6752,7 +6752,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-62-09",
     "english": "I have something to declare. Where do I go?",
-    "korean": "신고할 물건이 있어요. 어디로 가나요.",
+    "korean": "신고할 물건이 있어요. 어디로 가나요?",
     "day": 62,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6762,7 +6762,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-62-10",
     "english": "Do I need to declare this?",
-    "korean": "이걸 신고해야 하나요.",
+    "korean": "이걸 신고해야 하나요?",
     "day": 62,
     "source": "builtIn",
     "topic": "airport-transit-advanced",
@@ -6792,7 +6792,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-63-03",
     "english": "The fare is wrong. Can you check it?",
-    "korean": "요금이 잘못됐어요. 확인해 주시겠어요.",
+    "korean": "요금이 잘못됐어요. 확인해 주시겠어요?",
     "day": 63,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6801,14 +6801,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "This fare looks wrong. Could you check it?",
-        "korean": "요금이 이상해 보여요. 확인해 주시겠어요."
+        "korean": "요금이 이상해 보여요. 확인해 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-63-04",
     "english": "Can I get a refund for this extra charge?",
-    "korean": "이 추가 요금을 환불받을 수 있나요.",
+    "korean": "이 추가 요금을 환불받을 수 있나요?",
     "day": 63,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6817,7 +6817,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could you refund this extra charge?",
-        "korean": "이 추가 요금을 환불해 주시겠어요."
+        "korean": "이 추가 요금을 환불해 주시겠어요?"
       }
     ]
   },
@@ -6844,7 +6844,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-63-07",
     "english": "Could you help me contact the driver?",
-    "korean": "기사님께 연락하는 걸 도와주시겠어요.",
+    "korean": "기사님께 연락하는 걸 도와주시겠어요?",
     "day": 63,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6864,7 +6864,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-63-09",
     "english": "Is there another way to get there?",
-    "korean": "그리로 가는 다른 길이 있나요.",
+    "korean": "그리로 가는 다른 길이 있나요?",
     "day": 63,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6874,7 +6874,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-63-10",
     "english": "How long do we have to wait?",
-    "korean": "얼마나 기다려야 하나요.",
+    "korean": "얼마나 기다려야 하나요?",
     "day": 63,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6893,14 +6893,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Can I buy a monthly pass, please?",
-        "korean": "정기권을 살 수 있을까요."
+        "korean": "정기권을 살 수 있을까요?"
       }
     ]
   },
   {
     "id": "day-64-02",
     "english": "Is the airport line included in this pass?",
-    "korean": "이 정기권에 공항선이 포함되나요.",
+    "korean": "이 정기권에 공항선이 포함되나요?",
     "day": 64,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6910,7 +6910,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-64-03",
     "english": "Where can I add money to this card?",
-    "korean": "이 카드에 어디서 돈을 넣나요.",
+    "korean": "이 카드에 어디서 돈을 넣나요?",
     "day": 64,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6919,7 +6919,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Where can I reload this card?",
-        "korean": "이 카드를 어디서 충전하나요."
+        "korean": "이 카드를 어디서 충전하나요?"
       }
     ]
   },
@@ -6942,7 +6942,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-64-05",
     "english": "What time is the last train to the airport?",
-    "korean": "공항행 막차가 몇 시인가요.",
+    "korean": "공항행 막차가 몇 시인가요?",
     "day": 64,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6952,7 +6952,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-64-06",
     "english": "Could you call a taxi for tonight?",
-    "korean": "오늘 밤 탈 택시를 불러 주시겠어요.",
+    "korean": "오늘 밤 탈 택시를 불러 주시겠어요?",
     "day": 64,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6962,7 +6962,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-64-07",
     "english": "Could you drop me off by that streetlight?",
-    "korean": "저 가로등 근처에 내려 주세요.",
+    "korean": "저 가로등 근처에 내려 주세요?",
     "day": 64,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6972,7 +6972,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-64-08",
     "english": "Which areas does this pass cover?",
-    "korean": "이 정기권은 어느 구간까지 되나요.",
+    "korean": "이 정기권은 어느 구간까지 되나요?",
     "day": 64,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6982,7 +6982,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-64-09",
     "english": "My ticket has expired. What should I do?",
-    "korean": "제 표 유효기간이 지났어요. 어떻게 해야 하나요.",
+    "korean": "제 표 유효기간이 지났어요. 어떻게 해야 하나요?",
     "day": 64,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -6992,7 +6992,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-64-10",
     "english": "Is it safe to walk home from here at night?",
-    "korean": "밤에 여기서 걸어 귀가해도 안전한가요.",
+    "korean": "밤에 여기서 걸어 귀가해도 안전한가요?",
     "day": 64,
     "source": "builtIn",
     "topic": "urban-transit-advanced",
@@ -7012,7 +7012,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-65-02",
     "english": "Does this food have nuts in it?",
-    "korean": "이 음식에 견과류가 있나요.",
+    "korean": "이 음식에 견과류가 있나요?",
     "day": 65,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7021,14 +7021,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Are there any nuts in this food?",
-        "korean": "이 음식에 견과류가 있나요."
+        "korean": "이 음식에 견과류가 있나요?"
       }
     ]
   },
   {
     "id": "day-65-03",
     "english": "Could you leave out the shrimp?",
-    "korean": "새우는 빼 주시겠어요.",
+    "korean": "새우는 빼 주시겠어요?",
     "day": 65,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7037,14 +7037,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could you make it without shrimp?",
-        "korean": "새우 없이 만들어 주시겠어요."
+        "korean": "새우 없이 만들어 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-65-04",
     "english": "Do you have any gluten-free options?",
-    "korean": "글루텐 프리 음식이 있나요.",
+    "korean": "글루텐 프리 음식이 있나요?",
     "day": 65,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7074,7 +7074,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-65-07",
     "english": "Could you check what's in this sauce?",
-    "korean": "이 소스에 뭐가 들었는지 확인해 주시겠어요.",
+    "korean": "이 소스에 뭐가 들었는지 확인해 주시겠어요?",
     "day": 65,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7083,14 +7083,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could you check the ingredients in this sauce?",
-        "korean": "이 소스의 재료를 확인해 주시겠어요."
+        "korean": "이 소스의 재료를 확인해 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-65-08",
     "english": "Can you prepare my food without any contact with nuts?",
-    "korean": "제 음식이 견과류에 닿지 않게 준비해 주시겠어요.",
+    "korean": "제 음식이 견과류에 닿지 않게 준비해 주시겠어요?",
     "day": 65,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7120,7 +7120,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-66-01",
     "english": "Do you have a wine list?",
-    "korean": "와인 리스트가 있나요.",
+    "korean": "와인 리스트가 있나요?",
     "day": 66,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7146,7 +7146,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-66-03",
     "english": "What do you recommend with steak?",
-    "korean": "스테이크에는 무엇을 추천하세요.",
+    "korean": "스테이크에는 무엇을 추천하세요?",
     "day": 66,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7156,7 +7156,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-66-04",
     "english": "Is this wine sweet or dry?",
-    "korean": "이 와인은 달콤한가요, 드라이한가요.",
+    "korean": "이 와인은 달콤한가요, 드라이한가요?",
     "day": 66,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7166,7 +7166,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-66-05",
     "english": "Can I try a little first?",
-    "korean": "먼저 조금 맛봐도 될까요.",
+    "korean": "먼저 조금 맛봐도 될까요?",
     "day": 66,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7175,14 +7175,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could I taste a little first?",
-        "korean": "먼저 조금 맛봐도 될까요."
+        "korean": "먼저 조금 맛봐도 될까요?"
       }
     ]
   },
   {
     "id": "day-66-06",
     "english": "Can we share one bottle?",
-    "korean": "한 병을 나눠 마셔도 될까요.",
+    "korean": "한 병을 나눠 마셔도 될까요?",
     "day": 66,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7192,7 +7192,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-66-07",
     "english": "This wine tastes off. Could I try a different one?",
-    "korean": "이 와인에서 이상한 맛이 나요. 다른 걸로 맛봐도 될까요.",
+    "korean": "이 와인에서 이상한 맛이 나요. 다른 걸로 맛봐도 될까요?",
     "day": 66,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7202,7 +7202,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-66-08",
     "english": "Could we have some water too?",
-    "korean": "물도 좀 주시겠어요.",
+    "korean": "물도 좀 주시겠어요?",
     "day": 66,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7212,7 +7212,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-66-09",
     "english": "Do you have white wine by the glass?",
-    "korean": "화이트 와인을 잔으로도 파나요.",
+    "korean": "화이트 와인을 잔으로도 파나요?",
     "day": 66,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7232,7 +7232,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-67-01",
     "english": "Could we have the check, please?",
-    "korean": "계산서 주시겠어요.",
+    "korean": "계산서 주시겠어요?",
     "day": 67,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7241,14 +7241,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could we have the bill, please?",
-        "korean": "계산서 주시겠어요."
+        "korean": "계산서 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-67-02",
     "english": "Can we split the check in half?",
-    "korean": "계산서를 반반으로 나눠 주시겠어요.",
+    "korean": "계산서를 반반으로 나눠 주시겠어요?",
     "day": 67,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7257,7 +7257,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could we each pay half?",
-        "korean": "각자 절반씩 낼 수 있나요."
+        "korean": "각자 절반씩 낼 수 있나요?"
       }
     ]
   },
@@ -7284,7 +7284,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-67-05",
     "english": "Can I pay my bill now?",
-    "korean": "지금 계산해도 될까요.",
+    "korean": "지금 계산해도 될까요?",
     "day": 67,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7294,7 +7294,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-67-06",
     "english": "Can I pay by card?",
-    "korean": "카드로 낼 수 있나요.",
+    "korean": "카드로 낼 수 있나요?",
     "day": 67,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7310,7 +7310,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-67-07",
     "english": "Can I have a receipt, please?",
-    "korean": "영수증 주시겠어요.",
+    "korean": "영수증 주시겠어요?",
     "day": 67,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7319,14 +7319,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could I get a receipt, please?",
-        "korean": "영수증 주시겠어요."
+        "korean": "영수증 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-67-08",
     "english": "What's this service charge for?",
-    "korean": "이 서비스 요금은 뭔가요.",
+    "korean": "이 서비스 요금은 뭔가요?",
     "day": 67,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7336,7 +7336,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-67-09",
     "english": "Is there a fee to sit at the bar?",
-    "korean": "바에 앉으면 자릿값이 있나요.",
+    "korean": "바에 앉으면 자릿값이 있나요?",
     "day": 67,
     "source": "builtIn",
     "topic": "restaurant-bar-advanced",
@@ -7382,7 +7382,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-68-03",
     "english": "By what time should we be there?",
-    "korean": "몇 시까지 와야 하나요.",
+    "korean": "몇 시까지 와야 하나요?",
     "day": 68,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7408,7 +7408,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-68-05",
     "english": "Do you have clubs and shoes to rent?",
-    "korean": "빌릴 수 있는 클럽과 신발이 있나요.",
+    "korean": "빌릴 수 있는 클럽과 신발이 있나요?",
     "day": 68,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7418,7 +7418,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-68-06",
     "english": "Is the cart included in the fee?",
-    "korean": "카트가 요금에 포함되나요.",
+    "korean": "카트가 요금에 포함되나요?",
     "day": 68,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7427,14 +7427,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Does the fee include the cart?",
-        "korean": "요금에 카트가 포함되나요."
+        "korean": "요금에 카트가 포함되나요?"
       }
     ]
   },
   {
     "id": "day-68-07",
     "english": "Where is the driving range?",
-    "korean": "연습장이 어디에 있나요.",
+    "korean": "연습장이 어디에 있나요?",
     "day": 68,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7444,7 +7444,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-68-08",
     "english": "One of us is new. Is that okay?",
-    "korean": "저희 중 한 명이 초보인데 괜찮을까요.",
+    "korean": "저희 중 한 명이 초보인데 괜찮을까요?",
     "day": 68,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7454,7 +7454,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-68-09",
     "english": "Could you email me the booking confirmation?",
-    "korean": "예약 확인서를 이메일로 보내 주시겠어요.",
+    "korean": "예약 확인서를 이메일로 보내 주시겠어요?",
     "day": 68,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7464,7 +7464,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-68-10",
     "english": "How long does a round usually take?",
-    "korean": "한 라운드는 보통 얼마나 걸리나요.",
+    "korean": "한 라운드는 보통 얼마나 걸리나요?",
     "day": 68,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7474,7 +7474,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-69-01",
     "english": "How does this cart work?",
-    "korean": "이 카트는 어떻게 움직이나요.",
+    "korean": "이 카트는 어떻게 움직이나요?",
     "day": 69,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7484,7 +7484,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-69-02",
     "english": "Who's driving the cart?",
-    "korean": "카트는 누가 운전하나요.",
+    "korean": "카트는 누가 운전하나요?",
     "day": 69,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7504,7 +7504,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-69-04",
     "english": "Whose turn is it now?",
-    "korean": "지금 누구 차례인가요.",
+    "korean": "지금 누구 차례인가요?",
     "day": 69,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7514,7 +7514,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-69-05",
     "english": "Could you be quiet while I putt?",
-    "korean": "퍼트할 때 조용히 해 주시겠어요.",
+    "korean": "퍼트할 때 조용히 해 주시겠어요?",
     "day": 69,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7534,7 +7534,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-69-07",
     "english": "Would you like to play through?",
-    "korean": "저희 앞서 먼저 치고 가시겠어요.",
+    "korean": "저희 앞서 먼저 치고 가시겠어요?",
     "day": 69,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7544,7 +7544,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-69-08",
     "english": "I can't find my ball. What should I do?",
-    "korean": "공을 못 찾겠어요. 어떻게 해야 하나요.",
+    "korean": "공을 못 찾겠어요. 어떻게 해야 하나요?",
     "day": 69,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7554,7 +7554,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-69-09",
     "english": "Is the right side out of bounds?",
-    "korean": "오른쪽이 OB인가요.",
+    "korean": "오른쪽이 OB인가요?",
     "day": 69,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7564,7 +7564,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-69-10",
     "english": "Could you watch my ball for me?",
-    "korean": "제 공이 어디로 가는지 봐 주시겠어요.",
+    "korean": "제 공이 어디로 가는지 봐 주시겠어요?",
     "day": 69,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7580,7 +7580,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-70-01",
     "english": "Do you sell gloves here?",
-    "korean": "여기서 장갑을 파나요.",
+    "korean": "여기서 장갑을 파나요?",
     "day": 70,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7600,7 +7600,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-70-03",
     "english": "Can I try this shirt on?",
-    "korean": "이 셔츠를 입어 봐도 될까요.",
+    "korean": "이 셔츠를 입어 봐도 될까요?",
     "day": 70,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7609,14 +7609,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "May I try this shirt on?",
-        "korean": "이 셔츠를 입어 봐도 될까요."
+        "korean": "이 셔츠를 입어 봐도 될까요?"
       }
     ]
   },
   {
     "id": "day-70-04",
     "english": "Can you fix my club today?",
-    "korean": "오늘 제 클럽을 고칠 수 있나요.",
+    "korean": "오늘 제 클럽을 고칠 수 있나요?",
     "day": 70,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7625,14 +7625,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could you repair my club today?",
-        "korean": "오늘 제 클럽을 수리해 주시겠어요."
+        "korean": "오늘 제 클럽을 수리해 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-70-05",
     "english": "Are jeans okay here?",
-    "korean": "여기서 청바지를 입어도 되나요.",
+    "korean": "여기서 청바지를 입어도 되나요?",
     "day": 70,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7642,7 +7642,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-70-06",
     "english": "Should I take off my hat in here?",
-    "korean": "안에서는 모자를 벗어야 하나요.",
+    "korean": "안에서는 모자를 벗어야 하나요?",
     "day": 70,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7672,7 +7672,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-70-09",
     "english": "How much should I tip the caddie?",
-    "korean": "캐디 팁은 얼마가 적당한가요.",
+    "korean": "캐디 팁은 얼마가 적당한가요?",
     "day": 70,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7682,7 +7682,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-70-10",
     "english": "Do you have this in my size?",
-    "korean": "이거 제 사이즈로 있나요.",
+    "korean": "이거 제 사이즈로 있나요?",
     "day": 70,
     "source": "builtIn",
     "topic": "golf-course-basics",
@@ -7692,7 +7692,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-71-01",
     "english": "Do you offer tax-free shopping for tourists?",
-    "korean": "관광객 면세 쇼핑이 되나요.",
+    "korean": "관광객 면세 쇼핑이 되나요?",
     "day": 71,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7702,7 +7702,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-71-02",
     "english": "How much do I need to spend for a tax refund?",
-    "korean": "환급받으려면 얼마를 써야 하나요.",
+    "korean": "환급받으려면 얼마를 써야 하나요?",
     "day": 71,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7732,7 +7732,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-71-05",
     "english": "Where can I get the refund at the airport?",
-    "korean": "공항 어디에서 환급받나요.",
+    "korean": "공항 어디에서 환급받나요?",
     "day": 71,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7758,7 +7758,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-71-07",
     "english": "This doesn't work. Can I get a refund?",
-    "korean": "이게 작동하지 않아요. 환불받을 수 있나요.",
+    "korean": "이게 작동하지 않아요. 환불받을 수 있나요?",
     "day": 71,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7767,7 +7767,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "This isn't working. Could I have a refund?",
-        "korean": "작동이 안 되는데, 환불받을 수 있을까요."
+        "korean": "작동이 안 되는데, 환불받을 수 있을까요?"
       }
     ]
   },
@@ -7794,7 +7794,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-71-10",
     "english": "Could you email me a receipt for the refund?",
-    "korean": "환불 영수증을 이메일로 보내 주시겠어요.",
+    "korean": "환불 영수증을 이메일로 보내 주시겠어요?",
     "day": 71,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7804,7 +7804,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-72-01",
     "english": "Do you offer free alterations?",
-    "korean": "무료 수선해 주나요.",
+    "korean": "무료 수선해 주나요?",
     "day": 72,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7824,7 +7824,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-72-03",
     "english": "Can I exchange this for a larger size?",
-    "korean": "더 큰 사이즈로 교환할 수 있나요.",
+    "korean": "더 큰 사이즈로 교환할 수 있나요?",
     "day": 72,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7833,7 +7833,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could I swap this for a bigger size?",
-        "korean": "더 큰 사이즈로 바꿀 수 있나요."
+        "korean": "더 큰 사이즈로 바꿀 수 있나요?"
       }
     ]
   },
@@ -7849,7 +7849,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Do you have this same shirt in blue?",
-        "korean": "이 셔츠 같은 걸로 파란색도 있나요."
+        "korean": "이 셔츠 같은 걸로 파란색도 있나요?"
       }
     ]
   },
@@ -7876,7 +7876,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-72-07",
     "english": "Can I talk to the manager?",
-    "korean": "매니저님과 이야기할 수 있을까요.",
+    "korean": "매니저님과 이야기할 수 있을까요?",
     "day": 72,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7886,7 +7886,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-72-08",
     "english": "Can I return this if it's on sale?",
-    "korean": "세일 상품도 반품되나요.",
+    "korean": "세일 상품도 반품되나요?",
     "day": 72,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7896,7 +7896,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-72-09",
     "english": "Do you have this at another store?",
-    "korean": "이거 다른 매장에도 있나요.",
+    "korean": "이거 다른 매장에도 있나요?",
     "day": 72,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7906,7 +7906,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-72-10",
     "english": "Can I get store credit instead of a refund?",
-    "korean": "환불 대신 매장 적립금으로 받을 수 있나요.",
+    "korean": "환불 대신 매장 적립금으로 받을 수 있나요?",
     "day": 72,
     "source": "builtIn",
     "topic": "department-store-advanced",
@@ -7916,7 +7916,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-73-01",
     "english": "I'm in a hurry. Which way is the gate?",
-    "korean": "급해요. 탑승구가 어느 쪽인가요.",
+    "korean": "급해요. 탑승구가 어느 쪽인가요?",
     "day": 73,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -7936,7 +7936,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-73-03",
     "english": "What do you recommend from this menu?",
-    "korean": "이 메뉴에서 무엇을 추천하세요.",
+    "korean": "이 메뉴에서 무엇을 추천하세요?",
     "day": 73,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -7976,7 +7976,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-73-07",
     "english": "Could you write down the address for my driver?",
-    "korean": "기사님께 드릴 주소를 적어 주시겠어요.",
+    "korean": "기사님께 드릴 주소를 적어 주시겠어요?",
     "day": 73,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -7986,7 +7986,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-73-08",
     "english": "My flight was canceled. What should I do?",
-    "korean": "제 비행기가 취소됐어요. 어떻게 해야 하나요.",
+    "korean": "제 비행기가 취소됐어요. 어떻게 해야 하나요?",
     "day": 73,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8036,7 +8036,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-74-03",
     "english": "It's too loud here. Can we move somewhere quieter?",
-    "korean": "여기가 너무 시끄러워요. 더 조용한 곳으로 옮겨도 될까요.",
+    "korean": "여기가 너무 시끄러워요. 더 조용한 곳으로 옮겨도 될까요?",
     "day": 74,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8056,7 +8056,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-74-05",
     "english": "Do I need to show my return ticket?",
-    "korean": "귀국 항공권을 보여드려야 하나요.",
+    "korean": "귀국 항공권을 보여드려야 하나요?",
     "day": 74,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8066,7 +8066,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-74-06",
     "english": "My card was declined. Can I try another one?",
-    "korean": "카드가 거절됐어요. 다른 카드로 해도 될까요.",
+    "korean": "카드가 거절됐어요. 다른 카드로 해도 될까요?",
     "day": 74,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8076,7 +8076,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-74-07",
     "english": "Could you hand me the other club?",
-    "korean": "다른 클럽을 건네 주시겠어요.",
+    "korean": "다른 클럽을 건네 주시겠어요?",
     "day": 74,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8116,7 +8116,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-75-01",
     "english": "Could you say that again?",
-    "korean": "다시 한 번 말씀해 주시겠어요.",
+    "korean": "다시 한 번 말씀해 주시겠어요?",
     "day": 75,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8125,14 +8125,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Sorry, could you repeat that?",
-        "korean": "죄송해요, 다시 말씀해 주시겠어요."
+        "korean": "죄송해요, 다시 말씀해 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-75-02",
     "english": "Could you speak more slowly?",
-    "korean": "더 천천히 말씀해 주시겠어요.",
+    "korean": "더 천천히 말씀해 주시겠어요?",
     "day": 75,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8141,14 +8141,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could you slow down a little, please?",
-        "korean": "조금만 천천히 말씀해 주시겠어요."
+        "korean": "조금만 천천히 말씀해 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-75-03",
     "english": "What does this word mean?",
-    "korean": "이 단어는 무슨 뜻인가요.",
+    "korean": "이 단어는 무슨 뜻인가요?",
     "day": 75,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8157,14 +8157,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could you tell me what this word means?",
-        "korean": "이 단어가 무슨 뜻인지 알려 주시겠어요."
+        "korean": "이 단어가 무슨 뜻인지 알려 주시겠어요?"
       }
     ]
   },
   {
     "id": "day-75-04",
     "english": "Do you mean the next bus?",
-    "korean": "다음 버스 말씀이신가요.",
+    "korean": "다음 버스 말씀이신가요?",
     "day": 75,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8173,14 +8173,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Are you talking about the next bus?",
-        "korean": "다음 버스 말씀이세요."
+        "korean": "다음 버스 말씀이세요?"
       }
     ]
   },
   {
     "id": "day-75-05",
     "english": "Is that right?",
-    "korean": "맞나요.",
+    "korean": "맞나요?",
     "day": 75,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8190,7 +8190,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-75-06",
     "english": "Sorry, I don't understand. Could you explain?",
-    "korean": "죄송해요, 이해가 안 돼요. 설명해 주시겠어요.",
+    "korean": "죄송해요, 이해가 안 돼요. 설명해 주시겠어요?",
     "day": 75,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8200,7 +8200,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-75-07",
     "english": "Where can I ask for help?",
-    "korean": "어디에서 도움을 요청하나요.",
+    "korean": "어디에서 도움을 요청하나요?",
     "day": 75,
     "source": "builtIn",
     "topic": "daily-life-integration",
@@ -8246,7 +8246,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-76-01",
     "english": "Hi, how have you been?",
-    "korean": "안녕하세요, 잘 지내셨어요.",
+    "korean": "안녕하세요, 잘 지내셨어요?",
     "day": 76,
     "source": "builtIn",
     "topic": "everyday-small-talk",
@@ -8256,7 +8256,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-76-02",
     "english": "Pretty good, thanks. How about you?",
-    "korean": "꽤 잘 지내요, 고마워요. 당신은요.",
+    "korean": "꽤 잘 지내요, 고마워요. 당신은요?",
     "day": 76,
     "source": "builtIn",
     "topic": "everyday-small-talk",
@@ -8266,7 +8266,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-76-03",
     "english": "What have you been up to lately?",
-    "korean": "요즘 어떻게 지내셨어요.",
+    "korean": "요즘 어떻게 지내셨어요?",
     "day": 76,
     "source": "builtIn",
     "topic": "everyday-small-talk",
@@ -8286,7 +8286,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-76-05",
     "english": "How was your weekend?",
-    "korean": "주말은 어떠셨어요.",
+    "korean": "주말은 어떠셨어요?",
     "day": 76,
     "source": "builtIn",
     "topic": "everyday-small-talk",
@@ -8306,7 +8306,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-76-07",
     "english": "Are you from around here?",
-    "korean": "이 근처에서 사세요.",
+    "korean": "이 근처에서 사세요?",
     "day": 76,
     "source": "builtIn",
     "topic": "everyday-small-talk",
@@ -8458,7 +8458,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-78-01",
     "english": "Could I make an appointment for tomorrow?",
-    "korean": "내일로 예약할 수 있을까요.",
+    "korean": "내일로 예약할 수 있을까요?",
     "day": 78,
     "source": "builtIn",
     "topic": "phone-appointments",
@@ -8468,7 +8468,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-78-02",
     "english": "Can I speak to the front desk, please?",
-    "korean": "프런트 데스크와 통화할 수 있을까요.",
+    "korean": "프런트 데스크와 통화할 수 있을까요?",
     "day": 78,
     "source": "builtIn",
     "topic": "phone-appointments",
@@ -8478,7 +8478,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-78-03",
     "english": "Could you call me back later?",
-    "korean": "나중에 다시 전화해 주시겠어요.",
+    "korean": "나중에 다시 전화해 주시겠어요?",
     "day": 78,
     "source": "builtIn",
     "topic": "phone-appointments",
@@ -8487,7 +8487,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Can you call me back later?",
-        "korean": "나중에 다시 전화해 주시겠어요."
+        "korean": "나중에 다시 전화해 주시겠어요?"
       }
     ]
   },
@@ -8504,7 +8504,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-78-05",
     "english": "What time works for you?",
-    "korean": "몇 시가 괜찮으세요.",
+    "korean": "몇 시가 괜찮으세요?",
     "day": 78,
     "source": "builtIn",
     "topic": "phone-appointments",
@@ -8514,7 +8514,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-78-06",
     "english": "How long will it take?",
-    "korean": "얼마나 걸릴까요.",
+    "korean": "얼마나 걸릴까요?",
     "day": 78,
     "source": "builtIn",
     "topic": "phone-appointments",
@@ -8524,7 +8524,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-78-07",
     "english": "Can I leave a message?",
-    "korean": "메시지를 남길 수 있을까요.",
+    "korean": "메시지를 남길 수 있을까요?",
     "day": 78,
     "source": "builtIn",
     "topic": "phone-appointments",
@@ -8534,7 +8534,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-78-08",
     "english": "Could we move it to Friday morning?",
-    "korean": "금요일 오전으로 옮길 수 있을까요.",
+    "korean": "금요일 오전으로 옮길 수 있을까요?",
     "day": 78,
     "source": "builtIn",
     "topic": "phone-appointments",
@@ -8584,7 +8584,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-79-03",
     "english": "Can we meet a little later?",
-    "korean": "조금 더 늦게 만날 수 있을까요.",
+    "korean": "조금 더 늦게 만날 수 있을까요?",
     "day": 79,
     "source": "builtIn",
     "topic": "messages-rescheduling",
@@ -8593,14 +8593,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could we meet a little later?",
-        "korean": "조금 더 늦게 만날 수 있을까요."
+        "korean": "조금 더 늦게 만날 수 있을까요?"
       }
     ]
   },
   {
     "id": "day-79-04",
     "english": "Could we change it to tomorrow?",
-    "korean": "내일로 바꿀 수 있을까요.",
+    "korean": "내일로 바꿀 수 있을까요?",
     "day": 79,
     "source": "builtIn",
     "topic": "messages-rescheduling",
@@ -8610,7 +8610,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-79-05",
     "english": "Are you almost there?",
-    "korean": "거의 다 오셨어요.",
+    "korean": "거의 다 오셨어요?",
     "day": 79,
     "source": "builtIn",
     "topic": "messages-rescheduling",
@@ -8640,7 +8640,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-79-08",
     "english": "Something came up, can we reschedule?",
-    "korean": "급한 일이 생겼어요, 다시 잡을 수 있을까요.",
+    "korean": "급한 일이 생겼어요, 다시 잡을 수 있을까요?",
     "day": 79,
     "source": "builtIn",
     "topic": "messages-rescheduling",
@@ -8650,7 +8650,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-79-09",
     "english": "What time works better for you?",
-    "korean": "몇 시가 더 괜찮으세요.",
+    "korean": "몇 시가 더 괜찮으세요?",
     "day": 79,
     "source": "builtIn",
     "topic": "messages-rescheduling",
@@ -8670,7 +8670,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-80-01",
     "english": "How much is it?",
-    "korean": "얼마예요.",
+    "korean": "얼마예요?",
     "day": 80,
     "source": "builtIn",
     "topic": "money-payments-trouble",
@@ -8680,7 +8680,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-80-02",
     "english": "Can I pay by card?",
-    "korean": "카드로 낼 수 있을까요.",
+    "korean": "카드로 낼 수 있을까요?",
     "day": 80,
     "source": "builtIn",
     "topic": "money-payments-trouble",
@@ -8689,7 +8689,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Could I pay by card?",
-        "korean": "카드로 낼 수 있을까요."
+        "korean": "카드로 낼 수 있을까요?"
       }
     ]
   },
@@ -8706,7 +8706,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-80-04",
     "english": "Could I try another card?",
-    "korean": "다른 카드로 해볼 수 있을까요.",
+    "korean": "다른 카드로 해볼 수 있을까요?",
     "day": 80,
     "source": "builtIn",
     "topic": "money-payments-trouble",
@@ -8716,7 +8716,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-80-05",
     "english": "Could I have a receipt, please?",
-    "korean": "영수증을 받을 수 있을까요.",
+    "korean": "영수증을 받을 수 있을까요?",
     "day": 80,
     "source": "builtIn",
     "topic": "money-payments-trouble",
@@ -8726,7 +8726,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-80-06",
     "english": "Can we split the bill?",
-    "korean": "더치페이할 수 있을까요.",
+    "korean": "더치페이할 수 있을까요?",
     "day": 80,
     "source": "builtIn",
     "topic": "money-payments-trouble",
@@ -8756,7 +8756,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-80-09",
     "english": "Could you check the total again?",
-    "korean": "합계를 다시 확인해 주시겠어요.",
+    "korean": "합계를 다시 확인해 주시겠어요?",
     "day": 80,
     "source": "builtIn",
     "topic": "money-payments-trouble",
@@ -8766,7 +8766,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-80-10",
     "english": "Where can I pay for this?",
-    "korean": "이건 어디에서 내면 돼요.",
+    "korean": "이건 어디에서 내면 돼요?",
     "day": 80,
     "source": "builtIn",
     "topic": "money-payments-trouble",
@@ -8776,7 +8776,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-81-01",
     "english": "Where is the nearest ATM?",
-    "korean": "가장 가까운 현금인출기가 어디에 있나요.",
+    "korean": "가장 가까운 현금인출기가 어디에 있나요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8786,7 +8786,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-81-02",
     "english": "Is there an ATM nearby?",
-    "korean": "근처에 현금인출기가 있나요.",
+    "korean": "근처에 현금인출기가 있나요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8795,14 +8795,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Is there an ATM around here?",
-        "korean": "근처에 현금인출기가 있나요."
+        "korean": "근처에 현금인출기가 있나요?"
       }
     ]
   },
   {
     "id": "day-81-03",
     "english": "Can I withdraw cash here?",
-    "korean": "여기에서 현금을 인출할 수 있나요.",
+    "korean": "여기에서 현금을 인출할 수 있나요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8812,7 +8812,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-81-04",
     "english": "Could you exchange this money, please?",
-    "korean": "이 돈을 환전해 주시겠어요.",
+    "korean": "이 돈을 환전해 주시겠어요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8838,7 +8838,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-81-06",
     "english": "How much is the fee?",
-    "korean": "수수료가 얼마인가요.",
+    "korean": "수수료가 얼마인가요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8848,7 +8848,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-81-07",
     "english": "Do you have a currency exchange counter?",
-    "korean": "환전 창구가 있나요.",
+    "korean": "환전 창구가 있나요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8858,7 +8858,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-81-08",
     "english": "Could you tell me the exchange rate today?",
-    "korean": "오늘 환율이 어떻게 되는지 알려 주시겠어요.",
+    "korean": "오늘 환율이 어떻게 되는지 알려 주시겠어요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8868,7 +8868,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-81-09",
     "english": "Can I use my card at this ATM?",
-    "korean": "이 현금인출기에서 제 카드를 사용할 수 있나요.",
+    "korean": "이 현금인출기에서 제 카드를 사용할 수 있나요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8878,7 +8878,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-81-10",
     "english": "How long does the transfer take?",
-    "korean": "송금하는 데 얼마나 걸리나요.",
+    "korean": "송금하는 데 얼마나 걸리나요?",
     "day": 81,
     "source": "builtIn",
     "topic": "bank-atm-help",
@@ -8904,7 +8904,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-82-02",
     "english": "Can I move my visit to Friday?",
-    "korean": "진료를 금요일로 옮길 수 있나요.",
+    "korean": "진료를 금요일로 옮길 수 있나요?",
     "day": 82,
     "source": "builtIn",
     "topic": "health-followup",
@@ -8914,7 +8914,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-82-03",
     "english": "Is there a morning slot open?",
-    "korean": "오전에 빈 시간이 있나요.",
+    "korean": "오전에 빈 시간이 있나요?",
     "day": 82,
     "source": "builtIn",
     "topic": "health-followup",
@@ -8924,7 +8924,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-82-04",
     "english": "Could you see me again next week?",
-    "korean": "다음 주에 다시 진료해 주시겠어요.",
+    "korean": "다음 주에 다시 진료해 주시겠어요?",
     "day": 82,
     "source": "builtIn",
     "topic": "health-followup",
@@ -8960,7 +8960,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-82-07",
     "english": "How long should I rest?",
-    "korean": "얼마나 쉬어야 하나요.",
+    "korean": "얼마나 쉬어야 하나요?",
     "day": 82,
     "source": "builtIn",
     "topic": "health-followup",
@@ -8990,7 +8990,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-82-10",
     "english": "Could you check my progress, please?",
-    "korean": "경과를 확인해 주시겠어요.",
+    "korean": "경과를 확인해 주시겠어요?",
     "day": 82,
     "source": "builtIn",
     "topic": "health-followup",
@@ -9000,7 +9000,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-83-01",
     "english": "How many times a day should I take this?",
-    "korean": "이 약을 하루에 몇 번 먹어야 하나요.",
+    "korean": "이 약을 하루에 몇 번 먹어야 하나요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9010,7 +9010,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-83-02",
     "english": "Should I take it before or after meals?",
-    "korean": "식전에 먹어야 하나요, 식후에 먹어야 하나요.",
+    "korean": "식전에 먹어야 하나요, 식후에 먹어야 하나요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9019,14 +9019,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Do I take it before or after meals?",
-        "korean": "식전에 먹어야 하나요, 식후에 먹어야 하나요."
+        "korean": "식전에 먹어야 하나요, 식후에 먹어야 하나요?"
       }
     ]
   },
   {
     "id": "day-83-03",
     "english": "Could you explain the dosage, please?",
-    "korean": "복용량을 설명해 주시겠어요.",
+    "korean": "복용량을 설명해 주시겠어요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9036,7 +9036,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-83-04",
     "english": "Do you have anything for a headache?",
-    "korean": "두통에 먹는 약이 있나요.",
+    "korean": "두통에 먹는 약이 있나요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9046,7 +9046,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-83-05",
     "english": "Can I take this with water?",
-    "korean": "이 약을 물과 함께 먹어도 되나요.",
+    "korean": "이 약을 물과 함께 먹어도 되나요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9072,7 +9072,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-83-07",
     "english": "How long should I take this medicine?",
-    "korean": "이 약을 얼마나 오래 먹어야 하나요.",
+    "korean": "이 약을 얼마나 오래 먹어야 하나요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9082,7 +9082,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-83-08",
     "english": "Is it okay to take this on an empty stomach?",
-    "korean": "빈속에 먹어도 괜찮나요.",
+    "korean": "빈속에 먹어도 괜찮나요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9092,7 +9092,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-83-09",
     "english": "What should I do if I miss a dose?",
-    "korean": "복용을 한 번 빼먹으면 어떻게 해야 하나요.",
+    "korean": "복용을 한 번 빼먹으면 어떻게 해야 하나요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9102,7 +9102,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-83-10",
     "english": "Could you write down the instructions, please?",
-    "korean": "복용 방법을 적어 주시겠어요.",
+    "korean": "복용 방법을 적어 주시겠어요?",
     "day": 83,
     "source": "builtIn",
     "topic": "pharmacy-dosage",
@@ -9112,7 +9112,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-84-01",
     "english": "Would you like to join us for dinner?",
-    "korean": "저희와 함께 저녁 식사하시겠어요.",
+    "korean": "저희와 함께 저녁 식사하시겠어요?",
     "day": 84,
     "source": "builtIn",
     "topic": "invitations-plans",
@@ -9122,7 +9122,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-84-02",
     "english": "Are you free on Saturday?",
-    "korean": "토요일에 시간 되세요.",
+    "korean": "토요일에 시간 되세요?",
     "day": 84,
     "source": "builtIn",
     "topic": "invitations-plans",
@@ -9131,14 +9131,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "Are you free this Saturday?",
-        "korean": "토요일에 시간 되세요."
+        "korean": "토요일에 시간 되세요?"
       }
     ]
   },
   {
     "id": "day-84-03",
     "english": "Can I join you this weekend?",
-    "korean": "이번 주말에 합류해도 될까요.",
+    "korean": "이번 주말에 합류해도 될까요?",
     "day": 84,
     "source": "builtIn",
     "topic": "invitations-plans",
@@ -9158,7 +9158,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-84-05",
     "english": "How about grabbing coffee together?",
-    "korean": "같이 커피 한잔하는 게 어때요.",
+    "korean": "같이 커피 한잔하는 게 어때요?",
     "day": 84,
     "source": "builtIn",
     "topic": "invitations-plans",
@@ -9167,14 +9167,14 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "How about getting coffee together?",
-        "korean": "같이 커피 한잔하는 게 어때요."
+        "korean": "같이 커피 한잔하는 게 어때요?"
       }
     ]
   },
   {
     "id": "day-84-06",
     "english": "Do you have any plans this Sunday?",
-    "korean": "이번 일요일에 무슨 계획 있으세요.",
+    "korean": "이번 일요일에 무슨 계획 있으세요?",
     "day": 84,
     "source": "builtIn",
     "topic": "invitations-plans",
@@ -9184,7 +9184,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-84-07",
     "english": "Is there a plan for tomorrow evening?",
-    "korean": "내일 저녁에 무슨 계획이 있나요.",
+    "korean": "내일 저녁에 무슨 계획이 있나요?",
     "day": 84,
     "source": "builtIn",
     "topic": "invitations-plans",
@@ -9270,7 +9270,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-85-05",
     "english": "Could we do it another day?",
-    "korean": "다른 날에 할 수 있을까요.",
+    "korean": "다른 날에 할 수 있을까요?",
     "day": 85,
     "source": "builtIn",
     "topic": "polite-declining",
@@ -9350,7 +9350,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-86-03",
     "english": "How about this one?",
-    "korean": "이건 어때요.",
+    "korean": "이건 어때요?",
     "day": 86,
     "source": "builtIn",
     "topic": "opinions-recommendations",
@@ -9359,7 +9359,7 @@ export const builtInSentences: BuiltInSentence[] = [
     "alternatives": [
       {
         "english": "What about this one?",
-        "korean": "이건 어때요."
+        "korean": "이건 어때요?"
       }
     ]
   },
@@ -9376,7 +9376,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-86-05",
     "english": "What do you think?",
-    "korean": "어떻게 생각하세요.",
+    "korean": "어떻게 생각하세요?",
     "day": 86,
     "source": "builtIn",
     "topic": "opinions-recommendations",
@@ -9426,7 +9426,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-86-10",
     "english": "How about trying the new place nearby?",
-    "korean": "근처에 새로 생긴 곳에 가보는 건 어때요.",
+    "korean": "근처에 새로 생긴 곳에 가보는 건 어때요?",
     "day": 86,
     "source": "builtIn",
     "topic": "opinions-recommendations",
@@ -9456,7 +9456,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-87-03",
     "english": "Could you check this for me?",
-    "korean": "이거 확인해 주시겠어요.",
+    "korean": "이거 확인해 주시겠어요?",
     "day": 87,
     "source": "builtIn",
     "topic": "polite-complaints",
@@ -9476,7 +9476,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-87-05",
     "english": "Sorry, could you help me with this?",
-    "korean": "죄송한데, 이거 좀 도와주시겠어요.",
+    "korean": "죄송한데, 이거 좀 도와주시겠어요?",
     "day": 87,
     "source": "builtIn",
     "topic": "polite-complaints",
@@ -9526,7 +9526,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-87-10",
     "english": "Could you please look into this when you can?",
-    "korean": "시간 되실 때 이거 좀 확인해 주시겠어요.",
+    "korean": "시간 되실 때 이거 좀 확인해 주시겠어요?",
     "day": 87,
     "source": "builtIn",
     "topic": "polite-complaints",
@@ -9536,7 +9536,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-88-01",
     "english": "Where is the check-in counter?",
-    "korean": "체크인 카운터가 어디에 있어요.",
+    "korean": "체크인 카운터가 어디에 있어요?",
     "day": 88,
     "source": "builtIn",
     "topic": "real-life-mission-travel",
@@ -9556,7 +9556,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-88-03",
     "english": "How long does it take to the airport?",
-    "korean": "공항까지 얼마나 걸려요.",
+    "korean": "공항까지 얼마나 걸려요?",
     "day": 88,
     "source": "builtIn",
     "topic": "real-life-mission-travel",
@@ -9566,7 +9566,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-88-04",
     "english": "Could you call a taxi for me?",
-    "korean": "택시 좀 불러주시겠어요.",
+    "korean": "택시 좀 불러주시겠어요?",
     "day": 88,
     "source": "builtIn",
     "topic": "real-life-mission-travel",
@@ -9586,7 +9586,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-88-06",
     "english": "What time is check-out?",
-    "korean": "체크아웃이 몇 시예요.",
+    "korean": "체크아웃이 몇 시예요?",
     "day": 88,
     "source": "builtIn",
     "topic": "real-life-mission-travel",
@@ -9596,7 +9596,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-88-07",
     "english": "Could I have an extra towel, please?",
-    "korean": "수건 하나 더 받을 수 있을까요.",
+    "korean": "수건 하나 더 받을 수 있을까요?",
     "day": 88,
     "source": "builtIn",
     "topic": "real-life-mission-travel",
@@ -9636,7 +9636,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-89-01",
     "english": "How much is this?",
-    "korean": "이거 얼마예요.",
+    "korean": "이거 얼마예요?",
     "day": 89,
     "source": "builtIn",
     "topic": "real-life-mission-daily",
@@ -9646,7 +9646,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-89-02",
     "english": "Do you take credit cards?",
-    "korean": "신용카드 받으세요.",
+    "korean": "신용카드 받으세요?",
     "day": 89,
     "source": "builtIn",
     "topic": "real-life-mission-daily",
@@ -9656,7 +9656,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-89-03",
     "english": "Can I pay by card?",
-    "korean": "카드로 결제할 수 있을까요.",
+    "korean": "카드로 결제할 수 있을까요?",
     "day": 89,
     "source": "builtIn",
     "topic": "real-life-mission-daily",
@@ -9666,7 +9666,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-89-04",
     "english": "Sorry, I'm in a meeting. Can I call you back?",
-    "korean": "미안해요, 회의 중이에요. 다시 전화해도 될까요.",
+    "korean": "미안해요, 회의 중이에요. 다시 전화해도 될까요?",
     "day": 89,
     "source": "builtIn",
     "topic": "real-life-mission-daily",
@@ -9676,7 +9676,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-89-05",
     "english": "Could you speak slowly, please?",
-    "korean": "천천히 말씀해 주시겠어요.",
+    "korean": "천천히 말씀해 주시겠어요?",
     "day": 89,
     "source": "builtIn",
     "topic": "real-life-mission-daily",
@@ -9696,7 +9696,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-89-07",
     "english": "Do you have a smaller size?",
-    "korean": "더 작은 사이즈 있으세요.",
+    "korean": "더 작은 사이즈 있으세요?",
     "day": 89,
     "source": "builtIn",
     "topic": "real-life-mission-daily",
@@ -9706,7 +9706,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-89-08",
     "english": "The total seems wrong. Could you check it?",
-    "korean": "합계가 틀린 것 같아요. 확인해 주시겠어요.",
+    "korean": "합계가 틀린 것 같아요. 확인해 주시겠어요?",
     "day": 89,
     "source": "builtIn",
     "topic": "real-life-mission-daily",
@@ -9736,7 +9736,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-90-01",
     "english": "How have you been lately?",
-    "korean": "요즘 어떻게 지냈어요.",
+    "korean": "요즘 어떻게 지냈어요?",
     "day": 90,
     "source": "builtIn",
     "topic": "real-life-mission-farewell",
@@ -9772,7 +9772,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-90-04",
     "english": "Would you like to grab coffee next week?",
-    "korean": "다음 주에 커피 한잔 하실래요.",
+    "korean": "다음 주에 커피 한잔 하실래요?",
     "day": 90,
     "source": "builtIn",
     "topic": "real-life-mission-farewell",
@@ -9782,7 +9782,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-90-05",
     "english": "That works for me. How about Saturday?",
-    "korean": "괜찮아요. 토요일은 어때요.",
+    "korean": "괜찮아요. 토요일은 어때요?",
     "day": 90,
     "source": "builtIn",
     "topic": "real-life-mission-farewell",
