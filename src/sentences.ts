@@ -8326,7 +8326,7 @@ export const builtInSentences: BuiltInSentence[] = [
   {
     "id": "day-76-09",
     "english": "How are you settling in so far?",
-    "korean": "지금까지 정착은 잘 되고 있어요.",
+    "korean": "지금까지 정착은 잘 되고 있어요?",
     "day": 76,
     "source": "builtIn",
     "topic": "everyday-small-talk",
