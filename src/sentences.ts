@@ -8401,7 +8401,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-77-06",
-    "english": "Oh, I see.",
+    "english": "Oh, I see now.",
     "korean": "아, 알겠어요.",
     "day": 77,
     "source": "builtIn",
@@ -8477,7 +8477,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-78-03",
-    "english": "Could you call me back later?",
+    "english": "Can you call me back later?",
     "korean": "나중에 다시 전화해 주시겠어요?",
     "day": 78,
     "source": "builtIn",
@@ -8679,7 +8679,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-80-02",
-    "english": "Can I pay by card?",
+    "english": "Could I pay with my card?",
     "korean": "카드로 낼 수 있을까요?",
     "day": 80,
     "source": "builtIn",
@@ -8775,7 +8775,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-81-01",
-    "english": "Where is the nearest ATM?",
+    "english": "Where's the closest ATM?",
     "korean": "가장 가까운 현금인출기가 어디에 있나요?",
     "day": 81,
     "source": "builtIn",
@@ -8877,7 +8877,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-81-10",
-    "english": "How long does the transfer take?",
+    "english": "How long does the money transfer take?",
     "korean": "송금하는 데 얼마나 걸리나요?",
     "day": 81,
     "source": "builtIn",
@@ -9565,7 +9565,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-88-04",
-    "english": "Could you call a taxi for me?",
+    "english": "Could you get me a taxi?",
     "korean": "택시 좀 불러주시겠어요?",
     "day": 88,
     "source": "builtIn",
@@ -9585,7 +9585,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-88-06",
-    "english": "What time is check-out?",
+    "english": "When is check-out?",
     "korean": "체크아웃이 몇 시예요?",
     "day": 88,
     "source": "builtIn",
@@ -9635,7 +9635,7 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-89-01",
-    "english": "How much is this?",
+    "english": "How much does this cost?",
     "korean": "이거 얼마예요?",
     "day": 89,
     "source": "builtIn",
@@ -9655,8 +9655,8 @@ export const builtInSentences: BuiltInSentence[] = [
   },
   {
     "id": "day-89-03",
-    "english": "Can I pay by card?",
-    "korean": "카드로 결제할 수 있을까요?",
+    "english": "Do you take cards?",
+    "korean": "카드 결제되나요?",
     "day": 89,
     "source": "builtIn",
     "topic": "real-life-mission-daily",
